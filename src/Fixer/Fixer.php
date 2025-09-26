@@ -1,0 +1,121 @@
+<?php
+
+namespace Realodix\Hippo\Fixer;
+
+use Realodix\Hippo\Cache\Cache;
+use Realodix\Hippo\Config\Config;
+use Realodix\Hippo\Console\OutputLogger;
+use Realodix\Hippo\Enums\Mode;
+use Realodix\Hippo\Enums\Scope;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
+
+final class Fixer
+{
+    public function __construct(
+        private Processor $processor,
+        private Config $config,
+        private Filesystem $fs,
+        private Cache $cache,
+        private OutputLogger $logger,
+    ) {}
+
+    /**
+     * Entry point for file or directory processing.
+     *
+     * @param \Realodix\Hippo\Enums\Mode $mode Processing mode
+     * @param string|null $path File or directory path to process
+     * @param string|null $cachePath Custom path to the cache file
+     * @param string|null $configFile Custom path to the configuration file
+     */
+    public function handle(Mode $mode, ?string $path, ?string $cachePath, ?string $configFile): void
+    {
+        $config = $this->config->load(Scope::F, $configFile);
+        $fixerConfig = $config->fixer($path ? ['paths' => [$path]] : []);
+
+        $this->cache->prepareForRun(
+            $fixerConfig->paths,
+            $cachePath ?? $config->cacheDir,
+            $mode,
+        );
+
+        foreach ($fixerConfig->paths as $path) {
+            $path = Path::canonicalize($path);
+            $content = $this->read($path);
+            if ($content === null) {
+                continue;
+            }
+
+            $contentHash = $this->hash(implode("\n", $content)."\n");
+            if (
+                $this->cache->isValid($path, $contentHash)
+                || trim(implode($content)) === '' // empty file
+            ) {
+                $this->logger->skipped($path);
+
+                continue;
+            }
+
+            $this->logger->processing($path);
+            $this->write($path, $this->processor->process($content));
+            $this->logger->processed($path);
+        }
+
+        $this->cache->repository()->save();
+    }
+
+    /**
+     * Read file content.
+     *
+     * @param string $filePath Path to file
+     * @return array<string>|null
+     */
+    private function read(string $filePath): ?array
+    {
+        if (!is_readable($filePath)) {
+            $this->logger->error("Cannot read: {$filePath}");
+
+            return null;
+        }
+
+        $rawContent = file($filePath, FILE_IGNORE_NEW_LINES);
+        if ($rawContent === false) {
+            $this->logger->error("Failed to read file: {$filePath}");
+
+            return null;
+        }
+
+        return $rawContent;
+    }
+
+    /**
+     * Write processed content to a file.
+     *
+     * @param string $filePath Path to file
+     * @param array<string> $content Processed content
+     *
+     * @throws \Symfony\Component\Filesystem\Exception\IOException
+     */
+    private function write(string $filePath, array $content): void
+    {
+        $content = implode("\n", $content)."\n";
+        $this->fs->dumpFile($filePath, $content);
+
+        $this->cache->set($filePath, $this->hash($content));
+    }
+
+    private function hash(string $data): string
+    {
+        // increases the suffix number when the Fixer changes
+        // to invalidate the cache
+        return hash('xxh3', $data.'1');
+    }
+
+    /**
+     * @return \Realodix\Hippo\Console\Statistics
+     */
+    public function stats()
+    {
+        return $this->logger->stats();
+    }
+}
