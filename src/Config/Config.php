@@ -1,0 +1,106 @@
+<?php
+
+namespace Realodix\Haiku\Config;
+
+use Illuminate\Support\Arr;
+use Nette\Schema\Processor;
+use Realodix\Haiku\Enums\Scope;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Yaml\Yaml;
+
+final class Config
+{
+    const DEFAULT_FILENAME = 'haiku.yml';
+
+    public ?string $cacheDir;
+
+    /** @var array<string, mixed> */
+    private array $config;
+
+    public function __construct(
+        private BuilderConfig $builder,
+        private FixerConfig $fixer,
+        private Processor $schemaProcessor,
+        private OutputInterface $output,
+    ) {}
+
+    /**
+     * @param string|null $path Custom path to the configuration file
+     */
+    public function load(Scope $scope, ?string $path): self
+    {
+        try {
+            $config = Yaml::parseFile($this->resolvePath($path));
+            $this->validate($config, $scope);
+        } catch (\Symfony\Component\Yaml\Exception\ParseException) {
+            $config = [];
+
+            if ($scope === Scope::B) {
+                throw new InvalidConfigurationException('The configuration file does not exist.');
+            }
+        }
+
+        $this->config = $config;
+        $this->cacheDir = $config['cache_dir'] ?? null;
+
+        return $this;
+    }
+
+    public function builder(): BuilderConfig
+    {
+        if (!isset($this->config['builder'])) {
+            throw new InvalidConfigurationException('The "builder" configuration is missing.');
+        }
+
+        return $this->builder->make($this->config['builder']);
+    }
+
+    /**
+     * @param array{paths?: array<string>} $custom Custom configuration from the CLI
+     */
+    public function fixer(array $custom): FixerConfig
+    {
+        return $this->fixer->make($this->config['fixer'] ?? [], $custom);
+    }
+
+    /**
+     * Returns the absolute path to a configuration file.
+     *
+     * If no configuration file is specified, it defaults to the path of the
+     * `haiku.yml` file.
+     *
+     * @param string|null $path Custom path to the configuration file
+     */
+    private function resolvePath(?string $path): string
+    {
+        return base_path($path ?? self::DEFAULT_FILENAME);
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     * @param \Realodix\Haiku\Enums\Scope $scope
+     */
+    private function validate($config, $scope): void
+    {
+        if ($scope === Scope::B) {
+            $config = Arr::only($config, ['cache_dir', 'builder']);
+            $schema = Schema::builder();
+        } else {
+            $config = Arr::only($config, ['cache_dir', 'fixer']);
+            $schema = Schema::fixer();
+        }
+
+        try {
+            $this->schemaProcessor->process($schema, $config);
+        } catch (\Nette\Schema\ValidationException $e) {
+            $this->output->writeln('');
+            $this->output->writeln('<error>Configuration error:</error>');
+
+            foreach ($e->getMessages() as $message) {
+                $this->output->writeln("- {$message}");
+            }
+
+            exit(1);
+        }
+    }
+}

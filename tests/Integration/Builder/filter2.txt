@@ -1,0 +1,5 @@
+
+duplicate_line_global
+b
+
+a

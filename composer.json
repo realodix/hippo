@@ -1,0 +1,64 @@
+{
+    "name": "realodix/haiku",
+    "description": "A tool to manage and maintain Adblock filter lists.",
+    "license": "MIT",
+    "type": "library",
+    "authors": [{"name": "Budi Hermawan", "role": "Developer"}],
+    "homepage": "https://github.com/realodix/haiku",
+    "require": {
+        "php": "^8.4",
+        "composer/pcre": "^3.3",
+        "illuminate/container": "^12.41",
+        "illuminate/support": "^12.41",
+        "nesbot/carbon": "^3.11",
+        "nette/schema": "^1.3",
+        "symfony/console": "^8.0",
+        "symfony/filesystem": "^8.0",
+        "symfony/finder": "^8.0",
+        "symfony/yaml": "^8.0"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.24",
+        "mockery/mockery": "^1.6",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^12.4",
+        "realodix/relax": "^1.20"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Realodix\\Haiku\\": "src"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Realodix\\Haiku\\Test\\": "tests"
+        }
+    },
+    "bin": [
+        "haiku"
+    ],
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    },
+    "scripts": {
+        "check": [
+            "@cs",
+            "@sa",
+            "@test"
+        ],
+        "cs": "./vendor/bin/php-cs-fixer fix -v",
+        "sa": "./vendor/bin/phpstan analyse",
+        "test": "./vendor/bin/phpunit"
+    }
+}

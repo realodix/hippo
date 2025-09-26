@@ -1,0 +1,35 @@
+cache_dir: tests/Integration/tmp
+
+builder:
+  output_dir: tests/Integration/tmp
+  filter_list:
+    - filename: compiled1.txt
+      metadata:
+        date_modified: false
+      source:
+        - tests/Integration/Builder/filter1.txt
+        - tests/Integration/Builder/filter2.txt
+    - filename: compiled2.txt
+      remove_duplicates: true
+      metadata:
+        header: Adblock Plus 2.0
+        title: Filterlist 2
+        version: false
+        date_modified: false
+        custom: |
+          Description: Foo
+          Expires: 5 days (update frequency)
+          Homepage: https://example.com/
+          License: MIT
+          ------------------------------
+      source:
+        - tests/Integration/Builder/filter1.txt
+        - tests/Integration/Builder/filter2.txt
+    - filename: date_modified.txt
+      source:
+        - tests/Integration/Builder/filter1.txt
+    - filename: date_modified_metadata_provided.txt
+      metadata:
+        title: date_modified_metadata_provided
+      source:
+        - tests/Integration/Builder/filter1.txt

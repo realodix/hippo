@@ -1,0 +1,51 @@
+#0123456789
+## C
+## A
+###########################
+## D
+###BannerBox
+## B
+# =========================
+!# Sorting
+###a
+#@##a
+a.com,b.com,~c.com###a
+a.com,b.com,~c.com#@##a
+###b
+#@##b
+a.com,b.com,~c.com###b
+a.com,b.com,~c.com#@##b
+##.a
+#@#.a
+a.com,b.com,~c.com##.a
+a.com,b.com,~c.com#@#.a
+##.b
+#@#.b
+a.com,b.com,~c.com##.b
+a.com,b.com,~c.com#@#.b
+!# Merging
+###a
+#@##a
+a.com,b.com,~c.com###a
+a.com,b.com,~c.com#@##a
+##.a
+#@#.a
+a.com,b.com,~c.com##.a
+a.com,b.com,~c.com#@#.a
+!# Cosmetic, Scriptlet and Network
+###ads
+example.com##+js(nobab)
+##.ads
+[$domain=b.com|a.com,app=test_app|com.apple.Safari]example.com##selector
+example.com##body:style(overflow: auto !important;)
+##div
+$@$script[tag-content="banner"]
+example.com$$script[tag-content="banner"]
+$$script[tag-content="banner"]
+example.com$@$script[tag-content="banner"]
+-ad123-
+||example.com/banner/
+!# Network
+*$script,header=via:/1\.1\s+google/
+||example.com^$badfilter,important,strict1p,strict3p,1p,3p,first-party,all,cname,css,doc,document,ehide,elemhide,frame,generichide,ghide,inline-font,inline-script,match-case,ping,popunder,shide,specifichide,stylesheet,subdocument,xhr,xmlhttprequest,csp=script-src 'none',header=via:1.1 google,method=get|post,permissions=oversized-images=()|unsized-media=(),redirect-rule=noopjs,redirect=noopjs:100,removeparam=utm_source,replace=/(<VAST[\s\S]*?>)[\s\S]*<\/VAST>/\$1<\/VAST>/i,denyallow=x.com|y.com,domain=a.com|b.com,from=a.com|b.com,ipaddress=/^139\.45\.19[5-7]\./,to=google.*|gstatic.com
+||example.com^$css,image,~image
