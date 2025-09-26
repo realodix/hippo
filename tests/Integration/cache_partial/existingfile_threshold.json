@@ -1,0 +1,14 @@
+{
+    "fixer": {
+        "tests\/Integration\/tmp\/existingfile_threshold_actual.txt": {
+            "file_hash": "15c2263cd84d5f39",
+            "blocks": [
+                "c60f8ba575c1ad36",
+                "05b08a80c944d5b4",
+                "1d45309a55f8ad05",
+                "d3c57798d34e799c",
+                "1e4a0b9efe91687c"
+            ]
+        }
+    }
+}

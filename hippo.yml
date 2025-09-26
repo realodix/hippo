@@ -1,0 +1,33 @@
+cache_dir: .tmp
+
+fixer:
+  path: ./
+  ignore:
+    - vendor
+    - tests/Integration
+
+compiler:
+  output_dir: tests/Integration/tmp
+  filter_list:
+    - output_file: adblockid.adfl.txt
+      metadata:
+        # header: [Adblock Plus 2.0]
+        # title: AdBlockID
+        description: Filter list that specifically removes adverts on Indonesian language websites.
+        date_format: M Y H:i:s
+        expires: 5 days (update frequency)
+        # homepage: https://github.com/realodix/AdBlockID
+      source:
+        - https://raw.githubusercontent.com/realodix/AdBlockID/refs/heads/main/src/general-block.adfl
+        - https://raw.githubusercontent.com/realodix/AdBlockID/refs/heads/main/src/general-hide.adfl
+    - output_file: adblockid_2.adfl.txt
+      metadata:
+        # header: [Adblock Plus 2.0]
+        # title: AdBlockID
+        # description: Filter list that specifically removes adverts on Indonesian language websites.
+        date_format: M Y H:i:s
+        expires: 5 days (update frequency)
+        # homepage: https://github.com/realodix/AdBlockID
+      source:
+        - tests/zFilter/AdBlockID/adservers.adfl
+        - tests/zFilter/AdBlockID/general-hide.adfl
