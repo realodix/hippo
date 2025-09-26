@@ -1,0 +1,59 @@
+{
+    "name": "realodix/hippo",
+    "description": "A tool for sorting, optimizing, and combining ad-blocker filter lists.",
+    "license": "MIT",
+    "type": "library",
+    "authors": [{"name": "Budi Hermawan", "role": "Developer"}],
+    "homepage": "https://github.com/realodix/next-project",
+    "require": {
+        "php": "^8.3",
+        "composer/pcre": "^3.3",
+        "illuminate/container": "^12.28",
+        "illuminate/support": "^12.28",
+        "symfony/console": "^7.3",
+        "symfony/filesystem": "^7.3",
+        "symfony/finder": "^7.3",
+        "symfony/polyfill-php84": "^1.31",
+        "symfony/yaml": "^7.3"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.24",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^12.3",
+        "realodix/relax": "^1.20"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Realodix\\Hippo\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Realodix\\Hippo\\Test\\": "tests"
+        }
+    },
+    "bin": [
+        "hippo"
+    ],
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    },
+    "scripts": {
+        "check": [
+            "@cs",
+            "@sa",
+            "@test"
+        ],
+        "cs": "./vendor/bin/php-cs-fixer fix -v",
+        "sa": "./vendor/bin/phpstan analyse",
+        "test": "./vendor/bin/phpunit"
+    }
+}

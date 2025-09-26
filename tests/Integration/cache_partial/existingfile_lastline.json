@@ -1,0 +1,13 @@
+{
+    "fixer": {
+        "G:\\laragon\\www\\_PHP-Package\\php-fop\\tests\/Integration\/tmp\/existingfile_lastline_actual.txt": {
+            "file_hash": "948bf2bce2bb8c8d",
+            "blocks": [
+                "c60f8ba575c1ad36",
+                "05b08a80c944d5b4",
+                "1d45309a55f8ad05",
+                "d3c57798d34e799c"
+            ]
+        }
+    }
+}

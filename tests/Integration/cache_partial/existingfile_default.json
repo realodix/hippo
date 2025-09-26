@@ -1,0 +1,13 @@
+{
+    "fixer": {
+        "G:\\laragon\\www\\_PHP-Package\\php-fop\\tests\/Integration\/tmp\/existingfile_default_actual.txt": {
+            "file_hash": "b1d140ea0e4e97b9",
+            "blocks": [
+                "cb0fb9d5fa164897",
+                "bde89d86e82cb504",
+                "03c6d62facb67e83",
+                "ac2a57b8683099f1"
+            ]
+        }
+    }
+}
