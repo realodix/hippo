@@ -6,6 +6,8 @@ use Symfony\Component\Yaml\Yaml;
 
 final class Config
 {
+    const FILENAME = 'hippo.yml';
+
     public ?string $cacheDir = null;
 
     /** @var array<string, mixed> */
@@ -47,7 +49,7 @@ final class Config
     private function configPath(?string $configFile): string
     {
         if (is_null($configFile)) {
-            return $this->workingDirectory().'/hippo.yml';
+            return $this->workingDirectory().DIRECTORY_SEPARATOR.self::FILENAME;
         }
 
         return $this->workingDirectory().DIRECTORY_SEPARATOR.$configFile;

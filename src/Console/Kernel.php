@@ -30,6 +30,7 @@ class Kernel
     protected array $commands = [
         \Realodix\Hippo\Console\BuildCommand::class,
         \Realodix\Hippo\Console\FixCommand::class,
+        \Realodix\Hippo\Console\SetupCommand::class,
     ];
 
     public function __construct()
