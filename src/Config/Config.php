@@ -12,7 +12,7 @@ final class Config
     private array $configData = [];
 
     public function __construct(
-        private CompilerConfig $compiler,
+        private BuilderConfig $builder,
         private FixerConfig $fixer,
     ) {}
 
@@ -31,9 +31,9 @@ final class Config
         return $this;
     }
 
-    public function compiler(): CompilerConfig
+    public function builder(): BuilderConfig
     {
-        return $this->compiler->make($this->configData['compiler'], $this->workingDirectory());
+        return $this->builder->make($this->configData['builder'], $this->workingDirectory());
     }
 
     /**

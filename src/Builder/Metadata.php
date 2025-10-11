@@ -1,6 +1,6 @@
 <?php
 
-namespace Realodix\Hippo\Compiler;
+namespace Realodix\Hippo\Builder;
 
 final class Metadata
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Realodix\Hippo\Compiler;
+namespace Realodix\Hippo\Builder;
 
 use Realodix\Hippo\Cache\Cache;
 use Realodix\Hippo\Config\Config;
@@ -9,7 +9,7 @@ use Realodix\Hippo\Enums\Scope;
 use Realodix\Hippo\OutputLogger;
 use Symfony\Component\Filesystem\Filesystem;
 
-final class Compiler
+final class Builder
 {
     public function __construct(
         private Config $config,
@@ -24,9 +24,9 @@ final class Compiler
         $mode = $force ? Mode::Force : Mode::Default;
         $config = $this->config->loadFromFile($configFile);
 
-        $this->cache->prepareForRun($config, $mode, Scope::C);
+        $this->cache->prepareForRun($config, $mode, Scope::B);
 
-        foreach ($config->compiler()->filters as $filterConfig) {
+        foreach ($config->builder()->filters as $filterConfig) {
             $outputPath = $filterConfig->outputPath;
 
             // Skip compilation if the source has not changed (cache is valid)
@@ -82,10 +82,10 @@ final class Compiler
     }
 
     /**
-     * Compile a list of filters into a single filter list.
+     * Build a filter list from a list of source files.
      *
-     * @param list<string> $data List of source files to compile
-     * @return list<string> The compiled filter list
+     * @param list<string> $data List of source files to include in the filter list
+     * @return list<string> The built filter list
      */
     private function createFilterList(array $data): array
     {

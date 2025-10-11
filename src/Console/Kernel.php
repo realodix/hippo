@@ -28,7 +28,7 @@ class Kernel
      * @var array<class-string>
      */
     protected array $commands = [
-        \Realodix\Hippo\Console\CompileCommand::class,
+        \Realodix\Hippo\Console\BuildCommand::class,
         \Realodix\Hippo\Console\FixCommand::class,
     ];
 

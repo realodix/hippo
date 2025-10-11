@@ -4,7 +4,7 @@ namespace Realodix\Hippo\Config;
 
 use Symfony\Component\Filesystem\Filesystem;
 
-final class CompilerConfig
+final class BuilderConfig
 {
     public string $outputDir;
 
@@ -25,28 +25,28 @@ final class CompilerConfig
      *     metadata?: list<string>,
      *     source?: list<string>
      *   }>
-     * } $compilerConfigData
+     * } $builderConfigData
      */
-    public function make(array $compilerConfigData, string $workingDirectory): self
+    public function make(array $builderConfigData, string $workingDirectory): self
     {
         $this->workingDirectory = $workingDirectory;
-        $this->outputDir = $this->outputDir($compilerConfigData);
-        $this->filters = $this->parseFilterSets($compilerConfigData['filter_list'] ?? []);
+        $this->outputDir = $this->outputDir($builderConfigData);
+        $this->filters = $this->parseFilterSets($builderConfigData['filter_list'] ?? []);
 
         return $this;
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
-    public function getAllOutputPaths(): array
+    public function outputPaths(): array
     {
         return array_map(fn(FilterSet $filter) => $filter->outputPath, $this->filters);
     }
 
     /**
-     * @param array<int, array{output_file: string, metadata?: list<string>, source?: list<string>}> $filterLists
-     * @return array<int, FilterSet>
+     * @param list<array{output_file: string, metadata?: list<string>, source?: list<string>}> $filterLists
+     * @return list<FilterSet>
      */
     private function parseFilterSets(array $filterLists): array
     {

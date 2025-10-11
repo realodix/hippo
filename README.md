@@ -1,16 +1,16 @@
 # Realodix Hippo
 
-Hippo is a powerful command-line tool for managing ad-blocker filter lists. It is designed to automates repetitive tasks such as merging sources, optimize, and tidy up filter lists effortlessly. With a built-in caching system, Hippo skips unchanged files since the last run, resulting in significantly faster processing.
+Hippo is a powerful command-line tool for managing ad-blocker filter lists. It automates repetitive tasks such as merging sources, optimizing, and tidying up filter lists effortlessly. With a built-in caching system, Hippo skips unchanged files since the last run, resulting in significantly faster processing.
 
 
 ## Features
 
-- **Filter List Compilation:** Seamlessly combine multiple local or remote filter lists into one output file, enriched with customizable metadata.
+- **Filter List Building:** Builds unified outputs from multiple local or remote filter lists into a single file, regenerating metadata and stripping unnecessary lines such as comments.
 - **Rule Sorting:** Sorts filter rules alphabetically for consistent and readable ordering.
 - **Rules Combining:** Merges rules with identical patterns that differ only by domain, reducing duplication and improving efficiency.
 - **Option Sorting:** Sorts filter options (e.g., `$third-party,script,domain=...`) into a standardized and predictable sequence.
 - **Caching:** Caches processed files and re-processes only those that have changed, speeding up subsequent runs.
-- **Configuration:** Easily configure compiler and fixer behaviors via a simple `hippo.yml` file.
+- **Configuration:** Easily configure builder and fixer behaviors via a simple `hippo.yml` file.
 
 Below are a few examples of transformations applied during optimization.
 
@@ -49,13 +49,13 @@ This adds the `hippo` executable to `./vendor/bin/hippo`. Make sure `./vendor/bi
 ## Quick Start
 
 1. **Create Configuration:** Add a `hippo.yml` file to your project root (see Configuration for details).
-2. **Compile Filters:**
+2. **Build Filters:**
 
     ```sh
-    ./vendor/bin/hippo compile
+    ./vendor/bin/hippo build
     ```
 
-    This merges filter sources and generates the output file as defined in your config.
+    This builds unified outputs from filter sources as defined in your config.
 
 3. **Fix Existing Lists:**
 
@@ -68,17 +68,17 @@ This adds the `hippo` executable to `./vendor/bin/hippo`. Make sure `./vendor/bi
 
 ## Usage
 
-Hippo provides two main commands: `compile` for merging sources and `fix` for optimization.
+Hippo provides two main commands: `build` for merging sources and `fix` for optimization.
 
-### Compiling Filter Lists
-Merges multiple source files into a single output file as defined in your `hippo.yml`.
+### Building Filter Lists
+Builds multiple source files into a single output file as defined in your `hippo.yml`, including metadata regeneration and stripping unnecessary lines such as comments.
 
 ```sh
-./vendor/bin/hippo compile [options]
+./vendor/bin/hippo build [options]
 ```
 
 #### Options:
-- `--force`: Ignore cache and recompile all sources.
+- `--force`: Ignore cache and rebuild all sources.
 - `--config`, `-c`: Use a custom configuration file. Example: `--config ./config.yml`.
 
 ### Fixing Filter Lists
@@ -111,11 +111,11 @@ fixer:
     - some/path/to/file.txt
     - path/to/source
 
-# Settings for the `compile` command
-compiler:
+# Settings for the `build` command
+builder:
   # output_dir: dist
   filter_list:
-    # First output file
+    # First filter list
     - output_file: General Blocklist
       metadata:
         # header: [Adblock Plus 2.0]
@@ -127,12 +127,15 @@ compiler:
         - blocklists/general/local-rules.txt
         - https://cdn.example.org/blocklists/general.txt
 
-    # Second output file
+    # Second filter list
     - output_file: custom-privacy.txt
       source:
         - sources/tracking-domains-1.txt
         - sources/tracking-domains-2.txt
 ```
+
+> [!NOTE]
+> Lines displaying `# <key>: <value>` are examples of **optional** configuration keys and can be safely removed — Hippo will fall back to its default values.
 
 
 ## Contributing

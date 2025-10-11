@@ -2,7 +2,7 @@
 
 namespace Realodix\Hippo\Console;
 
-use Realodix\Hippo\Compiler\Compiler;
+use Realodix\Hippo\Builder\Builder;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,13 +11,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'compile',
+    name: 'build',
     description: 'Combine multiple filters into one',
 )]
-class CompileCommand extends Command
+class BuildCommand extends Command
 {
     public function __construct(
-        private Compiler $compiler,
+        private Builder $builder,
     ) {
         parent::__construct();
     }
@@ -26,7 +26,7 @@ class CompileCommand extends Command
     {
         $this
             ->addOption('config', 'c', InputOption::VALUE_OPTIONAL, 'File or directory to process')
-            ->addOption('force', null, InputOption::VALUE_NONE, 'Force re-compile all sources');
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Ignore cache and rebuild all sources');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -40,7 +40,7 @@ class CompileCommand extends Command
         $start = microtime(true);
         $io->writeln('Combining filter list fragments into a filter list...');
 
-        $this->compiler->handle(
+        $this->builder->handle(
             $input->getOption('config'),
             (bool) $input->getOption('force'),
         );

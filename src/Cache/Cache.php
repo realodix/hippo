@@ -40,8 +40,8 @@ final class Cache
             ->load();
 
         if ($mode !== Mode::Force) {
-            if ($scope === Scope::C) {
-                $this->cleanStaleEntries($config->compiler()->getAllOutputPaths());
+            if ($scope === Scope::B) {
+                $this->cleanStaleEntries($config->builder()->outputPaths());
             } else {
                 $this->cleanStaleEntries();
             }
@@ -59,7 +59,7 @@ final class Cache
      * - If a list of active files is provided, remove any entry not in that list.
      * - Otherwise, remove entries for files that no longer exist on disk.
      *
-     * @param list<string> $activeOutputFiles List of active compiled output files
+     * @param list<string> $activeOutputFiles List of active builder output files
      */
     private function cleanStaleEntries(array $activeOutputFiles = []): void
     {
