@@ -48,7 +48,7 @@ This adds the `hippo` executable to `./vendor/bin/hippo`. Make sure `./vendor/bi
 
 ## Quick Start
 
-1. **Create Configuration:** Add a `hippo.yml` file to your project root (see Configuration for details).
+1. **Create Configuration:** Create a `hippo.yml` configuration file and place it to your project root (see Configuration for details).
 2. **Build Filters:**
 
     ```sh
@@ -116,22 +116,22 @@ builder:
   # output_dir: dist
   filter_list:
     # First filter list
-    - output_file: General Blocklist
+    - output_file: general_blocklist.txt
       metadata:
         # header: [Adblock Plus 2.0]
-        title: EasyList
+        title: General Blocklist
         # description: Filter list that specifically removes adverts.
         # expires: 6 days (update frequency)
-        # homepage: https://github.com/easylist/easylist
+        # homepage: https://example.org/
       source:
         - blocklists/general/local-rules.txt
         - https://cdn.example.org/blocklists/general.txt
 
     # Second filter list
-    - output_file: custom-privacy.txt
+    - output_file: custom_privacy.txt
       source:
-        - sources/tracking-domains-1.txt
-        - sources/tracking-domains-2.txt
+        - sources/tracking_domains-1.txt
+        - sources/tracking_domains-2.txt
 ```
 
 > [!NOTE]
