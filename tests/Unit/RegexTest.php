@@ -3,7 +3,7 @@
 namespace Realodix\Hippo\Test\Unit;
 
 use PHPUnit\Framework\Attributes as PHPUnit;
-use Realodix\Hippo\Processor\Type\Regex;
+use Realodix\Hippo\Fixer\Type\Regex;
 use Realodix\Hippo\Test\TestCase;
 
 class RegexTest extends TestCase

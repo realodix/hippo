@@ -1,15 +1,15 @@
 <?php
 
-namespace Realodix\Hippo\Processor\Strategy;
+namespace Realodix\Hippo\Fixer\Strategy;
 
 use Realodix\Hippo\Cache\Cache;
-use Realodix\Hippo\Processor\FilterProcessor;
-use Realodix\Hippo\Processor\ValueObject\ProcessingResult;
+use Realodix\Hippo\Fixer\Processor;
+use Realodix\Hippo\Fixer\ValueObject\FixOutput;
 
 final class WholeFile
 {
     public function __construct(
-        private FilterProcessor $processor,
+        private Processor $processor,
         private Cache $cache,
     ) {}
 
@@ -18,14 +18,14 @@ final class WholeFile
      *
      * @param string $filePath Path to file
      * @param array<string> $content Full file content
-     * @return ProcessingResult
+     * @return \Realodix\Hippo\Fixer\ValueObject\FixOutput
      */
     public function handle(string $filePath, array $content): object
     {
         if (!$this->cache->isFileChanged($filePath)) {
-            return new ProcessingResult;
+            return new FixOutput;
         }
 
-        return new ProcessingResult($this->processor->process($content));
+        return new FixOutput($this->processor->process($content));
     }
 }

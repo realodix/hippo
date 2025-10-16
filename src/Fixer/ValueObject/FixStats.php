@@ -1,8 +1,8 @@
 <?php
 
-namespace Realodix\Hippo\Processor\ValueObject;
+namespace Realodix\Hippo\Fixer\ValueObject;
 
-final class ProcessingStats
+final class FixStats
 {
     public function __construct(
         public int $total = 0,
@@ -38,7 +38,7 @@ final class ProcessingStats
             $this->total(),
             $this->processed,
             $this->skipped,
-            $this->error
+            $this->error,
         );
     }
 }

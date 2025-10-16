@@ -1,14 +1,14 @@
 <?php
 
-namespace Realodix\Hippo\Processor;
+namespace Realodix\Hippo\Fixer;
 
 use Composer\Pcre\Preg;
-use Realodix\Hippo\Processor\Type\Combiner;
-use Realodix\Hippo\Processor\Type\ElementTidy;
-use Realodix\Hippo\Processor\Type\NetworkTidy;
-use Realodix\Hippo\Processor\Type\Regex;
+use Realodix\Hippo\Fixer\Type\Combiner;
+use Realodix\Hippo\Fixer\Type\ElementTidy;
+use Realodix\Hippo\Fixer\Type\NetworkTidy;
+use Realodix\Hippo\Fixer\Type\Regex;
 
-final class FilterProcessor
+final class Processor
 {
     public function __construct(
         private Combiner $combiner,

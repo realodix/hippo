@@ -3,7 +3,7 @@
 namespace Realodix\Hippo\Test\Unit;
 
 use PHPUnit\Framework\Attributes as PHPUnit;
-use Realodix\Hippo\Processor\FilterProcessor;
+use Realodix\Hippo\Fixer\Processor;
 use Realodix\Hippo\Test\TestCase;
 
 class GeneralTest extends TestCase
@@ -15,7 +15,7 @@ class GeneralTest extends TestCase
      */
     public function testBlankLine()
     {
-        $processor = $this->app->make(FilterProcessor::class);
+        $processor = $this->app->make(Processor::class);
 
         $input = [
             '',
@@ -32,7 +32,7 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function special_line()
     {
-        $processor = $this->app->make(FilterProcessor::class);
+        $processor = $this->app->make(Processor::class);
 
         $input = [
             '2',
@@ -75,7 +75,7 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function isSpecialLine($data)
     {
-        $processor = $this->app->make(FilterProcessor::class);
+        $processor = $this->app->make(Processor::class);
 
         $this->assertTrue($processor->isSpecialLine($data));
     }
@@ -86,7 +86,7 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function isNotSpecialLine($data)
     {
-        $processor = $this->app->make(FilterProcessor::class);
+        $processor = $this->app->make(Processor::class);
 
         $this->assertFalse($processor->isSpecialLine($data));
     }
@@ -95,7 +95,7 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function isCosmeticRule($data)
     {
-        $processor = $this->app->make(FilterProcessor::class);
+        $processor = $this->app->make(Processor::class);
 
         $this->assertTrue(
             $processor->isCosmeticRule($data),
@@ -106,7 +106,7 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function isNotCosmeticRule($data)
     {
-        $processor = $this->app->make(FilterProcessor::class);
+        $processor = $this->app->make(Processor::class);
 
         $this->assertFalse(
             $processor->isCosmeticRule($data),

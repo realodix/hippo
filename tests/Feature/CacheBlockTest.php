@@ -4,7 +4,7 @@ namespace Realodix\Hippo\Test\Feature;
 
 use PHPUnit\Framework\Attributes as PHPUnit;
 use Realodix\Hippo\Cache\Repository;
-use Realodix\Hippo\Processor\Strategy\Block;
+use Realodix\Hippo\Fixer\Strategy\Block;
 use Realodix\Hippo\Test\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;

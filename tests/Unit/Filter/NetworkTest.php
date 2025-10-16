@@ -3,7 +3,7 @@
 namespace Realodix\Hippo\Test\Unit\Filter;
 
 use PHPUnit\Framework\Attributes as PHPUnit;
-use Realodix\Hippo\Processor\FilterProcessor;
+use Realodix\Hippo\Fixer\Processor;
 use Realodix\Hippo\Test\TestCase;
 
 class NetworkTest extends TestCase
@@ -16,7 +16,7 @@ class NetworkTest extends TestCase
     {
         parent::setUp();
 
-        $this->processor = $this->app->make(FilterProcessor::class);
+        $this->processor = $this->app->make(Processor::class);
     }
 
     #[PHPUnit\Test]

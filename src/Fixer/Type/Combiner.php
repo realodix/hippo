@@ -1,6 +1,6 @@
 <?php
 
-namespace Realodix\Hippo\Processor\Type;
+namespace Realodix\Hippo\Fixer\Type;
 
 use Composer\Pcre\Preg;
 use Realodix\Hippo\Helper;

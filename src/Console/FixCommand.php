@@ -3,7 +3,7 @@
 namespace Realodix\Hippo\Console;
 
 use Realodix\Hippo\Enums\Mode;
-use Realodix\Hippo\Processor\FileHandler;
+use Realodix\Hippo\Fixer\Fixer;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class FixCommand extends Command
 {
     public function __construct(
-        private FileHandler $fileHandler,
+        private Fixer $fixer,
     ) {
         parent::__construct();
     }
@@ -47,14 +47,15 @@ class FixCommand extends Command
 
         // ---- Execute ----
         $startTime = microtime(true);
-        $stats = $this->fileHandler->handle(
+        $this->fixer->handle(
             $this->inputMode($input),
             $input->getOption('path'),
             $input->getOption('cache'),
             $input->getOption('config'),
         );
+        $stats = $this->fixer->stats();
 
-        if (!empty($stats->total) && $stats->processed < 1) {
+        if ($stats->total() === $stats->skipped) {
             $io->info('All files have already been processed.');
         } else {
             $io->writeln('');

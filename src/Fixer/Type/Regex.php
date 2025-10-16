@@ -1,6 +1,6 @@
 <?php
 
-namespace Realodix\Hippo\Processor\Type;
+namespace Realodix\Hippo\Fixer\Type;
 
 final class Regex
 {

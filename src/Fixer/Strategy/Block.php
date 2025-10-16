@@ -1,12 +1,12 @@
 <?php
 
-namespace Realodix\Hippo\Processor\Strategy;
+namespace Realodix\Hippo\Fixer\Strategy;
 
 use Illuminate\Container\Attributes\Singleton;
 use Realodix\Hippo\Cache\Cache;
 use Realodix\Hippo\Enums\Mode;
-use Realodix\Hippo\Processor\FilterProcessor;
-use Realodix\Hippo\Processor\ValueObject\ProcessingResult;
+use Realodix\Hippo\Fixer\Processor;
+use Realodix\Hippo\Fixer\ValueObject\FixOutput;
 
 #[Singleton]
 final class Block
@@ -26,7 +26,7 @@ final class Block
     public int $threshold = 2;
 
     public function __construct(
-        private FilterProcessor $processor,
+        private Processor $processor,
         private Cache $cache,
     ) {}
 
@@ -36,7 +36,7 @@ final class Block
      * @param string $filePath Path to the file being processed
      * @param array<string> $content File content
      * @param \Realodix\Hippo\Enums\Mode $mode Processing mode
-     * @return ProcessingResult
+     * @return \Realodix\Hippo\Fixer\ValueObject\FixOutput
      */
     public function handle(string $filePath, array $content, Mode $mode)
     {
@@ -52,7 +52,7 @@ final class Block
 
         // CASE: CACHE-AWARE MODE
         if (empty($blocksToProcess)) {
-            return new ProcessingResult;
+            return new FixOutput;
         }
 
         return $this->processChangedBlocks($originalBlocks, $totalBlocks, $blocksToProcess);
@@ -86,7 +86,7 @@ final class Block
      *
      * @param array<string> $content Full file content
      * @param \Realodix\Hippo\Enums\Mode $mode Processing mode
-     * @return ProcessingResult
+     * @return \Realodix\Hippo\Fixer\ValueObject\FixOutput
      */
     private function processAllBlocks(array $content, Mode $mode)
     {
@@ -98,7 +98,7 @@ final class Block
             $newBlockHashes = $this->cache->repository()->blockHash($newBlocks);
         }
 
-        return new ProcessingResult($processed, $newBlockHashes);
+        return new FixOutput($processed, $newBlockHashes);
     }
 
     /**
@@ -107,7 +107,7 @@ final class Block
      * @param array<array<string>> $originalBlocks Original blocks
      * @param int $totalBlocks Total number of blocks
      * @param array<int> $blocksToProcess Indices of blocks to process
-     * @return ProcessingResult
+     * @return \Realodix\Hippo\Fixer\ValueObject\FixOutput
      */
     private function processChangedBlocks(array $originalBlocks, int $totalBlocks, array $blocksToProcess)
     {
@@ -129,7 +129,7 @@ final class Block
 
         $newBlockHashes = $this->cache->repository()->blockHash($processedBlocks);
 
-        return new ProcessingResult($newContentParts, $newBlockHashes, $processedCount, $totalBlocks);
+        return new FixOutput($newContentParts, $newBlockHashes, $processedCount, $totalBlocks);
     }
 
     /**

@@ -37,7 +37,7 @@ class OutputLoggerTest extends TestCase
         // 2. Atur ekspektasi: writeln() harus dipanggil 1x dengan string yang benar
         $outputMock->expects($this->once())
             ->method('writeln')
-            ->with("<comment>[S]: {$testPath}</comment>");
+            ->with("<fg=gray>[S]: {$testPath}</>");
 
         // 3. Buat logger dengan mock output
         $logger = new OutputLogger($outputMock);
@@ -82,7 +82,7 @@ class OutputLoggerTest extends TestCase
         $outputMock = $this->createMock(OutputInterface::class);
         $outputMock->expects($this->once())
             ->method('writeln')
-            ->with("<error>{$errorMessage}</error>");
+            ->with("<fg=red>[E]: {$errorMessage}</>");
 
         $logger = new OutputLogger($outputMock);
         $logger->error($errorMessage);

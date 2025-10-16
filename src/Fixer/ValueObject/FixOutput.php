@@ -1,10 +1,13 @@
 <?php
 
-namespace Realodix\Hippo\Processor\ValueObject;
+namespace Realodix\Hippo\Fixer\ValueObject;
 
 use Realodix\Hippo\Enums\Status;
 
-final readonly class ProcessingResult
+/**
+ * The output of a fixer operation.
+ */
+final readonly class FixOutput
 {
     public Status $status;
 
