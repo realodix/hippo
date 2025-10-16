@@ -36,29 +36,26 @@ final class FileHandler
      */
     public function handle(Mode $mode, ?string $path, ?string $cachePath, ?string $configFile): ProcessingStats
     {
-        $stats = ProcessingStats::empty();
-        $config = $this->config->loadFromFile($configFile, ['cache_dir' => $cachePath]);
+        $stats = new ProcessingStats;
 
+        $config = $this->config->loadFromFile($configFile, ['cache_dir' => $cachePath]);
         $this->cache->prepareForRun($config, $mode);
 
-        $overrides = [];
-        if ($path) {
-            $overrides['paths'] = [$path];
-        }
-
+        $overrides = $path ? ['paths' => [$path]] : [];
         $fixerConfig = $config->fixer($overrides);
+
         foreach ($fixerConfig->paths as $path) {
             if (!file_exists($path) || !is_readable($path)) {
                 $this->logger->error("Cannot read: $path");
+                $stats->incrementError();
 
                 continue;
             }
 
             if (is_file($path)) {
-                $processed = $this->processFile($path, $mode);
-                $stats->add(total: 1, processed: (int) $processed, skipped: (int) !$processed);
+                $this->processFile($path, $mode, $stats);
             } elseif (is_dir($path)) {
-                $stats->add($this->processDirectory($path, $fixerConfig->ignore, $mode));
+                $this->processDirectory($path, $fixerConfig->ignore, $mode, $stats);
             }
         }
 
@@ -72,27 +69,31 @@ final class FileHandler
      *
      * @param string $filePath Path to file
      * @param \Realodix\Hippo\Enums\Mode $mode Processing mode
-     * @return bool True if processed, false if skipped or failed
+     * @param \Realodix\Hippo\Processor\ValueObject\ProcessingStats $stats Statistics of processed files
      */
-    private function processFile(string $filePath, Mode $mode): bool
+    private function processFile(string $filePath, Mode $mode, ProcessingStats $stats): void
     {
         $filePath = Path::canonicalize($filePath);
         $content = file($filePath, FILE_IGNORE_NEW_LINES);
+
         if ($content === false) {
             $this->logger->error("Failed to read file: {$filePath}");
+            $stats->incrementError();
 
-            return false;
+            return;
         }
 
         $result = $this->processContent($filePath, $content, $mode);
+
         if ($result === null) {
-            return false;
+            $stats->incrementSkipped();
+
+            return;
         }
 
         $this->write($filePath, $result);
         $this->logger->processed($filePath, $result->processedBlocks, $result->totalBlocks);
-
-        return true;
+        $stats->incrementProcessed();
     }
 
     /**
@@ -101,25 +102,15 @@ final class FileHandler
      * @param string $directory Directory path
      * @param array<string> $ignore Paths to ignore
      * @param \Realodix\Hippo\Enums\Mode $mode Processing mode
+     * @param \Realodix\Hippo\Processor\ValueObject\ProcessingStats $stats Statistics of processed files
      */
-    private function processDirectory(string $directory, array $ignore, Mode $mode): ProcessingStats
+    private function processDirectory(string $directory, array $ignore, Mode $mode, ProcessingStats $stats): void
     {
         $finder = $this->finder->create($directory, $ignore);
 
-        $totalCount = $finder->count();
-        $processedCount = 0;
-
         foreach ($finder as $file) {
-            if ($this->processFile($file->getRealPath(), $mode)) {
-                $processedCount++;
-            }
+            $this->processFile($file->getRealPath(), $mode, $stats);
         }
-
-        return new ProcessingStats(
-            total: $totalCount,
-            processed: $processedCount,
-            skipped: $totalCount - $processedCount,
-        );
     }
 
     /**
@@ -129,8 +120,8 @@ final class FileHandler
      * @param string $filePath Path to file
      * @param array<string> $content File content
      * @param \Realodix\Hippo\Enums\Mode $mode Processing mode
-     * @return \Realodix\Hippo\Processor\ValueObject\ProcessingResult|null
-     *   Process result if successful, null if skipped or failed
+     * @return \Realodix\Hippo\Processor\ValueObject\ProcessingResult|null Process result if successful,
+     *                                                                     null if skipped or failed
      */
     private function processContent(string $filePath, array $content, Mode $mode)
     {

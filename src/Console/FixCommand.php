@@ -57,12 +57,8 @@ class FixCommand extends Command
         if (!empty($stats->total) && $stats->processed < 1) {
             $io->info('All files have already been processed.');
         } else {
-            $io->writeln(sprintf(
-                "\nTotal: %d, Processed: %d, Skipped: %d",
-                $stats->total,
-                $stats->processed,
-                $stats->skipped,
-            ));
+            $io->writeln('');
+            $io->writeln($stats);
 
             $io->writeln('------------------');
         }

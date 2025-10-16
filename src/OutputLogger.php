@@ -35,12 +35,12 @@ final class OutputLogger
     {
         $path = Path::makeRelative($path, $this->root);
         if ($this->output->isVerbose()) {
-            $this->output->writeln("<comment>[S]: $path</comment>");
+            $this->output->writeln("<fg=gray>[S]: $path</>");
         }
     }
 
     public function error(string $message): void
     {
-        $this->output->writeln("<error>$message</error>");
+        $this->output->writeln("<fg=red>[E]: $message</>");
     }
 }

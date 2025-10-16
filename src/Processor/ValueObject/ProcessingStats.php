@@ -8,25 +8,37 @@ final class ProcessingStats
         public int $total = 0,
         public int $processed = 0,
         public int $skipped = 0,
+        public int $error = 0,
     ) {}
 
-    public static function empty(): self
+    public function incrementProcessed(): void
     {
-        return new self;
+        $this->processed++;
     }
 
-    public function add(self|int $total, int $processed = 0, int $skipped = 0): self
+    public function incrementSkipped(): void
     {
-        if ($total instanceof self) {
-            $this->total += $total->total;
-            $this->processed += $total->processed;
-            $this->skipped += $total->skipped;
-        } else {
-            $this->total += $total;
-            $this->processed += $processed;
-            $this->skipped += $skipped;
-        }
+        $this->skipped++;
+    }
 
-        return $this;
+    public function incrementError(): void
+    {
+        $this->error++;
+    }
+
+    public function total(): int
+    {
+        return $this->processed + $this->skipped + $this->error;
+    }
+
+    public function __toString(): string
+    {
+        return sprintf(
+            'Total: %d, Processed: %d, Skipped: %d, Error: %d',
+            $this->total(),
+            $this->processed,
+            $this->skipped,
+            $this->error
+        );
     }
 }
