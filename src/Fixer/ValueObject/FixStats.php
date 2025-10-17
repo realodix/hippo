@@ -4,12 +4,11 @@ namespace Realodix\Hippo\Fixer\ValueObject;
 
 final class FixStats
 {
-    public function __construct(
-        public int $total = 0,
-        public int $processed = 0,
-        public int $skipped = 0,
-        public int $error = 0,
-    ) {}
+    private int $processed = 0;
+
+    private int $skipped = 0;
+
+    private int $error = 0;
 
     public function incrementProcessed(): void
     {
@@ -24,6 +23,11 @@ final class FixStats
     public function incrementError(): void
     {
         $this->error++;
+    }
+
+    public function allSkipped(): bool
+    {
+        return $this->total() === $this->skipped;
     }
 
     public function total(): int

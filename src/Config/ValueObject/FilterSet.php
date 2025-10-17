@@ -1,6 +1,6 @@
 <?php
 
-namespace Realodix\Hippo\Config;
+namespace Realodix\Hippo\Config\ValueObject;
 
 /**
  * A filter list configuration

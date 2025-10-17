@@ -61,7 +61,7 @@ final class Builder
     /**
      * Build a filter list from a list of source files.
      *
-     * @param \Realodix\Hippo\Config\FilterSet $config
+     * @param \Realodix\Hippo\Config\ValueObject\FilterSet $config
      * @return list<string> The built filter list
      */
     private function buildFilterList($config): array
@@ -118,7 +118,7 @@ final class Builder
      * The hash is calculated by hashing each source file individually,
      * and then hashing the concatenated hashes of all files.
      *
-     * @param \Realodix\Hippo\Config\FilterSet $config
+     * @param \Realodix\Hippo\Config\ValueObject\FilterSet $config
      * @return string The calculated hash
      */
     private function sourceHash($config): string
@@ -142,7 +142,7 @@ final class Builder
      * - If the cache is empty (first run), the same default version is used.
      * - Otherwise, it increments or resets the revision number.
      *
-     * @param \Realodix\Hippo\Config\FilterSet $config
+     * @param \Realodix\Hippo\Config\ValueObject\FilterSet $config
      * @param ?array{version?: string} $cacheEntry
      * @return string The computed version in 'YY.MM.rev' format.
      */

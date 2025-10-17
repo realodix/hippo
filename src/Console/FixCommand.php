@@ -55,8 +55,9 @@ class FixCommand extends Command
         );
         $stats = $this->fixer->stats();
 
-        if ($stats->total() === $stats->skipped) {
-            $io->info('All files have already been processed.');
+        if ($stats->allSkipped()) {
+            $io->writeln('<info>All files have been processed.</info>');
+            $io->newLine();
         } else {
             $io->writeln('');
             $io->writeln($stats);

@@ -9,8 +9,6 @@ use Realodix\Hippo\Enums\Status;
  */
 final readonly class FixOutput
 {
-    public Status $status;
-
     /**
      * @param array<string|array<string>> $content Processed content
      * @param array<string> $blockHash Block hashes
@@ -20,16 +18,10 @@ final readonly class FixOutput
         public array $blockHash = [],
         public ?int $processedBlocks = null,
         public ?int $totalBlocks = null,
-        ?Status $status = null,
-    ) {
-        $this->status = $status ?? self::resolveStatus($content);
-    }
+    ) {}
 
-    /**
-     * @param array<string|array<string>> $content Processed content
-     */
-    private static function resolveStatus(array $content): Status
+    public function status(): Status
     {
-        return !empty($content) ? Status::Success : Status::Skipped;
+        return !empty($this->content) ? Status::Success : Status::Skipped;
     }
 }

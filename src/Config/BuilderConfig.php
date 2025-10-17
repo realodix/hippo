@@ -2,6 +2,7 @@
 
 namespace Realodix\Hippo\Config;
 
+use Realodix\Hippo\Config\ValueObject\FilterSet;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 
@@ -9,7 +10,7 @@ final class BuilderConfig
 {
     public string $outputDir;
 
-    /** @var array<int, FilterSet> */
+    /** @var list<FilterSet> */
     public array $filters;
 
     private string $workingDirectory;

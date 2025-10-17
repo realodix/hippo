@@ -19,7 +19,7 @@ final class Metadata
      * If the "header" key is present in the data, it will be prepended to
      * the metadata array.
      *
-     * @param \Realodix\Hippo\Config\FilterSet $config
+     * @param \Realodix\Hippo\Config\ValueObject\FilterSet $config
      * @param string $version The version string (e.g., '25.10.1') to include in the metadata.
      * @return list<string> The created metadata array.
      */

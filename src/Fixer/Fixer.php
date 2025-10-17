@@ -16,8 +16,6 @@ use Symfony\Component\Filesystem\Path;
 
 final class Fixer
 {
-    private FixStats $stats;
-
     public function __construct(
         private Config $config,
         private Finder $finder,
@@ -25,6 +23,7 @@ final class Fixer
         private Block $block,
         private WholeFile $file,
         private Cache $cache,
+        private FixStats $stats,
         private OutputLogger $logger,
     ) {}
 
@@ -38,8 +37,6 @@ final class Fixer
      */
     public function handle(Mode $mode, ?string $path, ?string $cachePath, ?string $configFile): void
     {
-        $this->stats = new FixStats;
-
         $config = $this->config->loadFromFile($configFile, ['cache_dir' => $cachePath]);
         $this->cache->prepareForRun($config, $mode);
 
@@ -90,7 +87,7 @@ final class Fixer
             ? $this->file->handle($filePath, $content)
             : $this->block->handle($filePath, $content, $mode);
 
-        if ($output->status === Status::Skipped) {
+        if ($output->status() === Status::Skipped) {
             $this->logger->skipped($filePath);
             $stats->incrementSkipped();
 
