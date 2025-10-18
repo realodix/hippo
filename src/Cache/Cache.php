@@ -141,4 +141,13 @@ final class Cache
 
         return $cachedEntry['file_hash'] !== hash_file(Repository::HASH_ALGO, $filePath);
     }
+
+    /**
+     * @param string $value
+     * @return string
+     */
+    public function hash($value)
+    {
+        return hash(Repository::HASH_ALGO, $value);
+    }
 }

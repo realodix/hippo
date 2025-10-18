@@ -19,132 +19,144 @@ final class Builder
         private OutputLogger $logger,
     ) {}
 
+    /**
+     * Main entry point for building filter lists.
+     *
+     * @param string|null $configFile Path to the configuration file.
+     * @param bool $force If true, forces rebuild even when cache is valid.
+     */
     public function handle(?string $configFile, bool $force = false): void
     {
         $mode = $force ? Mode::Force : Mode::Default;
         $config = $this->config->loadFromFile($configFile);
 
+        // Prepare cache repository for this run
         $this->cache->prepareForRun($config, $mode, Scope::B);
 
         foreach ($config->builder()->filters as $filterConfig) {
             $outputPath = $filterConfig->outputPath;
 
-            // Skip compilation if the source has not changed (cache is valid)
-            $sourceHash = $this->sourceHash($filterConfig);
-            $cacheEntry = $this->cache->repository()->get($outputPath);
-            if (!$force && $cacheEntry !== null && ($cacheEntry['source_hash'] ?? null) === $sourceHash) {
+            // Step 1: Read all source files or URLs
+            $sources = $this->readSources($filterConfig);
+            if ($sources === null) {
                 $this->logger->skipped($outputPath);
 
                 continue;
             }
 
-            $version = $this->determineVersion($filterConfig, $cacheEntry);
-            $metadata = $this->metadata->create($filterConfig, $version);
-            $contentFilter = $this->buildFilterList($filterConfig);
-            $filterList = collect($metadata)->merge($contentFilter)
-                ->filter()->implode("\n")."\n";
+            // Step 2: Generate a single hash from all source contents
+            $sourceHash = $this->sourceHash($sources);
 
-            $this->filesystem->dumpFile($outputPath, $filterList);
-            $this->logger->processed($outputPath, null, null);
+            // Step 3: Skip processing if cache is still valid
+            $cacheEntry = $this->cache->repository()->get($outputPath);
+            if (!$force && $this->isCacheValid($cacheEntry, $sourceHash)) {
+                $this->logger->skipped($outputPath);
 
-            // Set the source hash in the cache
-            $this->cache->repository()->set($outputPath, [
-                'source_hash' => $sourceHash,
-                'version' => $version,
-            ]);
+                continue;
+            }
+
+            // Step 4: Build and write output file
+            $this->buildAndWrite($sources, $filterConfig, $cacheEntry, $sourceHash);
         }
 
-        // Save the updated cache to disk for the next run
+        // Save all updated cache entries to disk
         $this->cache->repository()->save();
     }
 
     /**
-     * Build a filter list from a list of source files.
+     * Builds the final output file from sources and metadata, and updates cache.
+     *
+     * @param list<string> $sources The list of raw source contents.
+     * @param \Realodix\Hippo\Config\ValueObject\FilterSet $filterConfig The configuration for the current filter set.
+     * @param array{source_hash?: string, version?: string}|null $cacheEntry The previous cache entry, if available.
+     * @param string $sourceHash The hash representing the current source state.
+     */
+    private function buildAndWrite(array $sources, $filterConfig, ?array $cacheEntry, string $sourceHash): void
+    {
+        $outputPath = $filterConfig->outputPath;
+        $version = $this->determineVersion($filterConfig, $cacheEntry);
+        $metadata = $this->metadata->create($filterConfig, $version);
+
+        $content = collect($metadata)->merge(Cleaner::clean($sources))
+            ->implode("\n")."\n";
+
+        $this->filesystem->dumpFile($outputPath, $content);
+        $this->logger->processed($outputPath, null, null);
+
+        $this->cache->repository()->set($outputPath, [
+            'source_hash' => $sourceHash,
+            'version' => $version,
+        ]);
+    }
+
+    /**
+     * Reads all source files or URLs defined in the configuration.
+     * Returns null if any source cannot be read.
      *
      * @param \Realodix\Hippo\Config\ValueObject\FilterSet $config
-     * @return list<string> The built filter list
+     * @return list<string>|null The list of source contents, or null if a read fails.
      */
-    private function buildFilterList($config): array
+    private function readSources($config): ?array
     {
-        $content = '';
+        $sources = [];
 
-        foreach ($config->source as $filter) {
-            $content .= $this->filesystem->readFile($filter)."\n";
-            $content = $this->stripMetadataAgent($content);
-            $content = $this->stripComments($content);
-            $content = $this->stripEmptyLines($content);
+        foreach ($config->source as $path) {
+            $data = null;
+
+            if (filter_var($path, FILTER_VALIDATE_URL)) {
+                $context = stream_context_create(['http' => ['timeout' => 5]]);
+                $data = @file_get_contents($path, false, $context) ?: null;
+            } elseif ($this->filesystem->exists($path)) {
+                $data = $this->filesystem->readFile($path);
+            }
+
+            if ($data === null) {
+                $this->logger->error($path.' not found');
+
+                return null;
+            }
+
+            $sources[] = $data;
         }
 
-        return [$content];
+        return $sources;
     }
 
     /**
-     * Remove adblock agent metadata.
+     * Generates a global hash representing all source contents combined.
      *
-     * Like this:
-     * - [Adblock Plus 2.0]
-     * - [uBlock Origin]
-     * - [AdGuard]
+     * @param list<string> $sources The list of source contents.
+     * @return string A hash that uniquely represents the current source state.
      */
-    private function stripMetadataAgent(string $content): string
-    {
-        return preg_replace('/^\[.*\]$/m', '', $content);
-    }
-
-    /**
-     * Removes comments (lines that start with !) from lines.
-     *
-     * Don not remove comments that start with !# (Preprocessor directives).
-     * - https://github.com/gorhill/uBlock/wiki/Static-filter-syntax#pre-parsing-directives
-     * - https://adguard.com/kb/general/ad-filtering/create-own-filters/#preprocessor-directives
-     * - https://regex101.com/r/VSOcD6/1
-     */
-    private function stripComments(string $content): string
-    {
-        return preg_replace('/^!(?!#\s?(?:include\s|if|endif|else)).*/m', '', $content);
-    }
-
-    /**
-     * Remove empty lines.
-     */
-    private function stripEmptyLines(string $content): string
-    {
-        return preg_replace('/^\h*\v+/m', '', $content);
-    }
-
-    /**
-     * Calculate a hash for a given set of source files.
-     *
-     * The hash is calculated by hashing each source file individually,
-     * and then hashing the concatenated hashes of all files.
-     *
-     * @param \Realodix\Hippo\Config\ValueObject\FilterSet $config
-     * @return string The calculated hash
-     */
-    private function sourceHash($config): string
+    private function sourceHash(array $sources): string
     {
         $hashes = [];
-        foreach ($config->source as $source) {
-            $hashes[] = hash_file($this->cache->repository()::HASH_ALGO, $source);
+        foreach ($sources as $data) {
+            $hashes[] = $this->cache->hash($data);
         }
 
-        return hash($this->cache->repository()::HASH_ALGO, implode('', $hashes));
+        return $this->cache->hash(implode('', $hashes));
     }
 
     /**
-     * Determine the version string to assign to the current build.
+     * Checks if the cache entry is still valid by comparing source hashes.
      *
-     * This method checks the filter configuration and cache data to decide
-     * whether versioning is enabled and, if so, what version number to use.
-     *
-     * - If `enable_version` is missing or disabled, a default version string
-     *   (based on the current date and revision 1) is returned.
-     * - If the cache is empty (first run), the same default version is used.
-     * - Otherwise, it increments or resets the revision number.
+     * @param array{source_hash?: string}|null $cacheEntry
+     * @return bool True if cache is valid, false otherwise.
+     */
+    private function isCacheValid(?array $cacheEntry, string $sourceHash): bool
+    {
+        return $cacheEntry !== null && ($cacheEntry['source_hash'] ?? null) === $sourceHash;
+    }
+
+    /**
+     * Determines the version string for the output file.
+     * Increments version if the current date matches the cached one,
+     * or resets to `.1` if a new month has started.
      *
      * @param \Realodix\Hippo\Config\ValueObject\FilterSet $config
-     * @param ?array{version?: string} $cacheEntry
-     * @return string The computed version in 'YY.MM.rev' format.
+     * @param array{version: string}|null $cacheEntry
+     * @return string The new version string in 'YY.MM.rev' format.
      */
     private function determineVersion($config, ?array $cacheEntry): string
     {

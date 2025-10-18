@@ -47,7 +47,7 @@ class BuildCommand extends Command
 
         $end = microtime(true);
         $io->newLine();
-        $io->info('Done!');
+        // $io->info('Done!');
         $io->newLine();
         $io->writeln('Time: '.round($end - $start, 3).' seconds');
 
