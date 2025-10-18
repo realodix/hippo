@@ -57,8 +57,8 @@ final class BuilderConfig
             $filters[] = new FilterSet(
                 outputFile: $list['output_file'],
                 outputPath: Path::canonicalize(Path::join($this->outputDir, $list['output_file'])),
-                metadata: $list['metadata'] ?? [],
                 source: $list['source'] ?? [],
+                metadata: $list['metadata'] ?? [],
             );
         }
 

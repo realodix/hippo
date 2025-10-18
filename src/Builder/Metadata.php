@@ -25,7 +25,7 @@ final class Metadata
      */
     public function create($config, string $version): array
     {
-        $config = $config->metadata;
+        $config = $config->metadata();
 
         $metadata = collect([
             $this->title($config),
@@ -62,11 +62,11 @@ final class Metadata
     }
 
     /**
-     * @param array{enable_version?: bool} $config
+     * @param array{enable_version: bool} $config
      */
     private function version(array $config, string $version): string
     {
-        if (!isset($config['enable_version']) || $config['enable_version'] === false) {
+        if ($config['enable_version'] === false) {
             return '';
         }
 
