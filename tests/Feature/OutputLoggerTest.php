@@ -19,7 +19,7 @@ class OutputLoggerTest extends TestCase
             ->with("<info>[P]: {$testPath}</info>");
 
         $logger = new OutputLogger($outputMock);
-        $logger->processed($absolutePath, 10, 10);
+        $logger->processed($absolutePath);
     }
 
     public function testSkippedWritesToOutputInVerboseMode()

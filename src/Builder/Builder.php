@@ -82,7 +82,7 @@ final class Builder
             ->implode("\n")."\n";
 
         $this->filesystem->dumpFile($outputPath, $content);
-        $this->logger->processed($outputPath, null, null);
+        $this->logger->processed($outputPath);
 
         $this->cache->repository()->set($outputPath, [
             'source_hash' => $sourceHash,

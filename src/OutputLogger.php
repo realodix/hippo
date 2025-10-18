@@ -15,7 +15,7 @@ final class OutputLogger
         $this->root = getcwd();
     }
 
-    public function processed(string $path, ?int $processedBlockCount, ?int $totalBlocks): void
+    public function processed(string $path, ?int $processedBlockCount = null, ?int $totalBlocks = null): void
     {
         $path = Path::makeRelative($path, $this->root);
 
