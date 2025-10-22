@@ -9,14 +9,7 @@ final readonly class FilterSet
 {
     /**
      * @param list<string> $source The source files for the filter list
-     * @param array{
-     *   header?: string,
-     *   title?: string,
-     *   description?: string,
-     *   expires?: string,
-     *   homepage?: string,
-     *   enable_version?: bool
-     * } $metadata
+     * @param array<string, mixed> $metadata The metadata configuration
      */
     public function __construct(
         public string $outputFile,
@@ -35,22 +28,25 @@ final readonly class FilterSet
      * Get the metadata configuration
      *
      * @return array{
-     *   header?: string,
-     *   title?: string,
-     *   description?: string,
-     *   expires?: string,
-     *   homepage?: string,
-     *   enable_version: bool
+     *  date_modified: bool,
+     *  enable_version: bool,
+     *  description: string,
+     *  header: string,
+     *  title: string,
+     *  extras: list<string>,
      * } $metadata
      */
     public function metadata(): array
     {
-        $metadata = $this->metadata;
+        $defautl = [
+            'date_modified' => true,
+            'enable_version' => false,
+            'description' => '',
+            'header' => '',
+            'title' => '',
+            'extras' => [''],
+        ];
 
-        if (empty($metadata['enable_version'])) {
-            $metadata['enable_version'] = false;
-        }
-
-        return $metadata;
+        return array_merge($defautl, $this->metadata);
     }
 }

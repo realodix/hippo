@@ -24,12 +24,8 @@ final class BuilderConfig
 
     /**
      * @param array{
-     *   output_dir?: string,
-     *   filter_list?: list<array{
-     *     output_file: string,
-     *     metadata?: list<string>,
-     *     source?: list<string>
-     *   }>
+     *  output_dir?: string,
+     *  filter_list?: list<array<string, mixed>>
      * } $builderConfigData
      * @param string $cwd Current working directory
      */
@@ -51,7 +47,11 @@ final class BuilderConfig
     }
 
     /**
-     * @param list<array{output_file: string, metadata?: list<string>, source?: list<string>}> $filterLists
+     * @param list<array{
+     *  output_file: string,
+     *  metadata?: array<string, mixed>,
+     *  source?: list<string>
+     * }> $filterLists
      * @return list<FilterSet>
      */
     private function parseFilterSets(array $filterLists): array

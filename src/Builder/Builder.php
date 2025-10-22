@@ -149,7 +149,7 @@ final class Builder
      */
     private function sourceHash(array $sources, $filterConfig): string
     {
-        $data = array_merge($sources, $filterConfig->metadata());
+        $data = array_merge($sources, Arr::flatten($filterConfig->metadata()));
 
         return $this->cache->hash(implode('', $data));
     }

@@ -122,9 +122,12 @@ builder:
         # header: Adblock Plus 2.0
         title: General Blocklist
         # description: Filter list that specifically removes adverts.
-        # expires: 6 days (update frequency)
-        # homepage: https://example.org/
         # enable_version: true
+        # date_modified: false
+        # extras:
+        #   - 'Expires: 6 days (update frequency)'
+        #   - 'Homepage: https://example.org/'
+        #   - 'License: MIT'
       source:
         - blocklists/general/local-rules.txt
         - https://cdn.example.org/blocklists/general.txt

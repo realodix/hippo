@@ -22,12 +22,12 @@ final class Schema
                 'filter_list' => Expect::listOf(Expect::structure([
                     'output_file' => Expect::string()->required(),
                     'metadata' => Expect::structure([
+                        'date_modified' => Expect::bool(),
+                        'description' => Expect::string(),
+                        'enable_version' => Expect::bool(),
                         'header' => Expect::string(),
                         'title' => Expect::string(),
-                        'description' => Expect::string(),
-                        'expires' => Expect::string(),
-                        'homepage' => Expect::string(),
-                        'enable_version' => Expect::bool(),
+                        'extras' => Expect::listOf('string'),
                     ]),
                     'source' => Expect::listOf('string')->required(),
                 ])),
