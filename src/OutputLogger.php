@@ -12,7 +12,7 @@ final class OutputLogger
     public function __construct(
         private OutputInterface $output,
     ) {
-        $this->root = getcwd();
+        $this->root = base_path();
     }
 
     public function processed(string $path, ?int $processedBlockCount = null, ?int $totalBlocks = null): void

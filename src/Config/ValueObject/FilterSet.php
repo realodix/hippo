@@ -44,7 +44,7 @@ final readonly class FilterSet
             'description' => '',
             'header' => '',
             'title' => '',
-            'extras' => [''],
+            'extras' => [],
         ];
 
         return array_merge($defautl, $this->metadata);

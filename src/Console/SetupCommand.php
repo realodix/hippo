@@ -21,7 +21,7 @@ class SetupCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $filename = Config::FILENAME;
 
-        $configFile = Path::join(getcwd(), $filename);
+        $configFile = Path::join(base_path(), $filename);
 
         if (file_exists($configFile)) {
             if (!$io->confirm("The {$filename} file already exists. Do you want to overwrite it?", false)) {

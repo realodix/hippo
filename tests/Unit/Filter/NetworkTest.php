@@ -16,7 +16,7 @@ class NetworkTest extends TestCase
     {
         parent::setUp();
 
-        $this->processor = $this->app->make(Processor::class);
+        $this->processor = app(Processor::class);
     }
 
     #[PHPUnit\Test]

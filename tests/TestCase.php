@@ -4,7 +4,6 @@ namespace Realodix\Hippo\Test;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Realodix\Hippo\Console\FixCommand;
-use Realodix\Hippo\Helper;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
@@ -15,20 +14,17 @@ abstract class TestCase extends BaseTestCase
 
     public $cacheFile = __DIR__.'/Integration/tmp/cache.json';
 
-    public $app;
-
     protected Filesystem $fs;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->app = Helper::app();
         $this->fs = new Filesystem;
 
         // In the test environment, we bind the OutputInterface to a silent,
         // buffered output so that command output isn't printed during tests.
-        Helper::app()->singleton(
+        app()->singleton(
             \Symfony\Component\Console\Output\OutputInterface::class,
             \Symfony\Component\Console\Output\BufferedOutput::class,
         );
@@ -37,7 +33,7 @@ abstract class TestCase extends BaseTestCase
     protected function runCommand($processingFile, ?string $cachePath = null, array $options = [])
     {
         $application = new Application;
-        $application->add(Helper::app(FixCommand::class));
+        $application->add(app(FixCommand::class));
         $command = $application->find('fix');
         $commandTester = new CommandTester($command);
 

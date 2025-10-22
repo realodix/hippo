@@ -54,7 +54,7 @@ final class Config
 
     public function builder(): BuilderConfig
     {
-        return $this->builder->make($this->configData['builder'], $this->cwd());
+        return $this->builder->make($this->configData['builder']);
     }
 
     /**
@@ -62,27 +62,11 @@ final class Config
      */
     public function fixer(array $overrides): FixerConfig
     {
-        return $this->fixer->make($this->configData['fixer'] ?? [], $overrides, $this->cwd());
+        return $this->fixer->make($this->configData['fixer'] ?? [], $overrides);
     }
 
     private function configPath(?string $configFile): string
     {
-        return Path::join($this->cwd(), $configFile ?? self::FILENAME);
-    }
-
-    /**
-     * Get current working directory path.
-     *
-     * @throws \RuntimeException
-     */
-    private function cwd(): string
-    {
-        $path = getcwd();
-
-        if ($path === false) {
-            throw new \RuntimeException('Unable to get current working directory.');
-        }
-
-        return $path;
+        return Path::join(base_path(), $configFile ?? self::FILENAME);
     }
 }

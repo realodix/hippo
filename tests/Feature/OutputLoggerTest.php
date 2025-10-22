@@ -12,7 +12,7 @@ class OutputLoggerTest extends TestCase
     public function testProcessedWritesSimpleMessageOnFullProcessing()
     {
         $testPath = 'path/to/another-file.txt';
-        $absolutePath = Path::join(getcwd(), $testPath);
+        $absolutePath = Path::join(base_path(), $testPath);
 
         $outputMock = $this->createMock(OutputInterface::class);
         $outputMock->expects($this->once())
@@ -28,7 +28,7 @@ class OutputLoggerTest extends TestCase
         $testPath = 'path/to/file.txt';
         // getcwd() in OutputLogger will be the project root.
         // Path::makeRelative will result in just 'path/to/file.txt'
-        $absolutePath = Path::join(getcwd(), $testPath);
+        $absolutePath = Path::join(base_path(), $testPath);
 
         $outputMock = $this->createMock(OutputInterface::class);
 
@@ -65,7 +65,7 @@ class OutputLoggerTest extends TestCase
     public function testProcessedWritesDetailedMessageOnPartialProcessing()
     {
         $testPath = 'path/to/partial-file.txt';
-        $absolutePath = Path::join(getcwd(), $testPath);
+        $absolutePath = Path::join(base_path(), $testPath);
 
         $outputMock = $this->createMock(OutputInterface::class);
         $outputMock->expects($this->once())

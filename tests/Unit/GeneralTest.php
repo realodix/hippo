@@ -15,7 +15,7 @@ class GeneralTest extends TestCase
      */
     public function testBlankLine()
     {
-        $processor = $this->app->make(Processor::class);
+        $processor = app(Processor::class);
 
         $input = [
             '',
@@ -32,7 +32,7 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function special_line()
     {
-        $processor = $this->app->make(Processor::class);
+        $processor = app(Processor::class);
 
         $input = [
             '2',
@@ -75,7 +75,7 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function isSpecialLine($data)
     {
-        $processor = $this->app->make(Processor::class);
+        $processor = app(Processor::class);
 
         $this->assertTrue($processor->isSpecialLine($data));
     }
@@ -86,7 +86,7 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function isNotSpecialLine($data)
     {
-        $processor = $this->app->make(Processor::class);
+        $processor = app(Processor::class);
 
         $this->assertFalse($processor->isSpecialLine($data));
     }
@@ -95,7 +95,7 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function isCosmeticRule($data)
     {
-        $processor = $this->app->make(Processor::class);
+        $processor = app(Processor::class);
 
         $this->assertTrue(
             $processor->isCosmeticRule($data),
@@ -106,7 +106,7 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function isNotCosmeticRule($data)
     {
-        $processor = $this->app->make(Processor::class);
+        $processor = app(Processor::class);
 
         $this->assertFalse(
             $processor->isCosmeticRule($data),
@@ -116,8 +116,8 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function preserveTheStructure(): void
     {
-        $inputFile = __DIR__.'/../Integration/preserve-the-structure_actual.txt';
-        $expectedFile = __DIR__.'/../Integration/preserve-the-structure_expected.txt';
+        $inputFile = base_path('tests/Integration/preserve-the-structure_actual.txt');
+        $expectedFile = base_path('tests/Integration/preserve-the-structure_expected.txt');
 
         $this->assertFilter($expectedFile, $inputFile);
     }

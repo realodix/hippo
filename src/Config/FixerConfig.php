@@ -15,11 +15,10 @@ final class FixerConfig
     /**
      * @param array<string, list<string>> $config
      * @param array{paths?: list<string>} $overrides
-     * @param string $cwd Current working directory
      */
-    public function make(array $config, array $overrides, string $cwd): self
+    public function make(array $config, array $overrides): self
     {
-        $this->paths = $this->paths($config, $overrides, $cwd);
+        $this->paths = $this->paths($config, $overrides);
 
         $this->ignore = $this->ignore($config);
 
@@ -29,20 +28,20 @@ final class FixerConfig
     /**
      * @param array{paths?: list<string>} $config
      * @param array{paths?: list<string>} $overrides
-     * @param string $cwd Current working directory
      * @return list<string>
      */
-    private function paths(array $config, array $overrides, string $cwd): array
+    private function paths(array $config, array $overrides): array
     {
-        $paths = $overrides['paths'] ?? $config['paths'] ?? [$cwd];
+        $rootPath = base_path();
+        $paths = $overrides['paths'] ?? $config['paths'] ?? [$rootPath];
 
-        $paths = array_map(function ($path) use ($cwd) {
+        $paths = array_map(function ($path) use ($rootPath) {
             if ($path === './') {
-                return $cwd;
+                return $rootPath;
             }
 
             if (Path::isRelative($path)) {
-                $path = Path::makeAbsolute($path, $cwd);
+                $path = Path::makeAbsolute($path, $rootPath);
             }
 
             return Path::canonicalize($path);

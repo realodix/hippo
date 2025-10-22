@@ -25,11 +25,11 @@ class CacheBlockTest extends TestCase
 
     public function testSetCacheFile(): void
     {
-        $inputFile = __DIR__.'/../Integration/cache.txt';
-        $processingFile = Path::canonicalize($this->tmpDir.'/'.basename($inputFile));
+        $inputFile = base_path('tests/Integration/cache.txt');
+        $processingFile = Path::join($this->tmpDir, basename($inputFile));
         $this->fs->copy($inputFile, $processingFile, true);
 
-        $this->runCommand($processingFile, $this->cacheFile);
+        $this->runFixCommand($processingFile, $this->cacheFile);
 
         $cacheContent = json_decode(file_get_contents($this->cacheFile), true)['fixer'];
         $this->assertCount(1, $cacheContent);
@@ -38,13 +38,13 @@ class CacheBlockTest extends TestCase
 
     public function testSetCacheFolder(): void
     {
-        $inputFile = __DIR__.'/../Integration/cache.txt';
-        $processingFile = Path::canonicalize($this->tmpDir.'/'.basename($inputFile));
+        $inputFile = base_path('tests/Integration/cache.txt');
+        $processingFile = Path::join($this->tmpDir, basename($inputFile));
         $this->fs->copy($inputFile, $processingFile, true);
 
-        $this->runCommand($processingFile, $this->tmpDir);
+        $this->runFixCommand($processingFile, $this->tmpDir);
 
-        $content = file_get_contents($this->tmpDir.'/'.Repository::DEFAULT_CACHE_FILENAME);
+        $content = file_get_contents(Path::join($this->tmpDir, Repository::DEFAULT_CACHE_FILENAME));
         $cacheContent = json_decode($content, true)['fixer'];
         $this->assertCount(1, $cacheContent);
         $this->assertArrayHasKey($processingFile, $cacheContent);
@@ -53,30 +53,30 @@ class CacheBlockTest extends TestCase
     #[PHPUnit\Test]
     public function partial_NewFile(): void
     {
-        $block = $this->app->make(Block::class);
-        $this->app->instance(Block::class, $block);
+        $block = app(Block::class);
+        app()->instance(Block::class, $block);
         $block->blockSize = 2;
 
         $this->assertFilter(
-            __DIR__.'/../Integration/cache_partial/newfile_expected.txt',
-            __DIR__.'/../Integration/cache_partial/newfile_actual.txt',
+            base_path('tests/Integration/cache_partial/newfile_expected.txt'),
+            base_path('tests/Integration/cache_partial/newfile_actual.txt'),
         );
     }
 
     #[PHPUnit\Test]
     public function partial_ExistingFile(): void
     {
-        $block = $this->app->make(Block::class);
+        $block = app(Block::class);
         $block->blockSize = 3;
-        $this->app->instance(Block::class, $block);
+        app()->instance(Block::class, $block);
 
         $tempCachePath = $this->createDynamicCache(
-            __DIR__.'/../Integration/cache_partial/existingfile_default.json',
+            base_path('tests/Integration/cache_partial/existingfile_default.json'),
         );
 
         $this->assertFilter(
-            __DIR__.'/../Integration/cache_partial/existingfile_default_expected.txt',
-            __DIR__.'/../Integration/cache_partial/existingfile_default_actual.txt',
+            base_path('tests/Integration/cache_partial/existingfile_default_expected.txt'),
+            base_path('tests/Integration/cache_partial/existingfile_default_actual.txt'),
             $tempCachePath,
             ['--partial' => true],
         );
@@ -85,17 +85,17 @@ class CacheBlockTest extends TestCase
     #[PHPUnit\Test]
     public function partial_ExistingFile_Threshold(): void
     {
-        $block = $this->app->make(Block::class);
+        $block = app(Block::class);
         $block->blockSize = 2;
-        $this->app->instance(Block::class, $block);
+        app()->instance(Block::class, $block);
 
         $tempCachePath = $this->createDynamicCache(
-            __DIR__.'/../Integration/cache_partial/existingfile_threshold.json',
+            base_path('tests/Integration/cache_partial/existingfile_threshold.json'),
         );
 
         $this->assertFilter(
-            __DIR__.'/../Integration/cache_partial/existingfile_threshold_expected.txt',
-            __DIR__.'/../Integration/cache_partial/existingfile_threshold_actual.txt',
+            base_path('tests/Integration/cache_partial/existingfile_threshold_expected.txt'),
+            base_path('tests/Integration/cache_partial/existingfile_threshold_actual.txt'),
             $tempCachePath,
             ['--partial' => true],
         );
@@ -104,18 +104,18 @@ class CacheBlockTest extends TestCase
     #[PHPUnit\Test]
     public function partial_ExistingFile_LastLine(): void
     {
-        $block = $this->app->make(Block::class);
+        $block = app(Block::class);
         $block->threshold = 4;
         $block->blockSize = 2;
-        $this->app->instance(Block::class, $block);
+        app()->instance(Block::class, $block);
 
         $tempCachePath = $this->createDynamicCache(
-            __DIR__.'/../Integration/cache_partial/existingfile_lastline.json',
+            base_path('tests/Integration/cache_partial/existingfile_lastline.json'),
         );
 
         $this->assertFilter(
-            __DIR__.'/../Integration/cache_partial/existingfile_lastline_expected.txt',
-            __DIR__.'/../Integration/cache_partial/existingfile_lastline_actual.txt',
+            base_path('tests/Integration/cache_partial/existingfile_lastline_expected.txt'),
+            base_path('tests/Integration/cache_partial/existingfile_lastline_actual.txt'),
             $tempCachePath,
             ['--partial' => true],
         );
@@ -128,11 +128,11 @@ class CacheBlockTest extends TestCase
         $newCacheData['fixer'] = [];
 
         foreach ($cacheFixture['fixer'] as $path => $hash) {
-            $absolutePath = Path::canonicalize(__DIR__.'/../../'.$path);
+            $absolutePath = base_path($path);
             $newCacheData['fixer'][$absolutePath] = $hash;
         }
 
-        $tempCachePath = $this->tmpDir.'/'.basename($fixturePath);
+        $tempCachePath = Path::join($this->tmpDir, basename($fixturePath));
         file_put_contents($tempCachePath, json_encode($newCacheData));
 
         return $tempCachePath;

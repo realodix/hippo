@@ -142,7 +142,7 @@ class CacheTest extends TestCase
     // Test prepareForRun scenarios
     public function testPrepareForRunWithNoForceAndNoExistingCache(): void
     {
-        $config = $this->app->make(Config::class);
+        $config = app(Config::class);
         $config->cacheDir = $this->testCacheFile;
 
         $this->cache->prepareForRun($config, Mode::Default);
@@ -162,7 +162,7 @@ class CacheTest extends TestCase
             $this->fs->remove($staleFile);
         }
 
-        $config = $this->app->make(Config::class);
+        $config = app(Config::class);
         $config->cacheDir = $this->testCacheFile;
 
         $this->cache->prepareForRun($config, Mode::Default);
@@ -175,7 +175,7 @@ class CacheTest extends TestCase
         $this->repository->set('key1', ['data1']); // Add some data
         $this->repository->save();
 
-        $config = $this->app->make(Config::class);
+        $config = app(Config::class);
         $config->cacheDir = $this->testCacheFile;
 
         $this->cache->prepareForRun($config, Mode::Force);
@@ -189,7 +189,7 @@ class CacheTest extends TestCase
         $this->repository->set('key1', ['data1']);
         $this->repository->save();
 
-        $config = $this->app->make(Config::class);
+        $config = app(Config::class);
         $config->cacheDir = $this->testCacheFile;
 
         $this->cache->prepareForRun($config, Mode::Force);
@@ -203,7 +203,7 @@ class CacheTest extends TestCase
         $this->repository->set('key1', ['data1']);
         $this->repository->save();
 
-        $config = $this->app->make(Config::class);
+        $config = app(Config::class);
         $config->cacheDir = $this->testCacheFile;
 
         $this->cache->prepareForRun($config, Mode::Force);

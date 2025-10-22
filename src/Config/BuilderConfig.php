@@ -13,11 +13,6 @@ final class BuilderConfig
     /** @var list<FilterSet> */
     public array $filters;
 
-    /**
-     * Current working directory
-     */
-    private string $cwd;
-
     public function __construct(
         private Filesystem $filesystem,
     ) {}
@@ -27,11 +22,9 @@ final class BuilderConfig
      *  output_dir?: string,
      *  filter_list?: list<array<string, mixed>>
      * } $builderConfigData
-     * @param string $cwd Current working directory
      */
-    public function make(array $builderConfigData, string $cwd): self
+    public function make(array $builderConfigData): self
     {
-        $this->cwd = $cwd;
         $this->outputDir = $this->outputDir($builderConfigData);
         $this->filters = $this->parseFilterSets($builderConfigData['filter_list'] ?? []);
 
@@ -77,7 +70,7 @@ final class BuilderConfig
     private function outputDir(array $configData): string
     {
         if (!empty($configData['output_dir'])) {
-            $outputDir = Path::join($this->cwd, $configData['output_dir']);
+            $outputDir = Path::join(base_path(), $configData['output_dir']);
 
             if (!$this->filesystem->exists($outputDir)) {
                 $this->filesystem->mkdir($outputDir);
@@ -86,6 +79,6 @@ final class BuilderConfig
             return $outputDir;
         }
 
-        return $this->cwd;
+        return base_path();
     }
 }
