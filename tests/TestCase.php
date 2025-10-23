@@ -10,6 +10,8 @@ use Symfony\Component\Filesystem\Filesystem;
 
 abstract class TestCase extends BaseTestCase
 {
+    use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
     public $tmpDir = __DIR__.'/Integration/tmp';
 
     public $cacheFile = __DIR__.'/Integration/tmp/cache.json';

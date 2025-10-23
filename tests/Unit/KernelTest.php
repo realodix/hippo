@@ -12,9 +12,9 @@ class KernelTest extends TestCase
 {
     public function testBootstrap()
     {
-        $providerMock = $this->createMock(App::class);
-        $providerMock->expects($this->once())
-            ->method('register');
+        $providerMock = \Mockery::mock(App::class);
+        $providerMock->expects('register');
+
         $kernel = new Kernel;
         $container = $this->getPrivateProperty($kernel, 'app');
         $container->instance(App::class, $providerMock);
@@ -31,10 +31,10 @@ class KernelTest extends TestCase
         $kernel = new Kernel;
         $commands = $this->getPrivateProperty($kernel, 'commands');
 
-        $applicationMock = $this->createMock(Application::class);
-        $applicationMock->expects($this->exactly(count($commands)))
-            ->method('add')
-            ->with($this->isInstanceOf(\Symfony\Component\Console\Command\Command::class));
+        $applicationMock = \Mockery::mock(Application::class);
+        $applicationMock->expects('add')
+            ->times(count($commands))
+            ->with(\Mockery::type(\Symfony\Component\Console\Command\Command::class));
 
         $this->callPrivateMethod($kernel, 'registerCommands', [$applicationMock]);
     }
