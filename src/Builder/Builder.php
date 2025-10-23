@@ -48,18 +48,20 @@ final class Builder
             $sources = Cleaner::clean($rawRources);
 
             // Step 2: Generate a single hash from all source contents
-            $sourceHash = $this->sourceHash($sources, $filterConfig);
+            $sourceHash = $this->sourceHash(array_merge(
+                $sources,
+                Arr::flatten($filterConfig->metadata()),
+            ));
 
             // Step 3: Skip processing if cache is still valid
-            $cacheEntry = $this->cache->repository()->get($outputPath);
-            if (!$force && $this->isCacheValid($cacheEntry, $sourceHash)) {
+            if (!$force && $this->isCacheValid($outputPath, $sourceHash)) {
                 $this->logger->skipped($outputPath);
 
                 continue;
             }
 
             // Step 4: Build and write output file
-            $this->buildAndWrite($sources, $filterConfig, $sourceHash, Arr::get($cacheEntry, 'version'));
+            $this->buildAndWrite($sources, $filterConfig, $sourceHash);
         }
 
         // Save all updated cache entries to disk
@@ -72,17 +74,16 @@ final class Builder
      * @param list<string> $sources The list of raw source contents.
      * @param \Realodix\Hippo\Config\ValueObject\FilterSet $filterConfig The configuration for the current filter set.
      * @param string $sourceHash The hash representing the current source state.
-     * @param string|null $currentVersion The current version string.
      *
      * @throws \Symfony\Component\Filesystem\Exception\IOException
      */
-    private function buildAndWrite(array $sources, $filterConfig, string $sourceHash, ?string $currentVersion): void
+    private function buildAndWrite(array $sources, $filterConfig, string $sourceHash): void
     {
         $outputPath = $filterConfig->outputPath;
-        $version = $this->determineVersion($filterConfig, $currentVersion);
-        $metadata = $this->metadata->create($filterConfig, $version);
 
-        $content = collect($metadata)->merge($sources)
+        $metadata = $this->metadata->setUp($filterConfig);
+
+        $content = collect($metadata->build())->merge($sources)
             ->implode("\n")."\n";
 
         $this->filesystem->dumpFile($outputPath, $content);
@@ -90,7 +91,7 @@ final class Builder
 
         $this->cache->repository()->set($outputPath, [
             'source_hash' => $sourceHash,
-            'version' => $version,
+            'version' => $metadata->version(),
         ]);
     }
 
@@ -131,12 +132,11 @@ final class Builder
 
     /**
      * Checks if the cache entry is still valid by comparing source hashes.
-     *
-     * @param array<string, mixed>|null $cacheEntry
-     * @return bool True if cache is valid, false otherwise.
      */
-    private function isCacheValid(?array $cacheEntry, string $sourceHash): bool
+    private function isCacheValid(string $outputPath, string $sourceHash): bool
     {
+        $cacheEntry = $this->cache->repository()->get($outputPath);
+
         return Arr::get($cacheEntry, 'source_hash') === $sourceHash;
     }
 
@@ -144,42 +144,10 @@ final class Builder
      * Generates a global hash representing all source contents combined.
      *
      * @param list<string> $sources The list of source contents.
-     * @param \Realodix\Hippo\Config\ValueObject\FilterSet $filterConfig
      * @return string A hash that uniquely represents the current source state.
      */
-    private function sourceHash(array $sources, $filterConfig): string
+    private function sourceHash(array $sources): string
     {
-        $data = array_merge($sources, Arr::flatten($filterConfig->metadata()));
-
-        return $this->cache->hash(implode('', $data));
-    }
-
-    /**
-     * Determines the version string for the output file.
-     * Increments version if the current date matches the cached one,
-     * or resets to `.1` if a new month has started.
-     *
-     * @param \Realodix\Hippo\Config\ValueObject\FilterSet $config
-     * @param string|null $currentVersion The current version string.
-     * @return string The new version string in 'YY.MM.rev' format.
-     */
-    private function determineVersion($config, ?string $currentVersion): string
-    {
-        $currentDate = date('y.m');
-        if (
-            // it doesn't enable versioning
-            $config->metadata()['enable_version'] === false
-            || empty($currentVersion) // no cached data, assume it's the first
-        ) {
-            return sprintf('%s.%d', $currentDate, 1);
-        }
-
-        $parts = explode('.', $currentVersion);
-        $cachedDate = $parts[0].'.'.$parts[1];
-        $cachedRevNum = (int) ($parts[2] ?? 0);
-
-        $revNum = ($cachedDate === $currentDate) ? $cachedRevNum + 1 : 1;
-
-        return sprintf('%s.%d', $currentDate, $revNum);
+        return $this->cache->hash(implode('', $sources));
     }
 }

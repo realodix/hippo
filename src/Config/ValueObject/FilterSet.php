@@ -29,7 +29,7 @@ final readonly class FilterSet
      *
      * @return array{
      *  date_modified: bool,
-     *  enable_version: bool,
+     *  version: bool,
      *  description: string,
      *  header: string,
      *  title: string,
@@ -40,10 +40,10 @@ final readonly class FilterSet
     {
         $defautl = [
             'date_modified' => true,
-            'enable_version' => false,
             'description' => '',
             'header' => '',
             'title' => '',
+            'version' => false,
             'extras' => [],
         ];
 

@@ -24,9 +24,9 @@ final class Schema
                     'metadata' => Expect::structure([
                         'date_modified' => Expect::bool(),
                         'description' => Expect::string(),
-                        'enable_version' => Expect::bool(),
                         'header' => Expect::string(),
                         'title' => Expect::string(),
+                        'version' => Expect::bool(),
                         'extras' => Expect::listOf('string'),
                     ]),
                     'source' => Expect::listOf('string')->required(),

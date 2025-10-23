@@ -60,8 +60,8 @@ builder:
         # header: Adblock Plus 2.0
         title: General Blocklist
         # description: Filter list that specifically removes adverts.
-        # enable_version: true
         # date_modified: false
+        # version: true
         # extras:
         #   - 'Expires: 6 days (update frequency)'
         #   - 'Homepage: https://example.org/'

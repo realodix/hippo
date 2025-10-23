@@ -2,10 +2,34 @@
 
 namespace Realodix\Hippo\Builder;
 
+use Illuminate\Support\Arr;
+use Realodix\Hippo\Cache\Cache;
+
 final class Metadata
 {
     /**
-     * Creates an array of metadata strings from the given data and revision.
+     * @var \Realodix\Hippo\Config\ValueObject\FilterSet
+     */
+    private $config;
+
+    public function __construct(
+        private Cache $cache,
+    ) {}
+
+    /**
+     * Sets up the metadata generator with the given filter set configuration.
+     *
+     * @param \Realodix\Hippo\Config\ValueObject\FilterSet $config
+     */
+    public function setUp($config): self
+    {
+        $this->config = $config;
+
+        return $this;
+    }
+
+    /**
+     * Builds an array of formatted metadata strings based on the configured filter set.
      *
      * The resulting array will contain the following metadata strings:
      * - "! Title: My Filter List"
@@ -16,18 +40,16 @@ final class Metadata
      * If the "header" key is present in the data, it will be prepended to
      * the metadata array.
      *
-     * @param \Realodix\Hippo\Config\ValueObject\FilterSet $config
-     * @param string $version The version string (e.g., '25.10.1') to include in the metadata.
-     * @return array<int, string> The created metadata array.
+     * @return array<int, string> The built metadata array.
      */
-    public function create($config, string $version): array
+    public function build(): array
     {
-        $config = $config->metadata();
+        $config = $this->config->metadata();
 
         $metadata = collect([
             $this->title($config['title']),
             $this->description($config['description']),
-            $this->version($config['enable_version'], $version),
+            $this->fVersion($config['version']),
             $this->lastModified($config['date_modified']),
             $this->extras($config['extras']),
         ])->flatten()
@@ -36,6 +58,39 @@ final class Metadata
             ->filter(); // Remove empty values from the array
 
         return $metadata->toArray();
+    }
+
+    public function version(): string
+    {
+        $config = $this->config;
+        $cacheEntry = $this->cache->repository()->get($config->outputPath);
+        $currentVersion = Arr::get($cacheEntry, 'version');
+
+        $currentDate = date('y.m');
+        if (
+            // it doesn't enable versioning
+            $config->metadata()['version'] === false
+            || empty($currentVersion) // no cached data, assume it's the first
+        ) {
+            return sprintf('%s.%d', $currentDate, 1);
+        }
+
+        $parts = explode('.', $currentVersion);
+        $cachedDate = $parts[0].'.'.$parts[1];
+        $cachedRevNum = (int) ($parts[2] ?? 0);
+
+        $revNum = ($cachedDate === $currentDate) ? $cachedRevNum + 1 : 1;
+
+        return sprintf('%s.%d', $currentDate, $revNum);
+    }
+
+    private function fVersion(bool $value): string
+    {
+        if ($value === false) {
+            return '';
+        }
+
+        return sprintf('Version: %s', $this->version());
     }
 
     private function header(string $value): string
@@ -74,15 +129,6 @@ final class Metadata
         }
 
         return "Title: {$value}";
-    }
-
-    private function version(bool $value, string $version): string
-    {
-        if ($value === false) {
-            return '';
-        }
-
-        return sprintf('Version: %s', $version);
     }
 
     /**
