@@ -121,13 +121,13 @@ builder:
       metadata:
         # header: Adblock Plus 2.0
         title: General Blocklist
-        # description: Filter list that specifically removes adverts.
         # date_modified: false
         # version: true
-        # extras:
-        #   - 'Expires: 6 days (update frequency)'
-        #   - 'Homepage: https://example.org/'
-        #   - 'License: MIT'
+        # extras: |
+        #   Description: Filter list that specifically removes adverts.
+        #   Expires: 6 days (update frequency)
+        #   Homepage: https://example.org/
+        #   License: MIT
       source:
         - blocklists/general/local-rules.txt
         - https://cdn.example.org/blocklists/general.txt

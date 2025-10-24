@@ -11,8 +11,6 @@ final class Metadata
      *
      * The resulting array will contain the following metadata strings:
      * - "! Title: My Filter List"
-     * - "! Description: My filter list for ad blocking"
-     * - "! Version: 1.0.0"
      * - "! Last modified: 2022-01-01 12:00:00 +0000"
      *
      * If the "header" key is present in the data, it will be prepended to
@@ -27,7 +25,6 @@ final class Metadata
 
         $metadata = collect([
             $this->title($config['title']),
-            $this->description($config['description']),
             $this->lastModified($config['date_modified']),
             $this->version($config['version']),
             $this->extras($config['extras']),
@@ -46,15 +43,6 @@ final class Metadata
         }
 
         return "[{$value}]";
-    }
-
-    private function description(string $value): string
-    {
-        if (empty($value)) {
-            return '';
-        }
-
-        return "Description: {$value}";
     }
 
     private function lastModified(bool $value): string
@@ -92,15 +80,14 @@ final class Metadata
     }
 
     /**
-     * @param list<string> $data
      * @return list<string>
      */
-    private function extras(array $data): array
+    private function extras(string $data): array
     {
         if (empty($data)) {
             return [];
         }
 
-        return $data;
+        return explode("\n", $data);
     }
 }

@@ -30,21 +30,19 @@ final readonly class FilterSet
      * @return array{
      *  date_modified: bool,
      *  version: bool,
-     *  description: string,
      *  header: string,
      *  title: string,
-     *  extras: list<string>,
+     *  extras: string,
      * } $metadata
      */
     public function metadata(): array
     {
         $defautl = [
             'date_modified' => true,
-            'description' => '',
             'header' => '',
             'title' => '',
             'version' => false,
-            'extras' => [],
+            'extras' => '',
         ];
 
         return array_merge($defautl, $this->metadata);

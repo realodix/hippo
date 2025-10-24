@@ -23,11 +23,10 @@ final class Schema
                     'output_file' => Expect::string()->required(),
                     'metadata' => Expect::structure([
                         'date_modified' => Expect::bool(),
-                        'description' => Expect::string(),
                         'header' => Expect::string(),
                         'title' => Expect::string(),
                         'version' => Expect::bool(),
-                        'extras' => Expect::listOf('string'),
+                        'extras' => Expect::string(),
                     ]),
                     'source' => Expect::listOf('string')->required(),
                 ])),
