@@ -2,32 +2,10 @@
 
 namespace Realodix\Hippo\Builder;
 
-use Illuminate\Support\Arr;
-use Realodix\Hippo\Cache\Cache;
+use Carbon\Carbon;
 
 final class Metadata
 {
-    /**
-     * @var \Realodix\Hippo\Config\ValueObject\FilterSet
-     */
-    private $config;
-
-    public function __construct(
-        private Cache $cache,
-    ) {}
-
-    /**
-     * Sets up the metadata generator with the given filter set configuration.
-     *
-     * @param \Realodix\Hippo\Config\ValueObject\FilterSet $config
-     */
-    public function setUp($config): self
-    {
-        $this->config = $config;
-
-        return $this;
-    }
-
     /**
      * Builds an array of formatted metadata strings based on the configured filter set.
      *
@@ -40,16 +18,17 @@ final class Metadata
      * If the "header" key is present in the data, it will be prepended to
      * the metadata array.
      *
+     * @param \Realodix\Hippo\Config\ValueObject\FilterSet $config
      * @return array<int, string> The built metadata array.
      */
-    public function build(): array
+    public function build($config): array
     {
-        $config = $this->config->metadata();
+        $config = $config->metadata();
 
         $metadata = collect([
             $this->title($config['title']),
             $this->description($config['description']),
-            $this->fVersion($config['version']),
+            $this->version($config['version']),
             $this->lastModified($config['date_modified']),
             $this->extras($config['extras']),
         ])->flatten()
@@ -60,37 +39,18 @@ final class Metadata
         return $metadata->toArray();
     }
 
-    public function version(): string
-    {
-        $config = $this->config;
-        $cacheEntry = $this->cache->repository()->get($config->outputPath);
-        $currentVersion = Arr::get($cacheEntry, 'version');
-
-        $currentDate = date('y.m');
-        if (
-            // it doesn't enable versioning
-            $config->metadata()['version'] === false
-            || empty($currentVersion) // no cached data, assume it's the first
-        ) {
-            return sprintf('%s.%d', $currentDate, 1);
-        }
-
-        $parts = explode('.', $currentVersion);
-        $cachedDate = $parts[0].'.'.$parts[1];
-        $cachedRevNum = (int) ($parts[2] ?? 0);
-
-        $revNum = ($cachedDate === $currentDate) ? $cachedRevNum + 1 : 1;
-
-        return sprintf('%s.%d', $currentDate, $revNum);
-    }
-
-    private function fVersion(bool $value): string
+    public function version(bool $value): string
     {
         if ($value === false) {
             return '';
         }
 
-        return sprintf('Version: %s', $this->version());
+        return sprintf(
+            'Version: %s.%d%d',
+            date('y.m'),
+            Carbon::now()->startOfDay()->diffInMinutes(Carbon::now()),
+            Carbon::now()->second,
+        );
     }
 
     private function header(string $value): string

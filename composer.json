@@ -10,6 +10,7 @@
         "composer/pcre": "^3.3",
         "illuminate/container": "^12.35",
         "illuminate/support": "^12.35",
+        "nesbot/carbon": "^3.10",
         "nette/schema": "^1.3",
         "symfony/console": "^7.3",
         "symfony/filesystem": "^7.3",

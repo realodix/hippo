@@ -61,7 +61,8 @@ final class Builder
             }
 
             // Step 4: Build and write output file
-            $this->buildAndWrite($sources, $filterConfig, $sourceHash);
+            $metadata = $this->metadata->build($filterConfig);
+            $this->buildAndWrite($outputPath, $sources, $metadata, $sourceHash);
         }
 
         // Save all updated cache entries to disk
@@ -71,19 +72,16 @@ final class Builder
     /**
      * Builds the final output file from sources and metadata, and updates cache.
      *
+     * @param string $outputPath The path to the output file.
      * @param list<string> $sources The list of raw source contents.
-     * @param \Realodix\Hippo\Config\ValueObject\FilterSet $filterConfig The configuration for the current filter set.
+     * @param array<int, string> $metadata The built metadata array.
      * @param string $sourceHash The hash representing the current source state.
      *
      * @throws \Symfony\Component\Filesystem\Exception\IOException
      */
-    private function buildAndWrite(array $sources, $filterConfig, string $sourceHash): void
+    private function buildAndWrite(string $outputPath, array $sources, array $metadata, string $sourceHash): void
     {
-        $outputPath = $filterConfig->outputPath;
-
-        $metadata = $this->metadata->setUp($filterConfig);
-
-        $content = collect($metadata->build())->merge($sources)
+        $content = collect($metadata)->merge($sources)
             ->implode("\n")."\n";
 
         $this->filesystem->dumpFile($outputPath, $content);
@@ -91,7 +89,6 @@ final class Builder
 
         $this->cache->repository()->set($outputPath, [
             'source_hash' => $sourceHash,
-            'version' => $metadata->version(),
         ]);
     }
 
