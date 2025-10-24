@@ -30,11 +30,13 @@ if (!function_exists('base_path')) {
     /**
      * Get the path to the base of the application root .
      */
-    function base_path(): string
+    function base_path(string $path = ''): string
     {
-        return dirname(array_values(array_filter(
+        $basePath = dirname(array_values(array_filter(
             array_keys(ClassLoader::getRegisteredLoaders()),
-            fn($path) => !str_starts_with($path, 'phar://'),
+            fn($pharPath) => !str_starts_with($pharPath, 'phar://'),
         ))[0]);
+
+        return Path::join($basePath, $path);
     }
 }

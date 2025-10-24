@@ -5,7 +5,6 @@ namespace Realodix\Hippo\Config;
 use Nette\Schema\Processor;
 use Nette\Schema\ValidationException;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Yaml\Yaml;
 
 final class Config
@@ -67,6 +66,6 @@ final class Config
 
     private function configPath(?string $configFile): string
     {
-        return Path::join(base_path(), $configFile ?? self::FILENAME);
+        return base_path($configFile ?? self::FILENAME);
     }
 }

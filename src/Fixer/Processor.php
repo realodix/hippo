@@ -81,7 +81,7 @@ final class Processor
         $networkFilters = [];
 
         foreach ($section as $rule) {
-            if (preg_match(Regex::COSMETIC_DOMAIN, $rule) || str_starts_with($rule, '[$')) {
+            if (Preg::match(Regex::COSMETIC_DOMAIN, $rule) || str_starts_with($rule, '[$')) {
                 $cosmeticFilters[] = $rule;
             } else {
                 $networkFilters[] = $rule;
@@ -92,7 +92,7 @@ final class Processor
         if (!empty($cosmeticFilters)) {
             $uncombined = collect($cosmeticFilters)
                 ->unique()
-                ->sortBy(fn($a) => preg_replace(Regex::COSMETIC_DOMAIN, '', $a))
+                ->sortBy(fn($a) => Preg::replace(Regex::COSMETIC_DOMAIN, '', $a))
                 ->values();
             $result = array_merge(
                 $result,

@@ -8,7 +8,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Path;
 
 #[AsCommand(
     name: 'setup',
@@ -21,7 +20,7 @@ class SetupCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $filename = Config::FILENAME;
 
-        $configFile = Path::join(base_path(), $filename);
+        $configFile = base_path($filename);
 
         if (file_exists($configFile)) {
             if (!$io->confirm("The {$filename} file already exists. Do you want to overwrite it?", false)) {

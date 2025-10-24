@@ -28,8 +28,8 @@ final class Metadata
         $metadata = collect([
             $this->title($config['title']),
             $this->description($config['description']),
-            $this->version($config['version']),
             $this->lastModified($config['date_modified']),
+            $this->version($config['version']),
             $this->extras($config['extras']),
         ])->flatten()
             ->map(fn($m) => $m ? "! {$m}" : '')
@@ -37,20 +37,6 @@ final class Metadata
             ->filter(); // Remove empty values from the array
 
         return $metadata->toArray();
-    }
-
-    public function version(bool $value): string
-    {
-        if ($value === false) {
-            return '';
-        }
-
-        return sprintf(
-            'Version: %s.%d%d',
-            date('y.m'),
-            Carbon::now()->startOfDay()->diffInMinutes(Carbon::now()),
-            Carbon::now()->second,
-        );
     }
 
     private function header(string $value): string
@@ -89,6 +75,20 @@ final class Metadata
         }
 
         return "Title: {$value}";
+    }
+
+    private function version(bool $value): string
+    {
+        if ($value === false) {
+            return '';
+        }
+
+        return sprintf(
+            'Version: %s.%d%d',
+            date('y.m'),
+            Carbon::now()->startOfDay()->diffInMinutes(Carbon::now()),
+            Carbon::now()->second,
+        );
     }
 
     /**

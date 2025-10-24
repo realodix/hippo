@@ -12,7 +12,7 @@ class OutputLoggerTest extends TestCase
     public function testProcessedWritesSimpleMessageOnFullProcessing()
     {
         $testPath = 'path/to/another-file.txt';
-        $absolutePath = Path::join(base_path(), $testPath);
+        $absolutePath = base_path($testPath);
 
         $outputMock = \Mockery::mock(OutputInterface::class);
         $outputMock->expects('writeln')
@@ -25,7 +25,7 @@ class OutputLoggerTest extends TestCase
     public function testSkippedWritesToOutputInVerboseMode()
     {
         $testPath = 'path/to/file.txt';
-        $absolutePath = Path::join(base_path(), $testPath);
+        $absolutePath = base_path($testPath);
 
         $outputMock = \Mockery::mock(OutputInterface::class);
         // Set isVerbose() to return true
@@ -56,7 +56,7 @@ class OutputLoggerTest extends TestCase
     public function testProcessedWritesDetailedMessageOnPartialProcessing()
     {
         $testPath = 'path/to/partial-file.txt';
-        $absolutePath = Path::join(base_path(), $testPath);
+        $absolutePath = base_path($testPath);
 
         $outputMock = \Mockery::mock(OutputInterface::class);
         $outputMock->expects('writeln')

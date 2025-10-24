@@ -11,7 +11,7 @@ final class BuilderConfig
     public string $outputDir;
 
     /** @var list<FilterSet> */
-    public array $filters;
+    public array $filterSet;
 
     public function __construct(
         private Filesystem $filesystem,
@@ -26,7 +26,7 @@ final class BuilderConfig
     public function make(array $builderConfigData): self
     {
         $this->outputDir = $this->outputDir($builderConfigData);
-        $this->filters = $this->parseFilterSets($builderConfigData['filter_list'] ?? []);
+        $this->filterSet = $this->parseFilterSets($builderConfigData['filter_list'] ?? []);
 
         return $this;
     }
@@ -36,7 +36,7 @@ final class BuilderConfig
      */
     public function outputPaths(): array
     {
-        return array_map(fn(FilterSet $filter) => $filter->outputPath, $this->filters);
+        return array_map(fn(FilterSet $filter) => $filter->outputPath, $this->filterSet);
     }
 
     /**
@@ -70,7 +70,7 @@ final class BuilderConfig
     private function outputDir(array $configData): string
     {
         if (!empty($configData['output_dir'])) {
-            $outputDir = Path::join(base_path(), $configData['output_dir']);
+            $outputDir = base_path($configData['output_dir']);
 
             if (!$this->filesystem->exists($outputDir)) {
                 $this->filesystem->mkdir($outputDir);

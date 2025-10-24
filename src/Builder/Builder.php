@@ -34,22 +34,22 @@ final class Builder
         // Prepare cache repository for this run
         $this->cache->prepareForRun($config, $mode, Scope::B);
 
-        foreach ($config->builder()->filters as $filterConfig) {
+        foreach ($config->builder()->filterSet as $filterConfig) {
             $outputPath = $filterConfig->outputPath;
 
             // Step 1: Read all source files or URLs
-            $rawRources = $this->readSources($filterConfig);
-            if ($rawRources === null) {
+            $rawContent = $this->readSources($filterConfig);
+            if ($rawContent === null) {
                 $this->logger->skipped($outputPath);
 
                 continue;
             }
 
-            $sources = Cleaner::clean($rawRources);
+            $content = Cleaner::clean($rawContent);
 
             // Step 2: Generate a single hash from all source contents
             $sourceHash = $this->sourceHash(array_merge(
-                $sources,
+                $content,
                 Arr::flatten($filterConfig->metadata()),
             ));
 
@@ -62,7 +62,7 @@ final class Builder
 
             // Step 4: Build and write output file
             $metadata = $this->metadata->build($filterConfig);
-            $this->buildAndWrite($outputPath, $sources, $metadata, $sourceHash);
+            $this->buildAndWrite($outputPath, $content, $metadata, $sourceHash);
         }
 
         // Save all updated cache entries to disk
@@ -73,15 +73,15 @@ final class Builder
      * Builds the final output file from sources and metadata, and updates cache.
      *
      * @param string $outputPath The path to the output file.
-     * @param list<string> $sources The list of raw source contents.
+     * @param list<string> $content Source contents.
      * @param array<int, string> $metadata The built metadata array.
      * @param string $sourceHash The hash representing the current source state.
      *
      * @throws \Symfony\Component\Filesystem\Exception\IOException
      */
-    private function buildAndWrite(string $outputPath, array $sources, array $metadata, string $sourceHash): void
+    private function buildAndWrite(string $outputPath, array $content, array $metadata, string $sourceHash): void
     {
-        $content = collect($metadata)->merge($sources)
+        $content = collect($metadata)->merge($content)
             ->implode("\n")."\n";
 
         $this->filesystem->dumpFile($outputPath, $content);
@@ -94,16 +94,15 @@ final class Builder
 
     /**
      * Reads all source files or URLs defined in the configuration.
-     * Returns null if any source cannot be read.
      *
      * @param \Realodix\Hippo\Config\ValueObject\FilterSet $config
-     * @return list<string>|null The list of source contents, or null if a read fails.
+     * @return list<string>|null Source contents, or null if a read fails.
      *
      * @throws \Symfony\Component\Filesystem\Exception\IOException
      */
     private function readSources($config): ?array
     {
-        $sources = [];
+        $text = [];
 
         foreach ($config->source as $path) {
             $data = null;
@@ -121,10 +120,10 @@ final class Builder
                 return null;
             }
 
-            $sources[] = $data;
+            $text[] = $data;
         }
 
-        return $sources;
+        return $text;
     }
 
     /**
@@ -140,7 +139,7 @@ final class Builder
     /**
      * Generates a global hash representing all source contents combined.
      *
-     * @param list<string> $sources The list of source contents.
+     * @param list<string> $sources Source contents.
      * @return string A hash that uniquely represents the current source state.
      */
     private function sourceHash(array $sources): string
