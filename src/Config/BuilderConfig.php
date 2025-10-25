@@ -41,7 +41,7 @@ final class BuilderConfig
 
     /**
      * @param list<array{
-     *  output_file: string,
+     *  filename: string,
      *  metadata?: array<string, mixed>,
      *  source?: list<string>
      * }> $filterLists
@@ -52,8 +52,7 @@ final class BuilderConfig
         $filters = [];
         foreach ($filterLists as $list) {
             $filters[] = new FilterSet(
-                outputFile: $list['output_file'],
-                outputPath: Path::join($this->outputDir, $list['output_file']),
+                outputPath: Path::join($this->outputDir, $list['filename']),
                 source: $list['source'] ?? [],
                 metadata: $list['metadata'] ?? [],
             );

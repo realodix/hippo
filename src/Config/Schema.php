@@ -20,7 +20,7 @@ final class Schema
             'builder' => Expect::structure([
                 'output_dir' => Expect::string(),
                 'filter_list' => Expect::listOf(Expect::structure([
-                    'output_file' => Expect::string()->required(),
+                    'filename' => Expect::string()->required(),
                     'metadata' => Expect::structure([
                         'date_modified' => Expect::bool(),
                         'header' => Expect::string(),

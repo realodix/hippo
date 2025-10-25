@@ -2,6 +2,8 @@
 
 namespace Realodix\Hippo\Config\ValueObject;
 
+use Symfony\Component\Filesystem\Path;
+
 /**
  * A filter list configuration
  */
@@ -12,14 +14,16 @@ final readonly class FilterSet
      * @param array<string, mixed> $metadata The metadata configuration
      */
     public function __construct(
-        public string $outputFile,
         public string $outputPath,
-        public array $source = [],
-        private array $metadata = [],
+        public array $source,
+        private array $metadata,
     ) {
         if (empty($this->source)) {
             throw new \InvalidArgumentException(
-                sprintf('The "source" key is missing or empty for the filter list "%s".', $this->outputFile),
+                sprintf(
+                    'The "source" key for the filter list "%s" must contain at least one item.',
+                    Path::makeRelative($this->outputPath, base_path()),
+                ),
             );
         }
     }

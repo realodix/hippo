@@ -54,7 +54,7 @@ builder:
   # output_dir: dist
   filter_list:
     # First filter list
-    - output_file: general_blocklist.txt
+    - filename: general_blocklist.txt
       metadata:
         # header: Adblock Plus 2.0
         title: General Blocklist

@@ -117,7 +117,7 @@ builder:
   # output_dir: dist
   filter_list:
     # First filter list
-    - output_file: general_blocklist.txt
+    - filename: general_blocklist.txt
       metadata:
         # header: Adblock Plus 2.0
         title: General Blocklist
@@ -133,7 +133,7 @@ builder:
         - https://cdn.example.org/blocklists/general.txt
 
     # Second filter list
-    - output_file: custom_privacy.txt
+    - filename: custom_privacy.txt
       source:
         - sources/tracking_domains-1.txt
         - sources/tracking_domains-2.txt
