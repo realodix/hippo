@@ -5,7 +5,6 @@ namespace Realodix\Hippo\Test\Feature;
 use Realodix\Hippo\OutputLogger;
 use Realodix\Hippo\Test\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Path;
 
 class OutputLoggerTest extends TestCase
 {

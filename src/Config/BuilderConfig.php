@@ -32,14 +32,6 @@ final class BuilderConfig
     }
 
     /**
-     * @return list<string>
-     */
-    public function outputPaths(): array
-    {
-        return array_map(fn(FilterSet $filter) => $filter->outputPath, $this->filterSet);
-    }
-
-    /**
      * Resolves and ensures the existence of the output directory.
      *
      * - If the "output_dir" key is defined in the configuration, its path is

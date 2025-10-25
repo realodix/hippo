@@ -262,4 +262,43 @@ class CacheTest extends TestCase
         $this->assertArrayHasKey($existingFile, $loadedCache);
         $this->assertTrue($this->fs->exists($this->testCacheFile));
     }
+
+    /**
+     * @see Realodix\Hippo\Builder\Builder::class
+     * @see Realodix\Hippo\Cache\Cache::cleanStaleEntries()
+     */
+    public function testCleanStaleEntriesForBuilder(): void
+    {
+        $this->repository->setCacheFile($this->testCacheFile);
+
+        // 1. Define output paths
+        $activePath1 = Path::join($this->tmpDir, 'active_list_1.txt');
+        $activePath2 = Path::join($this->tmpDir, 'active_list_2.txt');
+        $stalePath = Path::join($this->tmpDir, 'stale_list.txt');
+
+        // This is the array that the old implementation expected
+        $activeOutputFiles = [$activePath1, $activePath2];
+
+        // 2. Set initial cache state
+        $this->repository->set($activePath1, ['data' => 'active 1']);
+        $this->repository->set($activePath2, ['data' => 'active 2']);
+        $this->repository->set($stalePath, ['data' => 'stale']);
+        $this->repository->save();
+
+        // 3. Run the method to be tested, passing the array of active files
+        $this->callPrivateMethod($this->cache, 'cleanStaleEntries', [$activeOutputFiles]);
+
+        // 4. Assertions
+        $loadedCache = $this->repository->all();
+        $this->assertArrayHasKey($activePath1, $loadedCache, 'Active entry 1 should not be removed.');
+        $this->assertArrayHasKey($activePath2, $loadedCache, 'Active entry 2 should not be removed.');
+        $this->assertArrayNotHasKey($stalePath, $loadedCache, 'Stale entry should be removed.');
+
+        // Verify the cache file content after cleaning
+        $newRepository = new Repository($this->fs);
+        $newRepository->setCacheFile($this->testCacheFile);
+        $newRepository->load();
+        $this->assertArrayHasKey($activePath1, $newRepository->all());
+        $this->assertArrayNotHasKey($stalePath, $newRepository->all());
+    }
 }

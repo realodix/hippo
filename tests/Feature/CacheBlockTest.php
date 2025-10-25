@@ -10,19 +10,6 @@ use Symfony\Component\Filesystem\Path;
 
 class CacheBlockTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        if ($this->fs->exists($this->tmpDir)) {
-            $files = array_merge(
-                glob($this->tmpDir.'/*.json'),
-                glob($this->tmpDir.'/.*.json'),
-            );
-            if ($files) {
-                $this->fs->remove($files);
-            }
-        }
-    }
-
     public function testSetCacheFile(): void
     {
         $inputFile = base_path('tests/Integration/cache.txt');

@@ -43,7 +43,12 @@ final class Cache
 
         if ($mode !== Mode::Force) {
             if ($scope === Scope::B) {
-                $this->cleanStaleEntries($config->builder()->outputPaths());
+                $configuredOutputFiles = array_map(
+                    fn($filter) => $filter->outputPath,
+                    $config->builder()->filterSet,
+                );
+
+                $this->cleanStaleEntries($configuredOutputFiles);
             } else {
                 $this->cleanStaleEntries();
             }
@@ -61,15 +66,15 @@ final class Cache
      * - If a list of active files is provided, remove any entry not in that list.
      * - Otherwise, remove entries for files that no longer exist on disk.
      *
-     * @param list<string> $activeOutputFiles List of active builder output files
+     * @param list<string> $configuredOutputFiles The list of active output files to keep.
      */
-    private function cleanStaleEntries(array $activeOutputFiles = []): void
+    private function cleanStaleEntries(array $configuredOutputFiles = []): void
     {
         $modified = false;
 
         foreach ($this->repository()->all() as $relativePath => $entry) {
-            $isStale = !empty($activeOutputFiles)
-                ? !in_array($relativePath, $activeOutputFiles)
+            $isStale = !empty($configuredOutputFiles)
+                ? !in_array($relativePath, $configuredOutputFiles)
                 : !file_exists($relativePath);
 
             if ($isStale) {

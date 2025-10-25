@@ -7,6 +7,7 @@ use Realodix\Hippo\Console\FixCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -32,7 +33,7 @@ abstract class TestCase extends BaseTestCase
         );
     }
 
-    protected function runCommand($processingFile, ?string $cachePath = null, array $options = [])
+    protected function runFixCommand($processingFile, ?string $cachePath = null, array $options = [])
     {
         $application = new Application;
         $application->add(app(FixCommand::class));
@@ -48,10 +49,10 @@ abstract class TestCase extends BaseTestCase
     protected function assertFilter(string $expectedFile, string $actualFile, ?string $cachePath = null, array $options = [])
     {
         $cachePath = $cachePath ?? $this->cacheFile;
-        $processingFile = $this->tmpDir.'/'.basename($actualFile);
+        $processingFile = Path::join($this->tmpDir, basename($actualFile));
         $this->fs->copy($actualFile, $processingFile, true);
 
-        $this->runCommand($processingFile, $cachePath, $options);
+        $this->runFixCommand($processingFile, $cachePath, $options);
 
         $this->assertFileEquals($expectedFile, $processingFile);
     }
@@ -77,12 +78,12 @@ abstract class TestCase extends BaseTestCase
     protected function tearDown(): void
     {
         if ($this->fs->exists($this->tmpDir)) {
-            $files = glob($this->tmpDir.'/*.txt');
-            if ($files) {
-                $this->fs->remove($files);
-            }
+            $files = array_merge(
+                glob(Path::join($this->tmpDir, '/*.txt')),
+                glob(Path::join($this->tmpDir, '/*.json')),
+                glob(Path::join($this->tmpDir, '/.*.json')),
+            );
 
-            $files = glob($this->tmpDir.'/*.json');
             if ($files) {
                 $this->fs->remove($files);
             }
