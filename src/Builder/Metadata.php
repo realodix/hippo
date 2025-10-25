@@ -51,7 +51,7 @@ final class Metadata
             return '';
         }
 
-        $date = (new \DateTime)->format(\DateTime::RFC1123);
+        $date = (new \DateTime)->format(\DateTime::RFC7231);
 
         return "Last modified: {$date}";
     }

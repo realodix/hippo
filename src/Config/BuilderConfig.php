@@ -8,10 +8,10 @@ use Symfony\Component\Filesystem\Path;
 
 final class BuilderConfig
 {
-    public string $outputDir;
-
     /** @var list<FilterSet> */
     public array $filterSet;
+
+    private string $outputDir;
 
     public function __construct(
         private Filesystem $filesystem,
@@ -26,7 +26,7 @@ final class BuilderConfig
     public function make(array $builderConfigData): self
     {
         $this->outputDir = $this->outputDir($builderConfigData);
-        $this->filterSet = $this->parseFilterSets($builderConfigData['filter_list'] ?? []);
+        $this->filterSet = $this->filterSets($builderConfigData['filter_list'] ?? []);
 
         return $this;
     }
@@ -40,28 +40,13 @@ final class BuilderConfig
     }
 
     /**
-     * @param list<array{
-     *  filename: string,
-     *  metadata?: array<string, mixed>,
-     *  source?: list<string>
-     * }> $filterLists
-     * @return list<FilterSet>
-     */
-    private function parseFilterSets(array $filterLists): array
-    {
-        $filters = [];
-        foreach ($filterLists as $list) {
-            $filters[] = new FilterSet(
-                outputPath: Path::join($this->outputDir, $list['filename']),
-                source: $list['source'] ?? [],
-                metadata: $list['metadata'] ?? [],
-            );
-        }
-
-        return $filters;
-    }
-
-    /**
+     * Resolves and ensures the existence of the output directory.
+     *
+     * - If the "output_dir" key is defined in the configuration, its path is
+     *   resolved relative to the project base path. The directory will be
+     *   created if it does not already exist.
+     * - If no "output_dir" is provided, the project base path will be used.
+     *
      * @param array{output_dir?: string} $configData
      *
      * @throws \Symfony\Component\Filesystem\Exception\IOException
@@ -79,5 +64,29 @@ final class BuilderConfig
         }
 
         return base_path();
+    }
+
+    /**
+     * Resolves the filter list configuration for each filter list.
+     *
+     * @param list<array{
+     *  filename: string,
+     *  metadata?: array<string, mixed>,
+     *  source?: list<string>
+     * }> $filterLists
+     * @return list<FilterSet>
+     */
+    private function filterSets(array $filterLists): array
+    {
+        $filters = [];
+        foreach ($filterLists as $list) {
+            $filters[] = new FilterSet(
+                outputPath: Path::join($this->outputDir, $list['filename']),
+                source: $list['source'] ?? [],
+                metadata: $list['metadata'] ?? [],
+            );
+        }
+
+        return $filters;
     }
 }
