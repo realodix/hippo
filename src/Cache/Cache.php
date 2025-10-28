@@ -143,13 +143,4 @@ final class Cache
     {
         return hash(self::HASH_ALGO, $data);
     }
-
-    /**
-     * @param string $filename
-     * @return string
-     */
-    public function hashFile($filename)
-    {
-        return hash_file(self::HASH_ALGO, $filename);
-    }
 }

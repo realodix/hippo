@@ -15,20 +15,11 @@ final class OutputLogger
         $this->root = base_path();
     }
 
-    public function processed(string $path, ?int $processedBlockCount = null, ?int $totalBlocks = null): void
+    public function processed(string $path): void
     {
         $path = Path::makeRelative($path, $this->root);
 
-        if (
-            (!is_null($processedBlockCount) || !is_null($totalBlocks))
-            && $processedBlockCount !== $totalBlocks
-        ) {
-            $this->output->writeln(
-                "<info>[P]: $path (processed $processedBlockCount/$totalBlocks blocks)</info>",
-            );
-        } else {
-            $this->output->writeln("<info>[P]: $path</info>");
-        }
+        $this->output->writeln("<info>[P]: $path</info>");
     }
 
     public function skipped(string $path): void

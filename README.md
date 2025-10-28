@@ -96,7 +96,6 @@ Optimizes existing filter files or directories by cleaning syntax, sorting rules
 #### Options:
 - `--path`: Target file or directory to process.
 - `--force`, `-f`: Process all files regardless of cache.
-<!-- - `--partial`, `-p`: Partial mode; maps files into several blocks and only processes blocks that are detected as having changed. This mode is very useful for very large files. (incompatible with `--force`). -->
 - `--config`, `-c`: Use a custom configuration file. Example: `--config ./config.yml`.
 - `--cache`: Specify a custom cache path. Example: `--cache ./custom-cache/`.
 

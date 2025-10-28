@@ -28,7 +28,6 @@ class FixCommand extends Command
         $this
             ->addOption('path', null, InputOption::VALUE_OPTIONAL, 'File or directory to process')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force processing even if file has not changed')
-            ->addOption('partial', 'p', InputOption::VALUE_NONE, 'Use partial mode')
             ->addOption('config', 'c', InputOption::VALUE_OPTIONAL, 'Path to config file')
             ->addOption('cache', null, InputOption::VALUE_OPTIONAL, 'Path to the cache file');
     }
@@ -36,9 +35,6 @@ class FixCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        if ($input->getOption('force') && $input->getOption('partial')) {
-            throw new \InvalidArgumentException('The --force and --partial options cannot be used together.');
-        }
 
         $io->writeln($this->getApplication()->getName().' <info>'.$this->getApplication()->getVersion().'</info> by <comment>Realodix</comment>');
         $io->writeln('PHP runtime: <info>'.PHP_VERSION.'</info>');
@@ -77,7 +73,6 @@ class FixCommand extends Command
     {
         return match (true) {
             $input->getOption('force') => Mode::Force,
-            $input->getOption('partial') => Mode::Partial,
             default => Mode::Default,
         };
     }
