@@ -88,7 +88,7 @@ final class Builder
         $this->logger->processed($outputPath);
 
         $this->cache->repository()->set($outputPath, [
-            'source_hash' => $sourceHash,
+            'reference' => $sourceHash,
         ]);
     }
 
@@ -133,7 +133,7 @@ final class Builder
     {
         $cacheEntry = $this->cache->repository()->get($outputPath);
 
-        return Arr::get($cacheEntry, 'source_hash') === $sourceHash;
+        return Arr::get($cacheEntry, 'reference') === $sourceHash;
     }
 
     /**
