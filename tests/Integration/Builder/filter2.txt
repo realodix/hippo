@@ -1,4 +1,5 @@
 
-c
+duplicate_line_global
+b
 
-d
+a

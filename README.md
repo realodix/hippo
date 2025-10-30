@@ -105,46 +105,51 @@ Optimizes existing filter files or directories by cleaning syntax, sorting rules
 Configure Hippo with a `hippo.yml` file in your project root.
 
 ```yaml
-cache_dir: .tmp
+# cache_dir: .tmp
 
 # Settings for the `fix` command
 fixer:
   paths:
-    - ./
-  ignore:
-    - file.txt
+    - folder_1/file.txt
+    - folder_2
+  ignores:
+    - ignored_file.txt
     - some/path/to/file.txt
     - path/to/source
 
 # Settings for the `build` command
 builder:
-  # output_dir: dist
+  output_dir: dist
   filter_list:
     # First filter list
-    - filename: general_blocklist.txt
+    - filename: general_blocklist.txt # Required
+      remove_duplicates: true
       metadata:
-        # header: Adblock Plus 2.0
+        header: Adblock Plus 2.0
         title: General Blocklist
-        # date_modified: false
-        # version: true
-        # extras: |
-        #   Description: Filter list that specifically removes adverts.
-        #   Expires: 6 days (update frequency)
-        #   Homepage: https://example.org/
-        #   License: MIT
-      source:
+        version: true
+        custom: |
+          Description: Filter list that specifically removes adverts.
+          Expires: 6 days (update frequency)
+          Homepage: https://example.org/
+          License: MIT
+      source: # Required
         - blocklists/general/local-rules.txt
         - https://cdn.example.org/blocklists/general.txt
 
     # Second filter list
     - filename: custom_privacy.txt
+      date_modified: false
+      remove_duplicates: true
       source:
         - sources/tracking_domains-1.txt
         - sources/tracking_domains-2.txt
 ```
 
+See [Configuration Reference](./docs/configuration.md) for more details.
+
 > [!NOTE]
-> Lines displaying `# <key>: <value>` are examples of **optional** configuration keys and can be safely removed — Hippo will fall back to its default values.
+> You can delete any configurations you don't need. Hippo will use the default values ​​instead.
 
 
 ## Contributing

@@ -5,7 +5,10 @@
 ! Homepage: https://example.com/
 ! License: MIT
 ! ------------------------------
-a
+3
+2
+duplicate_line
+duplicate_line_global
+1
 b
-c
-d
+a

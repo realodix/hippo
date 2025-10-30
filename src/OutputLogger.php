@@ -2,6 +2,7 @@
 
 namespace Realodix\Hippo;
 
+use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Path;
 
@@ -15,9 +16,28 @@ final class OutputLogger
         $this->root = base_path();
     }
 
-    public function processed(string $path): void
+    public function processing(string $path): void
     {
         $path = Path::makeRelative($path, $this->root);
+
+        $this->output->writeln("<fg=gray>[P]: $path</>");
+    }
+
+    /**
+     * Logs a processed file.
+     *
+     * @param string $path The path to the processed file.
+     * @param bool $overwrite Whether to clear the previous line.
+     */
+    public function processed(string $path, bool $overwrite = false): void
+    {
+        $path = Path::makeRelative($path, $this->root);
+
+        if ($overwrite) {
+            // $this->output->write("\x1b[1A\x1b[2K");
+            $cursor = new Cursor($this->output);
+            $cursor->moveUp()->clearLine();
+        }
 
         $this->output->writeln("<info>[P]: $path</info>");
     }

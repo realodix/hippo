@@ -45,7 +45,7 @@ cache_dir: .tmp
 fixer:
   # paths:
   #   - ./
-  ignore:
+  ignores:
     - file.txt
     - some/path/to/file.txt
     - path/to/source
@@ -55,12 +55,13 @@ builder:
   filter_list:
     # First filter list
     - filename: general_blocklist.txt
+      # remove_duplicates: true
       metadata:
         # header: Adblock Plus 2.0
         title: General Blocklist
         # date_modified: false
         # version: true
-        # extras: |
+        # custom: |
         #   Description: Filter list that specifically removes adverts.
         #   Expires: 6 days (update frequency)
         #   Homepage: https://example.org/

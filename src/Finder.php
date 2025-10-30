@@ -10,10 +10,10 @@ final class Finder
      * Create a new Finder instance.
      *
      * @param string $directory The directory to search in
-     * @param array<string> $ignore An array of patterns to ignore
+     * @param array<string> $ignores An array of patterns to ignore
      * @return BaseFinder The new Finder instance
      */
-    public function create(string $directory, array $ignore): BaseFinder
+    public function create(string $directory, array $ignores): BaseFinder
     {
         $finder = new BaseFinder;
         $finder->files()
@@ -22,7 +22,7 @@ final class Finder
             ->ignoreDotFiles(true)
             ->ignoreVCS(true);
 
-        foreach ($ignore as $pattern) {
+        foreach ($ignores as $pattern) {
             $finder->notPath($pattern);
         }
 

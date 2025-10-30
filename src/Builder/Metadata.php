@@ -27,7 +27,7 @@ final class Metadata
             $this->title($config['title']),
             $this->lastModified($config['date_modified']),
             $this->version($config['version']),
-            $this->extras($config['extras']),
+            $this->custom($config['custom']),
         ])->flatten()
             ->map(fn($m) => $m ? "! {$m}" : '')
             ->when($this->header($config['header']), fn($c, $h) => $c->prepend($h))
@@ -82,7 +82,7 @@ final class Metadata
     /**
      * @return list<string>
      */
-    private function extras(string $data): array
+    private function custom(string $data): array
     {
         if (empty($data)) {
             return [];

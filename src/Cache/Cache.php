@@ -2,6 +2,7 @@
 
 namespace Realodix\Hippo\Cache;
 
+use Illuminate\Support\Arr;
 use Realodix\Hippo\Config\Config;
 use Realodix\Hippo\Enums\Mode;
 use Realodix\Hippo\Enums\Scope;
@@ -58,6 +59,35 @@ final class Cache
             $this->repository()->clear();
             $this->cacheCleared = true;
         }
+    }
+
+    /**
+     * Set the cached data for the given key.
+     *
+     * @param string $key The key to set
+     * @param string $value The reference value
+     * @param bool $needHash Whether the value needs to be hashed
+     */
+    public function set(string $key, string $value, bool $needHash = false): void
+    {
+        $value = $needHash ? $this->hash($value) : $value;
+
+        $this->repository()->set($key, [
+            'reference' => $value,
+        ]);
+    }
+
+    /**
+     * Checks if a file has changed.
+     *
+     * @param string $key The cache key
+     * @param string $value The reference value
+     */
+    public function isValid(string $key, string $value): bool
+    {
+        $cacheEntry = $this->repository()->get($key);
+
+        return Arr::get($cacheEntry, 'reference') === $value;
     }
 
     /**

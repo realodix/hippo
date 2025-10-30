@@ -14,19 +14,20 @@ final class Schema
 
             'fixer' => Expect::structure([
                 'paths' => Expect::listOf('string'),
-                'ignore' => Expect::listOf('string'),
+                'ignores' => Expect::listOf('string'),
             ]),
 
             'builder' => Expect::structure([
                 'output_dir' => Expect::string(),
                 'filter_list' => Expect::listOf(Expect::structure([
                     'filename' => Expect::string()->required(),
+                    'remove_duplicates' => Expect::bool(),
                     'metadata' => Expect::structure([
                         'date_modified' => Expect::bool(),
                         'header' => Expect::string(),
                         'title' => Expect::string(),
                         'version' => Expect::bool(),
-                        'extras' => Expect::string(),
+                        'custom' => Expect::string(),
                     ]),
                     'source' => Expect::listOf('string')->required(),
                 ])),

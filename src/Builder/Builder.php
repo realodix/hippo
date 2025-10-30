@@ -34,34 +34,34 @@ final class Builder
         // Prepare cache repository for this run
         $this->cache->prepareForRun($config, $mode, Scope::B);
 
-        foreach ($config->builder()->filterSet as $filterConfig) {
-            $outputPath = $filterConfig->outputPath;
+        foreach ($config->builder()->filterSet as $filterSet) {
+            $outputPath = $filterSet->outputPath;
 
             // Step 1: Read all source files or URLs
-            $rawContent = $this->readSources($filterConfig);
+            $rawContent = $this->readSources($filterSet);
             if ($rawContent === null) {
                 $this->logger->skipped($outputPath);
 
                 continue;
             }
 
-            $content = Cleaner::clean($rawContent);
+            $content = Cleaner::clean($rawContent, $filterSet->unique);
 
             // Step 2: Generate a single hash from all source contents
             $sourceHash = $this->sourceHash(array_merge(
                 $content,
-                Arr::flatten($filterConfig->metadata()),
+                Arr::flatten($filterSet->metadata()),
             ));
 
             // Step 3: Skip processing if cache is still valid
-            if (!$force && $this->isCacheValid($outputPath, $sourceHash)) {
+            if (!$force && $this->cache->isValid($outputPath, $sourceHash)) {
                 $this->logger->skipped($outputPath);
 
                 continue;
             }
 
             // Step 4: Build and write output file
-            $metadata = $this->metadata->build($filterConfig);
+            $metadata = $this->metadata->build($filterSet);
             $this->buildAndWrite($outputPath, $content, $metadata, $sourceHash);
         }
 
@@ -87,9 +87,7 @@ final class Builder
         $this->filesystem->dumpFile($outputPath, $content);
         $this->logger->processed($outputPath);
 
-        $this->cache->repository()->set($outputPath, [
-            'reference' => $sourceHash,
-        ]);
+        $this->cache->set($outputPath, $sourceHash);
     }
 
     /**
@@ -124,16 +122,6 @@ final class Builder
         }
 
         return $text;
-    }
-
-    /**
-     * Checks if the cache entry is still valid by comparing source hashes.
-     */
-    private function isCacheValid(string $outputPath, string $sourceHash): bool
-    {
-        $cacheEntry = $this->cache->repository()->get($outputPath);
-
-        return Arr::get($cacheEntry, 'reference') === $sourceHash;
     }
 
     /**

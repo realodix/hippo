@@ -63,6 +63,7 @@ final class BuilderConfig
      *
      * @param list<array{
      *  filename: string,
+     *  remove_duplicates?: bool,
      *  metadata?: array<string, mixed>,
      *  source?: list<string>
      * }> $filterLists
@@ -76,6 +77,7 @@ final class BuilderConfig
                 outputPath: Path::join($this->outputDir, $list['filename']),
                 source: $list['source'] ?? [],
                 metadata: $list['metadata'] ?? [],
+                unique: $list['remove_duplicates'] ?? false,
             );
         }
 

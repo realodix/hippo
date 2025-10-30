@@ -1,4 +1,9 @@
-a
+3
+2
+duplicate_line
+duplicate_line_global
+1
+duplicate_line
+duplicate_line_global
 b
-c
-d
+a

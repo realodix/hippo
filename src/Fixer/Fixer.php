@@ -2,7 +2,6 @@
 
 namespace Realodix\Hippo\Fixer;
 
-use Illuminate\Support\Arr;
 use Realodix\Hippo\Cache\Cache;
 use Realodix\Hippo\Config\Config;
 use Realodix\Hippo\Enums\Mode;
@@ -51,7 +50,7 @@ final class Fixer
             if (is_file($path)) {
                 $this->processFile($path, $this->stats);
             } elseif (is_dir($path)) {
-                $finder = $this->finder->create($path, $fixerConfig->ignore);
+                $finder = $this->finder->create($path, $fixerConfig->ignores);
                 foreach ($finder as $file) {
                     $this->processFile($file->getRealPath(), $this->stats);
                 }
@@ -79,20 +78,19 @@ final class Fixer
             return;
         }
 
-        if (!$this->isFileChanged($filePath, $rawContent)) {
+        $rawContentHash = $this->cache->hash(implode("\n", $rawContent)."\n");
+        if ($this->cache->isValid($filePath, $rawContentHash)) {
             $this->logger->skipped($filePath);
             $stats->incrementSkipped();
 
             return;
         }
 
-        $this->write(
-            $filePath,
-            collect($this->processor->process($rawContent))
-                ->flatten()->implode("\n")."\n",
-        );
+        $this->logger->processing($filePath);
 
-        $this->logger->processed($filePath);
+        $this->write($filePath, implode("\n", $this->processor->process($rawContent))."\n");
+
+        $this->logger->processed($filePath, true);
         $stats->incrementProcessed();
     }
 
@@ -108,23 +106,7 @@ final class Fixer
     {
         $this->filesystem->dumpFile($filePath, $content);
 
-        $this->cache->repository()->set($filePath, [
-            'reference' => $this->cache->hash($content),
-        ]);
-    }
-
-    /**
-     * Checks if a file has changed.
-     *
-     * @param string $filePath Path to file
-     * @param array<string> $content File contents
-     */
-    private function isFileChanged(string $filePath, array $content): bool
-    {
-        $cacheEntry = $this->cache->repository()->get($filePath);
-        $currentHash = $this->cache->hash(implode("\n", $content)."\n");
-
-        return Arr::get($cacheEntry, 'reference') !== $currentHash;
+        $this->cache->set($filePath, $content, true);
     }
 
     public function stats(): FixStats

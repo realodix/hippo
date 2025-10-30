@@ -9,7 +9,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class BuilderTest extends TestCase
 {
-    public function testBuild()
+    protected function runBuildCommand()
     {
         $application = new Application;
         $application->add(app(BuildCommand::class));
@@ -20,15 +20,25 @@ class BuilderTest extends TestCase
             '--config' => 'tests/Integration/Builder/hippo.yml',
             '--force' => true,
         ]);
+    }
+
+    public function testBuild()
+    {
+        $this->runBuildCommand();
 
         $this->assertFileEquals(
-            base_path('tests/Integration/tmp/compiled1.txt'),
             base_path('tests/Integration/Builder/compiled1.txt'),
+            base_path('tests/Integration/tmp/compiled1.txt'),
         );
+    }
+
+    public function testBuild2()
+    {
+        $this->runBuildCommand();
 
         $this->assertFileEquals(
-            base_path('tests/Integration/tmp/compiled2.txt'),
             base_path('tests/Integration/Builder/compiled2.txt'),
+            base_path('tests/Integration/tmp/compiled2.txt'),
         );
     }
 }

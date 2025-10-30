@@ -11,17 +11,22 @@ final class Cleaner
      * and empty lines, leaving only the valid filter rules.
      *
      * @param list<string> $text Raw filter source contents.
+     * @param bool $unique Removes duplicate filter rules.
      * @return list<string> The cleaned filter contents, each containing only valid rules.
      */
-    public static function clean(array $text): array
+    public static function clean(array $text, bool $unique): array
     {
-        return array_map(function (string $content) {
-            $content = self::removeMetadataAgent($content);
-            $content = self::removeComment($content);
-            $content = self::removeEmptyLines($content);
+        return collect($text)
+            ->map(function (string $content) {
+                $content = self::removeMetadataAgent($content);
+                $content = self::removeComment($content);
+                $content = self::removeEmptyLines($content);
 
-            return rtrim($content);
-        }, $text);
+                return rtrim($content);
+            })->when($unique, function ($collection) {
+                return $collection->flatMap(fn($content) => explode("\n", $content))
+                    ->unique()->values();
+            })->all();
     }
 
     /**

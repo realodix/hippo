@@ -10,7 +10,7 @@ final class FixerConfig
     public array $paths;
 
     /** @var list<string> */
-    public array $ignore;
+    public array $ignores;
 
     /**
      * @param array<string, list<string>> $config
@@ -20,7 +20,7 @@ final class FixerConfig
     {
         $this->paths = $this->paths($config, $overrides);
 
-        $this->ignore = $this->ignore($config);
+        $this->ignores = $this->ignores($config);
 
         return $this;
     }
@@ -54,11 +54,11 @@ final class FixerConfig
      * @param array<string, list<string>> $config
      * @return list<string>
      */
-    private function ignore(array $config): array
+    private function ignores(array $config): array
     {
         return array_map(
-            fn($ignorePath) => Path::canonicalize($ignorePath),
-            $config['ignore'] ?? [],
+            fn($notPaths) => Path::canonicalize($notPaths),
+            $config['ignores'] ?? [],
         );
     }
 }
