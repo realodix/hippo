@@ -32,7 +32,7 @@ An array that defines one or more filter lists to be built. Each item in the arr
   - **`title`**: The title of the filter list.
   - **`date_modified`**: If `true`, adds the last modified date to the metadata.
     - **Possible values:** `true` or `false`
-    - **Default:** `true`
+    - **Default:** `true` or `false` if you have not set any configuration for metadata.
   - **`version`**: If `true`, adds a version number to the metadata.
     - **Possible values:** `true` or `false`
     - **Default:** `false`

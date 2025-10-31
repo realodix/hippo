@@ -20,11 +20,8 @@ final class Finder
             ->in($directory)
             ->name(['*.txt', '*.adfl'])
             ->ignoreDotFiles(true)
-            ->ignoreVCS(true);
-
-        foreach ($ignores as $pattern) {
-            $finder->notPath($pattern);
-        }
+            ->ignoreVCS(true)
+            ->notPath($ignores);
 
         return $finder;
     }

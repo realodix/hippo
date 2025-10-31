@@ -42,22 +42,28 @@ example.com,google.com##.advert
 
 ## Installation
 
-Install the package via Composer:
+Install the package via [Composer](https://getcomposer.org/):
 
 ```sh
 composer require realodix/hippo
 ```
 
-This adds the `hippo` executable to `./vendor/bin/hippo`. Make sure `./vendor/bin` is included in your `$PATH` environment variable, or run the executable directly.
+Composer will install Hippo executable in its `bin-dir` which defaults to `vendor/bin`.
 
 
 ## Quick Start
 
-1. **Create Configuration:** Create a `hippo.yml` configuration file and place it to your project root (see Configuration for details).
+1. **Initialize the configuration file for Hippo:**
+    ```sh
+    vendor/bin/hippo init
+    ```
+
+    Run this command to create a `hippo.yml` configuration file.
+
 2. **Build Filters:**
 
     ```sh
-    ./vendor/bin/hippo build
+    vendor/bin/hippo build
     ```
 
     This builds unified outputs from filter sources as defined in your config.
@@ -65,7 +71,7 @@ This adds the `hippo` executable to `./vendor/bin/hippo`. Make sure `./vendor/bi
 3. **Fix Existing Lists:**
 
     ```sh
-    ./vendor/bin/hippo fix
+    vendor/bin/hippo fix
     ```
 
     This tidies and optimizes the specified filter file or directory.
@@ -79,7 +85,7 @@ Hippo provides two main commands: `build` for merging sources and `fix` for opti
 Builds multiple source files into a single output file as defined in your `hippo.yml`, including metadata regeneration and stripping unnecessary lines such as comments.
 
 ```sh
-./vendor/bin/hippo build [options]
+vendor/bin/hippo build [options]
 ```
 
 #### Options:
@@ -90,7 +96,7 @@ Builds multiple source files into a single output file as defined in your `hippo
 Optimizes existing filter files or directories by cleaning syntax, sorting rules, and combining compatible patterns.
 
 ```sh
-./vendor/bin/hippo fix [options]
+vendor/bin/hippo fix [options]
 ```
 
 #### Options:
@@ -102,7 +108,7 @@ Optimizes existing filter files or directories by cleaning syntax, sorting rules
 
 ## Configuration
 
-Configure Hippo with a `hippo.yml` file in your project root.
+The configuration file should be a valid YAML file. The following options are available:
 
 ```yaml
 # cache_dir: .tmp
@@ -146,7 +152,7 @@ builder:
         - sources/tracking_domains-2.txt
 ```
 
-See [Configuration Reference](./docs/configuration.md) for more details.
+See [configuration reference](./docs/configuration.md) for more details.
 
 > [!NOTE]
 > You can delete any configurations you don't need. Hippo will use the default values ​​instead.

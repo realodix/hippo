@@ -2,6 +2,7 @@
 
 namespace Realodix\Hippo\Test\Feature;
 
+use PHPUnit\Framework\Attributes as PHPUnit;
 use Realodix\Hippo\Console\BuildCommand;
 use Realodix\Hippo\Test\TestCase;
 use Symfony\Component\Console\Application;
@@ -27,7 +28,7 @@ class BuilderTest extends TestCase
         $this->runBuildCommand();
 
         $this->assertFileEquals(
-            base_path('tests/Integration/Builder/compiled1.txt'),
+            base_path('tests/Integration/Builder/result/compiled1.txt'),
             base_path('tests/Integration/tmp/compiled1.txt'),
         );
     }
@@ -37,8 +38,30 @@ class BuilderTest extends TestCase
         $this->runBuildCommand();
 
         $this->assertFileEquals(
-            base_path('tests/Integration/Builder/compiled2.txt'),
+            base_path('tests/Integration/Builder/result/compiled2.txt'),
             base_path('tests/Integration/tmp/compiled2.txt'),
+        );
+    }
+
+    #[PHPUnit\Test]
+    public function date_modified_without_metadata()
+    {
+        $this->runBuildCommand();
+
+        $this->assertStringNotContainsString(
+            'Last modified:',
+            file_get_contents(base_path('tests/Integration/tmp/date_modified.txt')),
+        );
+    }
+
+    #[PHPUnit\Test]
+    public function date_modified_metadata_provided()
+    {
+        $this->runBuildCommand();
+
+        $this->assertStringContainsString(
+            'Last modified:',
+            file_get_contents(base_path('tests/Integration/tmp/date_modified_metadata_provided.txt')),
         );
     }
 }

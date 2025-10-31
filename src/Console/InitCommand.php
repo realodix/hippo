@@ -10,10 +10,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'setup',
+    name: 'init',
     description: 'Create a new hippo.yml file',
 )]
-class SetupCommand extends Command
+class InitCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -40,33 +40,34 @@ class SetupCommand extends Command
     private function createConfigFile(string $configFile): void
     {
         $content = <<<'YML'
-cache_dir: .tmp
+# cache_dir: .tmp
 
+# Settings for the `fix` command
 fixer:
-  # paths:
-  #   - ./
+  paths:
+    - folder_1/file.txt
+    - folder_2
   ignores:
-    - file.txt
+    - ignored_file.txt
     - some/path/to/file.txt
     - path/to/source
 
+# Settings for the `build` command
 builder:
-  # output_dir: dist
+  output_dir: dist
   filter_list:
-    # First filter list
-    - filename: general_blocklist.txt
-      # remove_duplicates: true
+    - filename: general_blocklist.txt # Required
+      remove_duplicates: true
       metadata:
-        # header: Adblock Plus 2.0
+        header: Adblock Plus 2.0
         title: General Blocklist
-        # date_modified: false
-        # version: true
-        # custom: |
-        #   Description: Filter list that specifically removes adverts.
-        #   Expires: 6 days (update frequency)
-        #   Homepage: https://example.org/
-        #   License: MIT
-      source:
+        version: true
+        custom: |
+          Description: Filter list that specifically removes adverts.
+          Expires: 6 days (update frequency)
+          Homepage: https://example.org/
+          License: MIT
+      source: # Required
         - blocklists/general/local-rules.txt
         - https://cdn.example.org/blocklists/general.txt
 YML;

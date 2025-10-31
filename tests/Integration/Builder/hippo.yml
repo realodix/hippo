@@ -25,3 +25,11 @@ builder:
       source:
         - tests/Integration/Builder/filter1.txt
         - tests/Integration/Builder/filter2.txt
+    - filename: date_modified.txt
+      source:
+        - tests/Integration/Builder/filter1.txt
+    - filename: date_modified_metadata_provided.txt
+      metadata:
+        title: date_modified_metadata_provided
+      source:
+        - tests/Integration/Builder/filter1.txt

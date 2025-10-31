@@ -44,7 +44,7 @@ final readonly class FilterSet
     public function metadata(): array
     {
         $defautl = [
-            'date_modified' => true,
+            'date_modified' => !empty($this->metadata) ? true : false,
             'header' => '',
             'title' => '',
             'version' => false,
