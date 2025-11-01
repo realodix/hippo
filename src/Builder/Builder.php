@@ -107,9 +107,9 @@ final class Builder
 
             if (filter_var($path, FILTER_VALIDATE_URL)) {
                 $context = stream_context_create(['http' => ['timeout' => 5]]);
-                $data = @file_get_contents($path, false, $context) ?: null;
+                $data = @file($path, 0, $context) ?: null;
             } elseif (file_exists($path)) {
-                $data = $this->filesystem->readFile($path);
+                $data = file($path);
             }
 
             if ($data === null) {
@@ -121,7 +121,7 @@ final class Builder
             $text[] = $data;
         }
 
-        return $text;
+        return Arr::flatten($text);
     }
 
     /**

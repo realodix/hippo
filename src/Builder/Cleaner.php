@@ -17,16 +17,15 @@ final class Cleaner
     public static function clean(array $text, bool $unique): array
     {
         return collect($text)
-            ->map(function (string $content) {
+            ->flatMap(function (string $content) {
                 $content = self::removeMetadataAgent($content);
                 $content = self::removeComment($content);
-                $content = self::removeEmptyLines($content);
+                $content = rtrim($content);
 
-                return rtrim($content);
+                return $content === '' ? [] : [$content];
             })->when($unique, function ($collection) {
-                return $collection->flatMap(fn($content) => explode("\n", $content))
-                    ->unique()->values();
-            })->all();
+                return $collection->unique();
+            })->values()->all();
     }
 
     /**
@@ -62,13 +61,5 @@ final class Cleaner
     private static function removeComment(string $content): string
     {
         return Preg::replace('/^!(?!#\s?(?:include\s|if|endif|else)).*/m', '', $content);
-    }
-
-    /**
-     * Remove empty lines.
-     */
-    private static function removeEmptyLines(string $content): string
-    {
-        return Preg::replace('/^\h*\v+/m', '', $content);
     }
 }
