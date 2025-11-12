@@ -11,10 +11,10 @@ final class Combiner
     /**
      * Combines domains for (further) identical rules.
      *
-     * @param array<int, string> $filters The filter rules.
-     * @param string $domainPattern The regex pattern to extract the domain part.
-     * @param string $separator The separator character used between domains (`,` or `|`).
-     * @return array<int, string> Combined filter rules.
+     * @param array<string> $filters The filter rules
+     * @param string $domainPattern The regex pattern to extract the domain part
+     * @param string $separator The separator character used between domains (`,` or `|`)
+     * @return array<string> Combined filter rules
      */
     public function handle(array $filters, string $domainPattern, string $separator): array
     {

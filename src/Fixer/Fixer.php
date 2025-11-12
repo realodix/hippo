@@ -2,11 +2,11 @@
 
 namespace Realodix\Hippo\Fixer;
 
-use Realodix\Hippo\App;
 use Realodix\Hippo\Cache\Cache;
 use Realodix\Hippo\Config\Config;
 use Realodix\Hippo\Console\OutputLogger;
 use Realodix\Hippo\Enums\Mode;
+use Realodix\Hippo\Enums\Scope;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 
@@ -30,7 +30,7 @@ final class Fixer
      */
     public function handle(Mode $mode, ?string $path, ?string $cachePath, ?string $configFile): void
     {
-        $config = $this->config->loadFromFile($configFile, ['cache_dir' => $cachePath]);
+        $config = $this->config->load($configFile, Scope::F, ['cache_dir' => $cachePath]);
         $fixerConfig = $config->fixer($path ? ['paths' => [$path]] : []);
 
         $this->cache->prepareForRun($fixerConfig->paths, $config->cacheDir, $mode);
@@ -85,7 +85,7 @@ final class Fixer
      * Write processed content to a file.
      *
      * @param string $filePath Path to file
-     * @param array<int, string> $content Processed content
+     * @param array<string> $content Processed content
      *
      * @throws \Symfony\Component\Filesystem\Exception\IOException
      */

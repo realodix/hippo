@@ -13,7 +13,7 @@ final class Metadata
      * the metadata array.
      *
      * @param array<string, mixed> $data
-     * @return array<int, string> The built metadata array.
+     * @return array<string> The built metadata array
      */
     public function build($data): array
     {
@@ -27,7 +27,7 @@ final class Metadata
             ->when($this->header($data['header']), fn($c, $h) => $c->prepend($h))
             ->filter(); // Remove empty values from the array
 
-        return $metadata->toArray();
+        return $metadata->all();
     }
 
     private function header(string $value): string
@@ -74,7 +74,7 @@ final class Metadata
     }
 
     /**
-     * @return array<int, string>
+     * @return array<string>
      */
     private function custom(string $data): array
     {

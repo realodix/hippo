@@ -24,8 +24,8 @@ final class Processor
      * sections, processes each section individually, and then concatenates
      * the results.
      *
-     * @param array<int, string> $lines An array of raw filter lines.
-     * @return array<int, string> The processed and optimized list of filter lines.
+     * @param array<string> $lines An array of raw filter lines
+     * @return array<string> The processed and optimized list of filter lines
      */
     public function process(array $lines): array
     {
@@ -72,8 +72,8 @@ final class Processor
     /**
      * Writes and combines a section of tidied rules, sorting them based on rule type.
      *
-     * @param array<int, string> $section Array of tidied filter rules.
-     * @return array<int, string> The processed lines for the section.
+     * @param array<string> $section Array of tidied filter rules
+     * @return array<string> The processed lines for the section
      */
     private function writeFilters(array $section): array
     {

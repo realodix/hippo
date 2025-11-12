@@ -7,12 +7,12 @@ use Symfony\Component\Finder\Finder;
 
 final class FixerConfig
 {
-    /** @var array<int, string> */
+    /** @var array<string> */
     public array $paths;
 
     /**
-     * @param array<string, array<int, string>> $config
-     * @param array{paths?: array<int, string>} $overrides
+     * @param array<string, array<string>> $config
+     * @param array{paths?: array<string>} $overrides
      */
     public function make(array $config, array $overrides): self
     {
@@ -25,9 +25,9 @@ final class FixerConfig
     }
 
     /**
-     * @param array<int, string> $paths
-     * @param array<int, string> $ignores Excludes files by path
-     * @return array<int, string>
+     * @param array<string> $paths
+     * @param array<string> $ignores Excludes files by path
+     * @return array<string>
      */
     private function paths(array $paths, array $ignores): array
     {
@@ -57,7 +57,7 @@ final class FixerConfig
 
     /**
      * @param string $dir The directory to use for the search
-     * @param array<int, string> $ignores Excludes files by path
+     * @param array<string> $ignores Excludes files by path
      * @return \Symfony\Component\Finder\Finder
      */
     public function finder(string $dir, array $ignores)

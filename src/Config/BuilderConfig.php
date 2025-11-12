@@ -20,13 +20,15 @@ final class BuilderConfig
     /**
      * @param array{
      *  output_dir?: string,
-     *  filter_list?: array<array<string, mixed>>
+     *  filter_list: list<array<string, mixed>>
      * } $config
      */
     public function make(array $config): self
     {
+        $this->validate($config);
+
         $this->outputDir = $this->outputDir($config['output_dir'] ?? null);
-        $this->filterSet = $this->filterSets($config['filter_list'] ?? []);
+        $this->filterSet = $this->filterSets($config['filter_list']);
 
         return $this;
     }
@@ -67,7 +69,7 @@ final class BuilderConfig
     /**
      * Resolves the filter list configuration for each filter list.
      *
-     * @param array<array<string, mixed>> $filterLists
+     * @param list<array<string, mixed>> $filterLists
      * @return list<FilterSet>
      */
     private function filterSets(array $filterLists): array
@@ -76,12 +78,41 @@ final class BuilderConfig
         foreach ($filterLists as $list) {
             $filters[] = new FilterSet(
                 outputPath: Path::join($this->outputDir, $list['filename']),
-                source: $list['source'] ?? [],
+                source: $list['source'],
                 metadata: $list['metadata'] ?? [],
                 unique: $list['remove_duplicates'] ?? false,
             );
         }
 
         return $filters;
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    private function validate(array $config): void
+    {
+        if (empty($config['filter_list'])) {
+            throw new InvalidConfigurationException(
+                "The 'builder > filter_list' configuration is missing.",
+            );
+        }
+
+        $index = 0;
+        foreach ($config['filter_list'] as $list) {
+            $index++;
+            if (empty($list['filename'])) {
+                throw new InvalidConfigurationException(
+                    "The 'builder > filter_list > $index > filename' configuration is missing.",
+                );
+            }
+
+            if (empty($list['source'])) {
+                throw new InvalidConfigurationException(sprintf(
+                    "The 'builder > filter_list > source' configuration of '%s' is missing.",
+                    basename($list['filename']),
+                ));
+            }
+        }
     }
 }

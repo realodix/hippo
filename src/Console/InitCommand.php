@@ -18,7 +18,7 @@ class InitCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $filename = Config::FILENAME;
+        $filename = Config::DEFAULT_FILENAME;
 
         $configFile = base_path($filename);
 

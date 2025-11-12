@@ -37,7 +37,7 @@ final class NetworkTidy
     }
 
     /**
-     * @return array<string, array<int, string>>
+     * @return array<string, array<string>>
      */
     private function parseOptions(string $rawOptions): array
     {
@@ -86,7 +86,7 @@ final class NetworkTidy
     }
 
     /**
-     * @param array<string, array<int, string>> $parsedOptions
+     * @param array<string, array<string>> $parsedOptions
      * @return \Illuminate\Support\Collection<int, string>
      */
     private function buildSortedOptionList(array $parsedOptions)

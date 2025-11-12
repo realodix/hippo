@@ -26,14 +26,13 @@ final class Cache
      * - If not forced: clean stale entries (files that no longer exist)
      * - If forced: clear entire cache, but only once per run
      *
-     * @param array<int, string> $validKeys $validKeys A valid keys to keep
+     * @param array<string> $validKeys $validKeys A valid keys to keep
      * @param string|null $storagePath The path where the cache is stored
      */
     public function prepareForRun(array $validKeys, ?string $storagePath, Mode $mode, Scope $scope = Scope::F): void
     {
-        $resolvedCachePath = $this->resolveCachePath($storagePath);
         $this->repository()
-            ->setCacheFile($resolvedCachePath)
+            ->setCacheFile($this->resolvePath($storagePath))
             ->setScope($scope)
             ->load();
 
@@ -76,7 +75,7 @@ final class Cache
     /**
      * Remove cache entries that are no longer valid.
      *
-     * @param array<int, string> $validKeys A valid keys to keep
+     * @param array<string> $validKeys A valid keys to keep
      */
     private function cleanStaleEntries(array $validKeys): void
     {
@@ -111,23 +110,22 @@ final class Cache
     /**
      * Resolves the cache file path and ensures its directory exists.
      *
-     * @param string|null $cachePath The user-provided cache directory path (can be
-     *                               relative, absolute, or null)
+     * @param string|null $path Optional cache directory path (can be relative, absolute, or null)
      * @return string The absolute path to the final cache file
      */
-    private function resolveCachePath(?string $cachePath): string
+    private function resolvePath(?string $path): string
     {
         // 1. Default: no path provided -> use default cache file in baseDir
-        if (empty($cachePath)) {
-            return Repository::DEFAULT_CACHE_FILENAME;
+        if (empty($path)) {
+            return Repository::DEFAULT_FILENAME;
         }
 
-        $resolvedPath = Path::canonicalize($cachePath);
+        $resolvedPath = Path::canonicalize($path);
 
         // 2. If exists, determine type
         if ($this->fs->exists($resolvedPath)) {
             return is_dir($resolvedPath)
-                ? Path::join($resolvedPath, Repository::DEFAULT_CACHE_FILENAME)
+                ? Path::join($resolvedPath, Repository::DEFAULT_FILENAME)
                 : $resolvedPath;
         }
 
@@ -150,6 +148,6 @@ final class Cache
         // 5. Otherwise treat as directory (covers .tmp, .cache, .env and regular names)
         $this->fs->mkdir($resolvedPath);
 
-        return Path::join($resolvedPath, Repository::DEFAULT_CACHE_FILENAME);
+        return Path::join($resolvedPath, Repository::DEFAULT_FILENAME);
     }
 }

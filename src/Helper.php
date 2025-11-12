@@ -13,10 +13,16 @@ final class Helper
      */
     public static function uniqueSorted(array $value, ?callable $sortBy = null)
     {
-        return collect($value)
+        $c = collect($value)
             ->filter(fn($s) => $s !== '')
-            ->unique()
-            ->sortBy($sortBy)
-            ->values();
+            ->unique();
+
+        if (is_callable($sortBy)) {
+            $c = $c->sortBy($sortBy);
+        } else {
+            $c = $c->sort();
+        }
+
+        return $c->values();
     }
 }

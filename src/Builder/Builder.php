@@ -29,7 +29,7 @@ final class Builder
     public function handle(bool $force, ?string $configFile): void
     {
         $mode = $force ? Mode::Force : Mode::Default;
-        $config = $this->config->loadFromFile($configFile);
+        $config = $this->config->load($configFile, Scope::B);
         $filterSets = $config->builder()->filterSet;
 
         // Prepare cache repository for this run
@@ -79,9 +79,9 @@ final class Builder
     /**
      * Writes the final output file from sources and metadata, and updates cache.
      *
-     * @param string $outputPath The path to the output file.
-     * @param array<int, string> $content Source contents.
-     * @param string $sourceHash The hash representing the current source state.
+     * @param string $outputPath The path to the output file
+     * @param array<string> $content Source contents
+     * @param string $sourceHash The hash representing the current source state
      *
      * @throws \Symfony\Component\Filesystem\Exception\IOException
      */
@@ -96,8 +96,8 @@ final class Builder
     /**
      * Reads all source files or URLs defined in the configuration.
      *
-     * @param array<int, string> $paths
-     * @return array<int, string>|null Source contents, or null if a read fails.
+     * @param array<string> $paths
+     * @return array<string>|null Source contents, or null if a read fails.
      */
     private function readSources($paths): ?array
     {
@@ -128,7 +128,7 @@ final class Builder
     /**
      * Generates a global hash representing all source contents combined.
      *
-     * @param array<int, string> $sources Source contents.
+     * @param array<string> $sources Source contents.
      * @return string A hash that uniquely represents the current source state.
      */
     private function sourceHash(array ...$sources): string

@@ -2,14 +2,12 @@
 
 namespace Realodix\Hippo\Cache;
 
-use Illuminate\Container\Attributes\Singleton;
 use Realodix\Hippo\Enums\Scope;
 use Symfony\Component\Filesystem\Filesystem;
 
-#[Singleton]
 final class Repository
 {
-    const DEFAULT_CACHE_FILENAME = '.hippo_cache.json';
+    const DEFAULT_FILENAME = '.hippo_cache.json';
 
     /**
      * The array of stored values.
@@ -18,7 +16,7 @@ final class Repository
      */
     private array $storage = [];
 
-    private string $cachePath = self::DEFAULT_CACHE_FILENAME;
+    private string $cachePath = self::DEFAULT_FILENAME;
 
     private string $scope = Scope::F->value;
 

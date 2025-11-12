@@ -41,7 +41,7 @@ class CacheTest extends TestCase
     public function testResolveCachePathAllScenarios(): void
     {
         $baseDir = Path::join($this->tmpDir, 'ResolveCachePath');
-        $defaultCacheFile = Repository::DEFAULT_CACHE_FILENAME;
+        $defaultCacheFile = Repository::DEFAULT_FILENAME;
 
         $cases = [
             // Input, Expected output (relative to baseDir if applicable)
@@ -65,7 +65,7 @@ class CacheTest extends TestCase
             $inputPath = $input === null ? null : Path::join($baseDir, $input);
 
             // 3. Assertion
-            $actual = $this->callPrivateMethod($this->cache, 'resolveCachePath', [$inputPath]);
+            $actual = $this->callPrivateMethod($this->cache, 'resolvePath', [$inputPath]);
             $this->assertSame($expected, $actual, 'Failed for input: '.var_export($input, true));
         }
 
