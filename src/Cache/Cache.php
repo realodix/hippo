@@ -110,7 +110,7 @@ final class Cache
     /**
      * Resolves the cache file path and ensures its directory exists.
      *
-     * @param string|null $path Optional cache directory path (can be relative, absolute, or null)
+     * @param string|null $path Custom cache directory path (can be relative, absolute, or null)
      * @return string The absolute path to the final cache file
      */
     private function resolvePath(?string $path): string

@@ -11,13 +11,13 @@ final class FixerConfig
     public array $paths;
 
     /**
-     * @param array<string, array<string>> $config
-     * @param array{paths?: array<string>} $overrides
+     * @param array<string, array<string>> $config User-defined configuration from the config file
+     * @param array{paths?: array<string>} $custom Custom configuration from the CLI
      */
-    public function make(array $config, array $overrides): self
+    public function make(array $config, array $custom): self
     {
         $this->paths = $this->paths(
-            $overrides['paths'] ?? $config['paths'] ?? [],
+            $custom['paths'] ?? $config['paths'] ?? [],
             $config['ignores'] ?? [],
         );
 

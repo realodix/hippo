@@ -25,60 +25,67 @@ final class Fixer
      *
      * @param \Realodix\Hippo\Enums\Mode $mode Processing mode
      * @param string|null $path File or directory path to process
-     * @param string|null $cachePath Optional path to the cache file or directory
-     * @param string|null $configFile Optional path to the configuration file
+     * @param string|null $cachePath Custom path to the cache file
+     * @param string|null $configFile Custom path to the configuration file
      */
     public function handle(Mode $mode, ?string $path, ?string $cachePath, ?string $configFile): void
     {
-        $config = $this->config->load($configFile, Scope::F, ['cache_dir' => $cachePath]);
+        $config = $this->config->load(Scope::F, $configFile);
         $fixerConfig = $config->fixer($path ? ['paths' => [$path]] : []);
 
-        $this->cache->prepareForRun($fixerConfig->paths, $config->cacheDir, $mode);
+        $this->cache->prepareForRun(
+            $fixerConfig->paths,
+            $cachePath ?? $config->cacheDir,
+            $mode,
+        );
 
         foreach ($fixerConfig->paths as $path) {
-            if (!is_readable($path)) {
-                $this->logger->error("Cannot read: {$path}");
+            $path = Path::canonicalize($path);
+            $content = $this->read($path);
+            if ($content === null) {
+                continue;
+            }
+
+            $contentHash = $this->hash(implode("\n", $content)."\n");
+            if (
+                $this->cache->isValid($path, $contentHash)
+                || trim(implode($content)) === '' // empty file
+            ) {
+                $this->logger->skipped($path);
 
                 continue;
             }
 
-            $this->processFile($path);
+            $this->logger->processing($path);
+            $this->write($path, $this->processor->process($content));
+            $this->logger->processed($path);
         }
 
         $this->cache->repository()->save();
     }
 
     /**
-     * Process a single file, using block-based cache or force mode.
+     * Read file content.
      *
      * @param string $filePath Path to file
+     * @return array<string>|null
      */
-    private function processFile(string $filePath): void
+    private function read(string $filePath): ?array
     {
-        $filePath = Path::canonicalize($filePath);
-        $rawContent = file($filePath, FILE_IGNORE_NEW_LINES);
+        if (!is_readable($filePath)) {
+            $this->logger->error("Cannot read: {$filePath}");
 
+            return null;
+        }
+
+        $rawContent = file($filePath, FILE_IGNORE_NEW_LINES);
         if ($rawContent === false) {
             $this->logger->error("Failed to read file: {$filePath}");
 
-            return;
+            return null;
         }
 
-        $rawContentHash = $this->hash(implode("\n", $rawContent)."\n");
-        if (
-            $this->cache->isValid($filePath, $rawContentHash)
-            || trim(implode($rawContent)) === '' // empty file
-        ) {
-            $this->logger->skipped($filePath);
-
-            return;
-        }
-
-        $this->logger->processing($filePath);
-
-        $this->write($filePath, $this->processor->process($rawContent));
-
-        $this->logger->processed($filePath);
+        return $rawContent;
     }
 
     /**

@@ -21,7 +21,7 @@ final class BuilderConfig
      * @param array{
      *  output_dir?: string,
      *  filter_list: list<array<string, mixed>>
-     * } $config
+     * } $config User-defined configuration from the config file
      */
     public function make(array $config): self
     {

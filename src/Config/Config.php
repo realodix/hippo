@@ -25,17 +25,16 @@ final class Config
     ) {}
 
     /**
-     * @param string|null $path Optional path to the configuration file
-     * @param array<string, string|null> $overrides Optional configuration overrides
+     * @param string|null $path Custom path to the configuration file
      */
-    public function load(?string $path, Scope $scope, array $overrides = []): self
+    public function load(Scope $scope, ?string $path): self
     {
         $config = Yaml::parseFile($this->resolvePath($path));
 
         $this->validate($config, $scope);
 
         $this->config = $config;
-        $this->cacheDir = $overrides['cache_dir'] ?? $config['cache_dir'] ?? null;
+        $this->cacheDir = $config['cache_dir'] ?? null;
 
         return $this;
     }
@@ -50,11 +49,11 @@ final class Config
     }
 
     /**
-     * @param array{paths?: array<string>} $overrides
+     * @param array{paths?: array<string>} $custom Custom configuration from the CLI
      */
-    public function fixer(array $overrides): FixerConfig
+    public function fixer(array $custom): FixerConfig
     {
-        return $this->fixer->make($this->config['fixer'] ?? [], $overrides);
+        return $this->fixer->make($this->config['fixer'] ?? [], $custom);
     }
 
     /**
@@ -63,7 +62,7 @@ final class Config
      * If no configuration file is specified, it defaults to the path of the
      * `hippo.yml` file.
      *
-     * @param string|null $path Optional path to the configuration file
+     * @param string|null $path Custom path to the configuration file
      */
     private function resolvePath(?string $path): string
     {

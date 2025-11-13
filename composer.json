@@ -6,7 +6,7 @@
     "authors": [{"name": "Budi Hermawan", "role": "Developer"}],
     "homepage": "https://github.com/realodix/hippo",
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "composer/pcre": "^3.3",
         "illuminate/container": "^12.38",
         "illuminate/support": "^12.38",

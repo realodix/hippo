@@ -24,12 +24,12 @@ final class Builder
      * Main entry point for building filter lists.
      *
      * @param bool $force If true, forces rebuild even when cache is valid
-     * @param string|null $configFile Optional path to the configuration file
+     * @param string|null $configFile Custom path to the configuration file
      */
     public function handle(bool $force, ?string $configFile): void
     {
         $mode = $force ? Mode::Force : Mode::Default;
-        $config = $this->config->load($configFile, Scope::B);
+        $config = $this->config->load(Scope::B, $configFile);
         $filterSets = $config->builder()->filterSet;
 
         // Prepare cache repository for this run
@@ -45,7 +45,7 @@ final class Builder
             $outputPath = $filterSet->outputPath;
 
             // Step 1: Read all source files or URLs
-            $rawContent = $this->readSources($filterSet->source);
+            $rawContent = $this->read($filterSet->source);
             if ($rawContent === null) {
                 $this->logger->skipped($outputPath);
 
@@ -55,7 +55,7 @@ final class Builder
             $content = Cleaner::clean($rawContent, $filterSet->unique);
 
             // Step 2: Generate a single hash from all source contents
-            $sourceHash = $this->sourceHash($content, Arr::flatten($filterSet->metadata()));
+            $sourceHash = $this->sourceHash($content, $filterSet->metadata());
 
             // Step 3: Skip processing if cache is still valid
             if (!$force && $this->cache->isValid($outputPath, $sourceHash)) {
@@ -65,15 +65,45 @@ final class Builder
             }
 
             // Step 4: Build and write output file
-            $this->write(
-                $outputPath,
-                array_merge($this->metadata->build($filterSet->metadata()), $content),
-                $sourceHash,
-            );
+            $finalContent = array_merge($this->metadata->build($filterSet->metadata()), $content);
+            $this->write($outputPath, $finalContent, $sourceHash);
+            $this->logger->processed($outputPath);
         }
 
         // Save all updated cache entries to disk
         $this->cache->repository()->save();
+    }
+
+    /**
+     * Reads all source files or URLs defined in the configuration.
+     *
+     * @param array<string> $paths
+     * @return array<string>|null Source contents, or null if a read fails.
+     */
+    private function read($paths): ?array
+    {
+        $text = [];
+
+        foreach ($paths as $path) {
+            $data = null;
+
+            if (filter_var($path, FILTER_VALIDATE_URL)) {
+                $context = stream_context_create(['http' => ['timeout' => 5]]);
+                $data = @file($path, 0, $context) ?: null;
+            } elseif (is_readable($path)) {
+                $data = file($path);
+            }
+
+            if ($data === null) {
+                $this->logger->error('Failed to read: '.$path);
+
+                return null;
+            }
+
+            $text[] = $data;
+        }
+
+        return Arr::flatten($text);
     }
 
     /**
@@ -88,41 +118,8 @@ final class Builder
     private function write(string $outputPath, array $content, string $sourceHash): void
     {
         $this->fs->dumpFile($outputPath, implode("\n", $content)."\n");
-        $this->logger->processed($outputPath);
 
         $this->cache->set($outputPath, $sourceHash);
-    }
-
-    /**
-     * Reads all source files or URLs defined in the configuration.
-     *
-     * @param array<string> $paths
-     * @return array<string>|null Source contents, or null if a read fails.
-     */
-    private function readSources($paths): ?array
-    {
-        $text = [];
-
-        foreach ($paths as $path) {
-            $data = null;
-
-            if (filter_var($path, FILTER_VALIDATE_URL)) {
-                $context = stream_context_create(['http' => ['timeout' => 5]]);
-                $data = @file($path, 0, $context) ?: null;
-            } elseif (file_exists($path)) {
-                $data = file($path);
-            }
-
-            if ($data === null) {
-                $this->logger->error($path.' not found');
-
-                return null;
-            }
-
-            $text[] = $data;
-        }
-
-        return Arr::flatten($text);
     }
 
     /**
