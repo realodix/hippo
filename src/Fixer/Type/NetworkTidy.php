@@ -8,6 +8,25 @@ use Realodix\Hippo\Helper;
 final class NetworkTidy
 {
     /**
+     * A list of options that can have multiple values.
+     *
+     * @var array<string>
+     */
+    const MULTI_VALUE_OPTIONS = [
+        'domain', 'from', 'to', 'denyallow', 'method',
+    ];
+
+    /**
+     * A list of options that have case-sensitive values.
+     *
+     * @var array<string>
+     */
+    const CASE_SENSITIVE_VALUE_OPTIONS = [
+        'csp', 'permissions', 'removeparam', 'replace', 'urltransform',
+        'cookie', 'hls',
+    ];
+
+    /**
      * Tidies a network filter rule by normalizing options and sorting domains.
      *
      * @param string $line The raw network filter line
@@ -28,10 +47,8 @@ final class NetworkTidy
         }
 
         $filterText = $this->removeUnnecessaryWildcard($m[1]);
-        $rawOptions = $m[2];
-
-        $parsedOptions = $this->parseOptions($rawOptions);
-        $optionList = $this->buildSortedOptionList($parsedOptions);
+        $filterOptions = $this->parseOptions($m[2]);
+        $optionList = $this->buildOptionList($filterOptions);
 
         return $filterText.'$'.$optionList->implode(',');
     }
@@ -41,16 +58,11 @@ final class NetworkTidy
      */
     private function parseOptions(string $rawOptions): array
     {
-        $parsed = [
-            'domain' => [], 'from' => [], 'to' => [], 'denyallow' => [],
-            'method' => [],
-            'otherOpts' => [],
-        ];
-
-        $caseSensitiveValueOptions = [
-            'cookie', 'hls', 'removeparam', 'replace', 'urltransform',
-            'permissions', 'csp',
-        ];
+        // Initialize an empty array
+        $parsed = ['genericOpts' => []];
+        foreach (self::MULTI_VALUE_OPTIONS as $key) {
+            $parsed[$key] = [];
+        }
 
         foreach (Preg::split('/(?<!\\\),/', $rawOptions) as $option) {
             $parts = explode('=', $option, 2);
@@ -60,25 +72,25 @@ final class NetworkTidy
             $name = ltrim($nameWithPrefix, '~');
             $lowerName = strtolower($name);
 
-            if (in_array($lowerName, ['domain', 'from', 'to', 'denyallow'])) {
+            if (in_array($lowerName, self::MULTI_VALUE_OPTIONS)) {
                 if ($value !== null) {
-                    array_push($parsed[$lowerName], ...explode('|', strtolower($value)));
+                    // if it's not a regex, make it lowercase
+                    if (!str_contains($value, '/')) {
+                        $value = strtolower($value);
+                    }
+
+                    array_push($parsed[$lowerName], ...explode('|', $value));
                 }
-            } elseif ($lowerName === 'method') {
-                if ($value !== null) {
-                    array_push($parsed['method'], ...explode('|', strtolower($value)));
-                }
-            } elseif (in_array($lowerName, $caseSensitiveValueOptions, true)) {
+            } elseif (in_array($lowerName, self::CASE_SENSITIVE_VALUE_OPTIONS, true)) {
                 // Lowercase the name, preserve value
                 $newNameWithPrefix = str_replace($name, $lowerName, $nameWithPrefix);
-                $otherOption = $newNameWithPrefix;
                 if ($value !== null) {
-                    $otherOption .= '='.$value;
+                    $newNameWithPrefix .= '='.$value;
                 }
-                $parsed['otherOpts'][] = $otherOption;
+                $parsed['genericOpts'][] = $newNameWithPrefix;
             } else {
                 // Lowercase the whole option
-                $parsed['otherOpts'][] = strtolower($option);
+                $parsed['genericOpts'][] = strtolower($option);
             }
         }
 
@@ -86,26 +98,23 @@ final class NetworkTidy
     }
 
     /**
-     * @param array<string, array<string>> $parsedOptions
+     * Builds and sorts the list of filter options from parsed data.
+     *
+     * @param array<string, array<string>> $options Parsed options from parseOptions()
      * @return \Illuminate\Support\Collection<int, string>
      */
-    private function buildSortedOptionList(array $parsedOptions)
+    private function buildOptionList(array $options)
     {
-        $optionList = $parsedOptions['otherOpts'];
+        $optionList = $options['genericOpts'];
 
         // Add back the consolidated domain-like options.
-        foreach (['domain', 'from', 'to', 'denyallow'] as $name) {
-            if (!empty($parsedOptions[$name])) {
+        foreach (self::MULTI_VALUE_OPTIONS as $name) {
+            if (!empty($options[$name])) {
                 $optionList[] = $name.'='.Helper::uniqueSorted(
-                    $parsedOptions[$name],
+                    $options[$name],
                     fn($s) => ltrim((string) $s, '~'),
                 )->implode('|');
             }
-        }
-
-        // Add back the consolidated method option.
-        if (!empty($parsedOptions['method'])) {
-            $optionList[] = 'method='.Helper::uniqueSorted($parsedOptions['method'])->implode('|');
         }
 
         return Helper::uniqueSorted(
@@ -209,6 +218,7 @@ final class NetworkTidy
         // if ($allowlist) {
         //     $filterText = '@@' . $filterText;
         // }
+
         return $filterText;
     }
 }

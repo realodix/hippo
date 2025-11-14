@@ -82,22 +82,6 @@ trait NetworkProvider
                     '||example.org^$urltransform=/RegeXP/i',
                 ],
             ],
-            'with other options' => [
-                [
-                    '||example.org^$cookie=NAME;maxAge=3600;sameSite=lax,dOmAIn=A.cOm',
-                    '||example.org^$hLs=/RegeXP/,dOmAIn=A.cOm',
-                    '||example.org^$remoVEpAram=~/RegeXP/,dOmAIn=A.cOm',
-                    '||example.org^$rEplAcE=/(<VAST[\s\S]*?>)[\s\S]*<\/VAST>/\$1<\/VAST>/i,dOmAIn=A.cOm',
-                    '||example.org^$urltransform=/RegeXP/i,dOmAIn=A.cOm',
-                ],
-                [
-                    '||example.org^$cookie=NAME;maxAge=3600;sameSite=lax,domain=a.com',
-                    '||example.org^$hls=/RegeXP/,domain=a.com',
-                    '||example.org^$removeparam=~/RegeXP/,domain=a.com',
-                    '||example.org^$replace=/(<VAST[\s\S]*?>)[\s\S]*<\/VAST>/\$1<\/VAST>/i,domain=a.com',
-                    '||example.org^$urltransform=/RegeXP/i,domain=a.com',
-                ],
-            ],
         ];
     }
 }

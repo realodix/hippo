@@ -43,7 +43,7 @@ final class Processor
             if ($this->isSpecialLine($line)) {
                 // Write current section if it exists and reset counters
                 if ($section) {
-                    $result = array_merge($result, $this->writeFilters($section));
+                    $result = array_merge($result, $this->processSection($section));
                     $section = [];
                 }
 
@@ -63,19 +63,20 @@ final class Processor
 
         // Write any remaining section
         if ($section) {
-            $result = array_merge($result, $this->writeFilters($section));
+            $result = array_merge($result, $this->processSection($section));
         }
 
         return $result;
     }
 
     /**
-     * Writes and combines a section of tidied rules, sorting them based on rule type.
+     * Processes a section of filter rules by normalizing, sorting, de-duplicating
+     * and combining them into their final form.
      *
-     * @param array<string> $section Array of tidied filter rules
+     * @param array<string> $section Tidied filter rules
      * @return array<string> The processed lines for the section
      */
-    private function writeFilters(array $section): array
+    private function processSection(array $section): array
     {
         $cosmeticFilters = [];
         $networkFilters = [];

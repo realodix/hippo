@@ -28,17 +28,17 @@ class NetworkTest extends TestCase
             '||example.com^$domain=a.com',
             '||example.com^$domain=b.com',
             '!',
-            '$domain=example.org|example.com,permissions=storage-access=()\, camera=(),image',
-            '$permissions=storage-access=()\, camera=(),domain=example.org|example.com,image',
-            '$domain=example.org|example.com,permissions=storage-access=(),image',
-            '$permissions=storage-access=()\, camera=(),domain=example.org|example.com,image',
+            '$domain=b.com|a.com,permissions=storage-access=()\, camera=(),image',
+            '$permissions=storage-access=()\, camera=(),domain=b.com|a.com,image',
+            '$domain=b.com|a.com,permissions=storage-access=(),image',
+            '$permissions=storage-access=()\, camera=(),domain=b.com|a.com,image',
         ];
         $expected = [
             '-banner-$image,domain=a.com|b.com',
             '||example.com^$domain=a.com|b.com',
             '!',
-            '$image,permissions=storage-access=(),domain=example.com|example.org',
-            '$image,permissions=storage-access=()\, camera=(),domain=example.com|example.org',
+            '$image,permissions=storage-access=(),domain=a.com|b.com',
+            '$image,permissions=storage-access=()\, camera=(),domain=a.com|b.com',
         ];
         $this->assertSame($expected, $this->processor->process($input));
     }
@@ -147,6 +147,39 @@ class NetworkTest extends TestCase
         $this->assertSame($expected, $this->processor->process($input));
     }
 
+    #[PHPUnit\Test]
+    public function lowercase_the_option_name(): void
+    {
+        $input = ['||example.com^$ALL'];
+        $expected = ['||example.com^$all'];
+        $this->assertSame($expected, $this->processor->process($input));
+    }
+
+    #[PHPUnit\Test]
+    public function lowercase_the_option_values(): void
+    {
+        $input = [
+            '$DENYALLOW=ExamPle.Com',
+            '$DOMAIN=ExamPle.Com',
+            '$FROM=ExamPle.Com',
+            '$METHOD=ExamPle.Com',
+            '$TO=ExamPle.Com',
+        ];
+
+        $this->assertSame(array_map('strtolower', $input), $this->processor->process($input));
+
+        // regex, no change
+        $input = [
+            '$denyallow=/[A-Z-a-z-09]+/',
+            '$domain=/[A-Z-a-z-09]+/',
+            '$from=/[A-Z-a-z-09]+/',
+            '$method=/[A-Z-a-z-09]+/',
+            '$to=/[A-Z-a-z-09]+/',
+        ];
+
+        $this->assertSame($input, $this->processor->process($input));
+    }
+
     #[PHPUnit\DataProvider('lowercase_the_option_name_preserve_value_provider')]
     #[PHPUnit\Test]
     public function lowercase_the_option_name_preserve_value(array $input, array $expected): void
@@ -164,8 +197,8 @@ class NetworkTest extends TestCase
     #[PHPUnit\Test]
     public function optPermissions_option_is_handled(): void
     {
-        $input = ['$permissions=storage-access=(),domain=example.org|example.com,image'];
-        $expected = ['$image,permissions=storage-access=(),domain=example.com|example.org'];
+        $input = ['$permissions=storage-access=(),domain=b.com|a.com,image'];
+        $expected = ['$image,permissions=storage-access=(),domain=a.com|b.com'];
         $this->assertSame($expected, $this->processor->process($input));
     }
 
@@ -173,9 +206,9 @@ class NetworkTest extends TestCase
     public function handle_escaped_comma(): void
     {
         $input = [
-            '||example.org^$DOMAIN=/a\,b/,HLS=/#UPLYNK-SEGMENT:.*\,ad/t',
-            '||example.org^$DOMAIN=example.org|example.com,permissions=storage-access=()\, camera=()',
-            '$DOMAIN=example.org|example.com,PERMISSIONS=storage-access=()\, camera=()',
+            '||example.org^$domain=/a\,b/,HLS=/#UPLYNK-SEGMENT:.*\,ad/t',
+            '||example.org^$domain=b.com|a.com,permissions=storage-access=()\, camera=()',
+            '$domain=b.com|a.com,PERMISSIONS=storage-access=()\, camera=()',
             '!',
             // Mengandung $, dan tidak boleh terpengaruh
             'example.com#$?#style[id="mdpDeblocker-css"] { remove: true; }',
@@ -184,9 +217,9 @@ class NetworkTest extends TestCase
             'example.com#$#div.Ad-Container[id^="adblock-bait-element-"] { display: block !important; }',
         ];
         $expected = [
-            '$permissions=storage-access=()\, camera=(),domain=example.com|example.org',
+            '$permissions=storage-access=()\, camera=(),domain=a.com|b.com',
             '||example.org^$hls=/#UPLYNK-SEGMENT:.*\,ad/t,domain=/a\,b/',
-            '||example.org^$permissions=storage-access=()\, camera=(),domain=example.com|example.org',
+            '||example.org^$permissions=storage-access=()\, camera=(),domain=a.com|b.com',
             '!',
             // Mengandung $, dan tidak boleh terpengaruh
             'example.com#$#.ignielAdBlock { display: none !important; }',
