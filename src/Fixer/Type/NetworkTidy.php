@@ -34,8 +34,6 @@ final class NetworkTidy
      */
     public function handle(string $line): string
     {
-        $line = trim($line);
-
         // https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
         if (Preg::match('/^\[\$[a-z]+=[^\]]+\]/', $line)) {
             return $line;
@@ -112,7 +110,7 @@ final class NetworkTidy
             if (!empty($options[$name])) {
                 $optionList[] = $name.'='.Helper::uniqueSorted(
                     $options[$name],
-                    fn($s) => ltrim((string) $s, '~'),
+                    fn($s) => ltrim($s, '~'),
                 )->implode('|');
             }
         }

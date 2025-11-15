@@ -10,13 +10,20 @@ class GeneralTest extends TestCase
 {
     use GeneralProvider;
 
+    private $processor;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->processor = app(Processor::class);
+    }
+
     /**
      * Remove the blank line
      */
     public function testBlankLine()
     {
-        $processor = app(Processor::class);
-
         $input = [
             '',
             '     ',
@@ -24,7 +31,7 @@ class GeneralTest extends TestCase
 
         $expected = [];
 
-        $output = $processor->process($input);
+        $output = $this->processor->process($input);
 
         $this->assertSame($expected, $output);
     }
@@ -32,8 +39,6 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function special_line()
     {
-        $processor = app(Processor::class);
-
         $input = [
             '2',
             '1',
@@ -66,7 +71,7 @@ class GeneralTest extends TestCase
             '2',
         ];
 
-        $output = $processor->process($input);
+        $output = $this->processor->process($input);
 
         $this->assertSame($expected, $output);
     }
@@ -75,9 +80,7 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function isSpecialLine($data)
     {
-        $processor = app(Processor::class);
-
-        $this->assertTrue($processor->isSpecialLine($data));
+        $this->assertTrue($this->processor->isSpecialLine($data));
     }
 
     #[PHPUnit\TestWith(['[$domain=example.com]##.textad'])]
@@ -86,19 +89,15 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function isNotSpecialLine($data)
     {
-        $processor = app(Processor::class);
-
-        $this->assertFalse($processor->isSpecialLine($data));
+        $this->assertFalse($this->processor->isSpecialLine($data));
     }
 
     #[PHPUnit\DataProvider('isCosmeticRuleProvider')]
     #[PHPUnit\Test]
     public function isCosmeticRule($data)
     {
-        $processor = app(Processor::class);
-
         $this->assertTrue(
-            $processor->isCosmeticRule($data),
+            $this->processor->isCosmeticRule($data),
         );
     }
 
@@ -106,10 +105,8 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function isNotCosmeticRule($data)
     {
-        $processor = app(Processor::class);
-
         $this->assertFalse(
-            $processor->isCosmeticRule($data),
+            $this->processor->isCosmeticRule($data),
         );
     }
 
@@ -122,14 +119,40 @@ class GeneralTest extends TestCase
         $this->assertFilter($expectedFile, $inputFile);
     }
 
+    #[PHPUnit\Test]
+    public function special_case(): void
+    {
+        $input = [
+            ' ! b',
+            ' ! a',
+            'a.com,,b.com##.ads',
+            '||example.com^$domain=a.com||b.com,,css',
+            '!',
+            '##.ads',
+            '##.Ads',
+            'a.com##.ads',
+            'a.com##.Ads',
+        ];
+        $expected = [
+            '! b',
+            '! a',
+            'a.com,b.com##.ads',
+            '||example.com^$css,domain=a.com|b.com',
+            '!',
+            '##.Ads',
+            'a.com##.Ads',
+            '##.ads',
+            'a.com##.ads',
+        ];
+        $this->assertSame($expected, $this->processor->process($input));
+    }
+
     /**
      * The results must not cause warnings/errors
      */
     #[PHPUnit\Test]
     public function bad_filter_causing_error(): void
     {
-        $processor = app(Processor::class);
-
         // https://github.com/AdguardTeam/FiltersRegistry/blob/281518f967/filters/exclusions.txt#L16
         // https://github.com/realodix/hippo/blob/e7b8da5d78/src/Fixer/Type/ElementTidy.php#L35
         $input = [
@@ -138,6 +161,6 @@ class GeneralTest extends TestCase
             'example.com##',
             'example.com##+',
         ];
-        $this->assertSame($input, $processor->process($input));
+        $this->assertSame($input, $this->processor->process($input));
     }
 }

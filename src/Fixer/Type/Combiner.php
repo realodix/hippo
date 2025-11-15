@@ -68,7 +68,7 @@ final class Combiner
 
         return Helper::uniqueSorted(
             explode($separator, $newDomain),
-            fn($s) => ltrim((string) $s, '~'),
+            fn($s) => ltrim($s, '~'),
         )->implode($separator);
     }
 

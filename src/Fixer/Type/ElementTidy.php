@@ -7,8 +7,8 @@ use Realodix\Hippo\Helper;
 
 final class ElementTidy
 {
-    /** @var array<string, string> */
-    private array $stringLiterals = [];
+    // /** @var array<string, string> */
+    // private array $stringLiterals = [];
 
     /**
      * Normalize an element hiding rule.
@@ -57,28 +57,14 @@ final class ElementTidy
         if (str_contains($domains, ',')) {
             return Helper::uniqueSorted(
                 explode(',', $domains),
-                fn($s) => ltrim((string) $s, '~'),
+                fn($s) => ltrim($s, '~'),
             )->implode(',');
         }
 
         return $domains;
     }
 
-    private function extractStringLiterals(string $selector): string
-    {
-        $this->stringLiterals = [];
 
-        return Preg::replaceCallback(
-            Regex::ATTRIBUTE_VALUE_PATTERN,
-            function ($matches) {
-                $placeholder = '___STRING_LITERAL_'.count($this->stringLiterals).'___';
-                $this->stringLiterals[$placeholder] = $matches[0];
-
-                return $placeholder;
-            },
-            $selector,
-        );
-    }
 
     private function normalizeCombinatorWhitespace(string $selector): string
     {
@@ -109,15 +95,33 @@ final class ElementTidy
         );
     }
 
+    private function extractStringLiterals(string $selector): string
+    {
+        // $this->stringLiterals = [];
+
+        // return Preg::replaceCallback(
+        //     Regex::ATTRIBUTE_VALUE_PATTERN,
+        //     function ($matches) {
+        //         $placeholder = '___STRING_LITERAL_'.count($this->stringLiterals).'___';
+        //         $this->stringLiterals[$placeholder] = $matches[0];
+
+        //         return $placeholder;
+        //     },
+        //     $selector,
+        // );
+
+        return $selector;
+    }
+
     private function restoreStringLiterals(string $selector): string
     {
-        if (!empty($this->stringLiterals)) {
-            return str_replace(
-                array_keys($this->stringLiterals),
-                array_values($this->stringLiterals),
-                $selector,
-            );
-        }
+        // if (!empty($this->stringLiterals)) {
+        //     return str_replace(
+        //         array_keys($this->stringLiterals),
+        //         array_values($this->stringLiterals),
+        //         $selector,
+        //     );
+        // }
 
         return $selector;
     }

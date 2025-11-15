@@ -7,6 +7,7 @@ use Realodix\Hippo\Fixer\Type\Combiner;
 use Realodix\Hippo\Fixer\Type\ElementTidy;
 use Realodix\Hippo\Fixer\Type\NetworkTidy;
 use Realodix\Hippo\Fixer\Type\Regex;
+use Realodix\Hippo\Helper;
 
 final class Processor
 {
@@ -32,11 +33,8 @@ final class Processor
         $result = []; // Stores the final processed rules
         $section = []; // Temporary storage for a section of rules
 
-        foreach ($lines as $raw) {
-            $line = trim((string) $raw);
-            if ($line === '') {
-                continue; // Skip blank lines
-            }
+        foreach ($lines as $line) {
+            $line = trim($line);
 
             // Check for comments, headers, or include directives,
             // which act as section breaks.
@@ -78,41 +76,29 @@ final class Processor
      */
     private function processSection(array $section): array
     {
-        $cosmeticFilters = [];
-        $networkFilters = [];
+        $cosmetic = [];
+        $network = [];
 
         foreach ($section as $rule) {
             if (Preg::match(Regex::COSMETIC_DOMAIN, $rule) || str_starts_with($rule, '[$')) {
-                $cosmeticFilters[] = $rule;
+                $cosmetic[] = $rule;
             } else {
-                $networkFilters[] = $rule;
+                $network[] = $rule;
             }
         }
 
-        $result = [];
-        if (!empty($cosmeticFilters)) {
-            $uncombined = collect($cosmeticFilters)
-                ->unique()
-                ->sortBy(fn($a) => Preg::replace(Regex::COSMETIC_DOMAIN, '', $a))
-                ->values();
-            $result = array_merge(
-                $result,
-                $this->combiner->handle($uncombined->all(), Regex::COSMETIC_DOMAIN, ','),
-            );
-        }
+        $cosmeticResult = $this->combiner->handle(
+            Helper::uniqueSorted($cosmetic, fn($a) => Preg::replace(Regex::COSMETIC_DOMAIN, '', $a))->all(),
+            Regex::COSMETIC_DOMAIN,
+            ',',
+        );
+        $networkResult = $this->combiner->handle(
+            Helper::uniqueSorted($network, fn($value) => $value, SORT_STRING | SORT_FLAG_CASE)->all(),
+            Regex::NET_OPTION_DOMAIN,
+            '|',
+        );
 
-        if (!empty($networkFilters)) {
-            $uncombined = collect($networkFilters)
-                ->unique()
-                ->sortBy(fn($value) => $value, SORT_STRING | SORT_FLAG_CASE)
-                ->values();
-            $result = array_merge(
-                $result,
-                $this->combiner->handle($uncombined->all(), Regex::NET_OPTION_DOMAIN, '|'),
-            );
-        }
-
-        return $result;
+        return array_merge($cosmeticResult, $networkResult);
     }
 
     /**
@@ -140,9 +126,9 @@ final class Processor
     public function isCosmeticRule(string $line): bool
     {
         // https://regex101.com/r/OW1tkq/1
-        $basic = (bool) Preg::match('/^#@?#[^\s|\#]|^#@?##[^\s|\#]/', $line);
+        $basic = Preg::match('/^#@?#[^\s|\#]|^#@?##[^\s|\#]/', $line);
         // https://regex101.com/r/SPcKMv/1
-        $advanced = (bool) Preg::match('/^(#(?:@?(?:\$|\?|%)|@?\$\?)#)[^\s]/', $line);
+        $advanced = Preg::match('/^(#(?:@?(?:\$|\?|%)|@?\$\?)#)[^\s]/', $line);
 
         return $basic || $advanced;
     }
