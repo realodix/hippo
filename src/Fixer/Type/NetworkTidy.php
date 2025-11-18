@@ -36,12 +36,11 @@ final class NetworkTidy
     public function handle(string $line): string
     {
         // https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
-        if (Preg::match('/^\[\$[a-z]+=[^\]]+\]/', $line)) {
+        if (preg_match('/^\[\$[a-z]+=[^\]]+\]/', $line)) {
             return $line;
         }
 
-        $m = [];
-        if (!Preg::match(Regex::NET_OPTION, $line, $m)) {
+        if (!preg_match(Regex::NET_OPTION, $line, $m)) {
             return $this->removeUnnecessaryWildcard($line);
         }
 
@@ -141,12 +140,12 @@ final class NetworkTidy
         if ($option === 'strict1p' || $option === 'strict3p') {
             return '1'.$option;
         }
-        if (Preg::match('/^~?((?:1|3)p|(first|third)-party)/', $option)) {
+        if (preg_match('/^~?((?:1|3)p|(first|third)-party)/', $option)) {
             return '2'.ltrim($option, '~');
         }
 
         // Prio 3
-        if (Preg::match('/
+        if (preg_match('/
             ^(csp|header|method|permissions|redirect(?:-rule)?
                 |removeparam|replace
             )=

@@ -24,7 +24,7 @@ final class Schema
         return self::global()->extend([
             'fixer' => Expect::structure([
                 'paths' => Expect::listOf('string'),
-                'ignores' => Expect::listOf('string'),
+                'excludes' => Expect::listOf('string'),
             ]),
         ]);
     }

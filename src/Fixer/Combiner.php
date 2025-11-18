@@ -1,6 +1,6 @@
 <?php
 
-namespace Realodix\Hippo\Fixer\Type;
+namespace Realodix\Hippo\Fixer;
 
 use Composer\Pcre\Preg;
 use Realodix\Hippo\Fixer\ValueObject\DomainSection;
@@ -81,8 +81,7 @@ final class Combiner
      */
     private function parseDomain(string $filter, string $domainPattern)
     {
-        $matches = [];
-        if (Preg::match($domainPattern, $filter, $matches)) {
+        if (preg_match($domainPattern, $filter, $matches)) {
             return new DomainSection(
                 fullMatch: $matches[0],
                 domainList: $matches[1] ?? '',

@@ -1,28 +1,34 @@
-## Configuration
+# Configuration
 
 Configuration for this application is handled through the `hippo.yml` file. Below is the documentation for all available options.
 
-### `cache_dir`
+## General
+
+#### `cache_dir`
 Specifies the directory where the cache file will be stored.
 
-### `fixer`
+
+## Fixer
 This section configures the behavior for the `fix` command.
 
-#### `fixer.paths`
+##### `paths`
 A list of files or directories to be processed. If `fixer.paths` is not set, it defaults to the project's root directory.
 
-#### `fixer.ignores`
-A list of files or directories to be ignored during processing. The `ignores` option is relative to the paths defined in `fixer.paths`. If `fixer.paths` is not set, it defaults to the project's root directory.
+##### `excludes`
+A list of files or directories to be excluded during processing. If `excludes` contains root paths, Hippo automatically excludes `vendor` directory.
 
-> **Note:** The `ignores` option is relative to the paths defined in `fixer.paths`. If `fixer.paths` is not set, it defaults to the project's root directory.
+Paths under `excludes` are relative to the `fixer.paths`. Here are some examples of `excludes`, assuming that `src` is defined in `fixer.paths`:
+- `Config` will skip the `src/Config` folder.
+- `Folder/with/File.txt` will skip `src/Folder/with/File.txt`.
 
-### `builder`
+
+## Builder
 This section configures the behavior for the `build` command.
 
-#### `builder.output_dir`
+##### `output_dir`
 The directory where the compiled filter lists will be saved.
 
-#### `builder.filter_list`
+##### `filter_list`
 An array that defines one or more filter lists to be built. Each item in the array is an object that configures a single filter list.
 
 - **`filename`** (Required): The output filename for the filter list.

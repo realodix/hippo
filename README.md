@@ -90,7 +90,7 @@ vendor/bin/hippo build [options]
 
 #### Options:
 - `--force`: Ignore cache and rebuild all sources.
-- `--config`, `-c`: Use a custom configuration file. Example: `--config ./config.yml`.
+- `--config`: Use a custom configuration file. Example: `--config ./config.yml`.
 
 ### Fixing Filter Lists
 Optimizes existing filter files or directories by cleaning syntax, sorting rules, and combining compatible patterns.
@@ -101,8 +101,8 @@ vendor/bin/hippo fix [options]
 
 #### Options:
 - `--path`: Target file or directory to process.
-- `--force`, `-f`: Process all files regardless of cache.
-- `--config`, `-c`: Use a custom configuration file. Example: `--config ./config.yml`.
+- `--force`: Process all files regardless of cache.
+- `--config`: Use a custom configuration file. Example: `--config ./config.yml`.
 - `--cache`: Specify a custom cache path. Example: `--cache ./custom-cache/`.
 
 
@@ -118,8 +118,8 @@ fixer:
   paths:
     - folder_1/file.txt
     - folder_2
-  ignores:
-    - ignored_file.txt
+  excludes:
+    - excluded_file.txt
     - some/path/to/file.txt
     - path/to/source
 

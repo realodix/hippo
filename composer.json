@@ -8,8 +8,8 @@
     "require": {
         "php": "^8.4",
         "composer/pcre": "^3.3",
-        "illuminate/container": "^12.38",
-        "illuminate/support": "^12.38",
+        "illuminate/container": "^12.39",
+        "illuminate/support": "^12.39",
         "nesbot/carbon": "^3.10",
         "nette/schema": "^1.3",
         "symfony/console": "^7.3",

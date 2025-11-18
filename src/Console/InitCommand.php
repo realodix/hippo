@@ -47,8 +47,8 @@ fixer:
   paths:
     - folder_1/file.txt
     - folder_2
-  ignores:
-    - ignored_file.txt
+  excludes:
+    - excluded_file.txt
     - some/path/to/file.txt
     - path/to/source
 

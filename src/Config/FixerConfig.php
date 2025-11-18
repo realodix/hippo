@@ -18,7 +18,7 @@ final class FixerConfig
     {
         $this->paths = $this->paths(
             $custom['paths'] ?? $config['paths'] ?? [],
-            $config['ignores'] ?? [],
+            $config['excludes'] ?? [],
         );
 
         return $this;
@@ -26,10 +26,10 @@ final class FixerConfig
 
     /**
      * @param array<string> $paths
-     * @param array<string> $ignores Excludes files by path
+     * @param array<string> $excludes Excludes files or dirs
      * @return array<string>
      */
-    private function paths(array $paths, array $ignores): array
+    private function paths(array $paths, array $excludes): array
     {
         $rootPath = base_path();
         $paths = !empty($paths) ? $paths : [$rootPath];
@@ -41,7 +41,7 @@ final class FixerConfig
             }
 
             if (is_dir($path)) {
-                $finder = $this->finder($path, $ignores);
+                $finder = $this->finder($path, $excludes);
                 foreach ($finder as $file) {
                     $resolvedPaths[] = $file->getRealPath();
                 }
@@ -57,15 +57,17 @@ final class FixerConfig
 
     /**
      * @param string $dir The directory to use for the search
-     * @param array<string> $ignores Excludes files by path
+     * @param array<string> $excludes Excludes files or dirs
      * @return \Symfony\Component\Finder\Finder
      */
-    public function finder(string $dir, array $ignores)
+    public function finder(string $dir, array $excludes)
     {
-        $ignores = array_map(
-            fn($ignoredPaths) => Path::canonicalize($ignoredPaths),
-            $ignores,
-        );
+        if ($dir === base_path()) {
+            $excludes = array_merge($excludes, ['vendor']);
+        }
+
+        $excludes = array_map(fn($paths) => Path::canonicalize($paths), $excludes);
+        $excludes = array_unique($excludes);
 
         $finder = new Finder;
         $finder->files()
@@ -73,7 +75,7 @@ final class FixerConfig
             ->name(['*.txt', '*.adfl'])
             ->ignoreDotFiles(true)
             ->ignoreVCS(true)
-            ->notPath($ignores);
+            ->notPath($excludes);
 
         return $finder;
     }

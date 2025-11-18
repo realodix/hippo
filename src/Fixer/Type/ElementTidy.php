@@ -15,16 +15,12 @@ final class ElementTidy
      * Normalize an element hiding rule.
      *
      * @param string $line The rule line
+     * @param array<string> $m The regex match
      * @return string The normalized rule
      */
-    public function handle(string $line): string
+    public function handle(string $line, array $m): string
     {
         if (str_starts_with($line, '[$')) {
-            return $line;
-        }
-
-        $m = [];
-        if (!Preg::match(Regex::COSMETIC_RULE, $line, $m)) {
             return $line;
         }
 
@@ -69,7 +65,7 @@ final class ElementTidy
 
     private function normalizeCombinatorWhitespace(string $selector): string
     {
-        if (Preg::match(Regex::UBO_JS_PATTERN, $selector)) {
+        if (preg_match(Regex::UBO_JS_PATTERN, $selector)) {
             return $selector;
         }
 

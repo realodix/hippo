@@ -3,7 +3,6 @@
 namespace Realodix\Hippo\Fixer;
 
 use Composer\Pcre\Preg;
-use Realodix\Hippo\Fixer\Type\Combiner;
 use Realodix\Hippo\Fixer\Type\ElementTidy;
 use Realodix\Hippo\Fixer\Type\NetworkTidy;
 use Realodix\Hippo\Helper;
@@ -51,8 +50,8 @@ final class Processor
             }
 
             // Categorize the line as either an element rule or a network filter.
-            if (Preg::match(Regex::COSMETIC_RULE, $line) || str_starts_with($line, '[$')) {
-                $section[] = $this->elementTidy->handle($line);
+            if (preg_match(Regex::COSMETIC_RULE, $line, $m) || str_starts_with($line, '[$')) {
+                $section[] = $this->elementTidy->handle($line, $m);
             } else {
                 $section[] = $this->networkTidy->handle($line);
             }
@@ -79,7 +78,7 @@ final class Processor
         $network = [];
 
         foreach ($section as $rule) {
-            if (Preg::match(Regex::COSMETIC_DOMAIN, $rule) || str_starts_with($rule, '[$')) {
+            if (preg_match(Regex::COSMETIC_DOMAIN, $rule) || str_starts_with($rule, '[$')) {
                 $cosmetic[] = $rule;
             } else {
                 $network[] = $rule;
@@ -125,9 +124,9 @@ final class Processor
     public function isCosmeticRule(string $line): bool
     {
         // https://regex101.com/r/OW1tkq/1
-        $basic = Preg::match('/^#@?#[^\s|\#]|^#@?##[^\s|\#]/', $line);
+        $basic = Preg::isMatch('/^#@?#[^\s|\#]|^#@?##[^\s|\#]/', $line);
         // https://regex101.com/r/SPcKMv/1
-        $advanced = Preg::match('/^(#(?:@?(?:\$|\?|%)|@?\$\?)#)[^\s]/', $line);
+        $advanced = Preg::isMatch('/^(#(?:@?(?:\$|\?|%)|@?\$\?)#)[^\s]/', $line);
 
         return $basic || $advanced;
     }
