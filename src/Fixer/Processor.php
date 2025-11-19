@@ -101,9 +101,6 @@ final class Processor
 
     /**
      * Determines if a given filter line is a special line.
-     *
-     * Special lines are comments, special comments starting with # but not ##
-     * (element hiding), headers, or the python-abp directives.
      */
     public function isSpecialLine(string $line): bool
     {

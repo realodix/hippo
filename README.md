@@ -68,7 +68,7 @@ Composer will install Hippo executable in its `bin-dir` which defaults to `vendo
 
     This builds unified outputs from filter sources as defined in your config.
 
-3. **Fix Existing Lists:**
+3. **Fix & Optimize:**
 
     ```sh
     vendor/bin/hippo fix

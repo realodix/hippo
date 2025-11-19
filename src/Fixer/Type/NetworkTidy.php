@@ -35,11 +35,6 @@ final class NetworkTidy
      */
     public function handle(string $line): string
     {
-        // https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
-        if (preg_match('/^\[\$[a-z]+=[^\]]+\]/', $line)) {
-            return $line;
-        }
-
         if (!preg_match(Regex::NET_OPTION, $line, $m)) {
             return $this->removeUnnecessaryWildcard($line);
         }
@@ -111,27 +106,20 @@ final class NetworkTidy
             }
         }
 
-        return Helper::uniqueSorted(
-            $optionList,
-            fn($a) => $this->prioritizeFilterOption($a),
-        );
+        return Helper::uniqueSorted($optionList, fn($a) => $this->prioritize($a));
     }
 
     /**
-     * Determines the priority of a filter option for sorting purposes.
+     * Determines the sorting priority of a filter option by providing a numeric prefix.
      *
-     * This method transforms a filter option (e.g., 'script', '~third-party', 'important')
-     * into a modified string used for sorting filter options in a consistent order.
+     * This method does NOT sort the option by itself. Instead, it returns a transformed
+     * string (a "sort key") which `uniqueSorted()` / `Collection::sortBy()` uses to
+     * determine the relative ordering of options.
      *
-     * The sorting prioritizes specific options as follows:
-     * - High-priority options like `important`, `badfilter`,`first-party`, `strict1p` are
-     *   placed "at the front" of the sorted list.
-     * - All other options are sorted alphabetically.
-     *
-     * @param string $option The option to sort (e.g., 'script', '~third-party')
-     * @return string The sorted option
+     * @param string $option The raw option string (e.g., 'script', '~third-party')
+     * @return string A modified string used purely as a sort key
      */
-    private function prioritizeFilterOption(string $option): string
+    private function prioritize(string $option): string
     {
         // Prio 1: (Highest): 'important' and 'party' options must always be at the top.
         if ($option === 'important' || $option === 'badfilter') {

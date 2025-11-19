@@ -121,18 +121,14 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function isCosmeticRule($data)
     {
-        $this->assertTrue(
-            $this->processor->isCosmeticRule($data),
-        );
+        $this->assertTrue($this->processor->isCosmeticRule($data));
     }
 
     #[PHPUnit\DataProvider('isNotCosmeticRuleProvider')]
     #[PHPUnit\Test]
     public function isNotCosmeticRule($data)
     {
-        $this->assertFalse(
-            $this->processor->isCosmeticRule($data),
-        );
+        $this->assertFalse($this->processor->isCosmeticRule($data));
     }
 
     #[PHPUnit\Test]

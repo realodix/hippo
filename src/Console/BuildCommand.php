@@ -6,7 +6,6 @@ use Realodix\Hippo\App;
 use Realodix\Hippo\Builder\Builder;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,8 +26,8 @@ class BuildCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Ignore cache and rebuild all sources')
-            ->addOption('config', 'c', InputOption::VALUE_OPTIONAL, 'Path to config file');
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Ignore cache and rebuild all sources')
+            ->addOption('config', null, InputOption::VALUE_OPTIONAL, 'Path to config file');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -46,7 +45,6 @@ class BuildCommand extends Command
         );
 
         if ($this->builder->stats()->allSkipped()) {
-            (new Cursor($output))->moveUp()->clearLine();
             $io->writeln('<info>[OK] No modified files detected. Nothing to process.</info>');
         }
 

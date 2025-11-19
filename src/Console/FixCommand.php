@@ -7,7 +7,6 @@ use Realodix\Hippo\Enums\Mode;
 use Realodix\Hippo\Fixer\Fixer;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,8 +28,8 @@ class FixCommand extends Command
     {
         $this
             ->addOption('path', null, InputOption::VALUE_OPTIONAL, 'File or directory to process')
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force processing even if file has not changed')
-            ->addOption('config', 'c', InputOption::VALUE_OPTIONAL, 'Path to config file')
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Force processing even if file has not changed')
+            ->addOption('config', null, InputOption::VALUE_OPTIONAL, 'Path to config file')
             ->addOption('cache', null, InputOption::VALUE_OPTIONAL, 'Path to the cache file');
     }
 
@@ -51,8 +50,6 @@ class FixCommand extends Command
 
         $stats = $this->fixer->stats();
         if ($stats->allSkipped()) {
-            $io->newLine();
-            (new Cursor($output))->moveUp()->clearLine();
             $io->writeln('<info>All files have been processed.</info>');
             $io->newLine();
         } else {

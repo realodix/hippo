@@ -20,6 +20,7 @@ final class ElementTidy
      */
     public function handle(string $line, array $m): string
     {
+        // https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
         if (str_starts_with($line, '[$')) {
             return $line;
         }
