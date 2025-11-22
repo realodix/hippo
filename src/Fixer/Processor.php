@@ -33,6 +33,9 @@ final class Processor
 
         foreach ($lines as $line) {
             $line = trim($line);
+            if ($line === '') {
+                continue;
+            }
 
             // Check for comments, headers, or include directives,
             // which act as section breaks.
@@ -78,7 +81,7 @@ final class Processor
         $network = [];
 
         foreach ($section as $rule) {
-            if (preg_match(Regex::COSMETIC_DOMAIN, $rule) || str_starts_with($rule, '[$')) {
+            if (preg_match(Regex::COSMETIC_RULE, $rule)) {
                 $cosmetic[] = $rule;
             } else {
                 $network[] = $rule;
