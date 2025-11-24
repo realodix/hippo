@@ -18,11 +18,9 @@ final class Helper
             ->filter(fn($s) => $s !== '')
             ->unique();
 
-        if (is_callable($sortBy)) {
-            $c = $c->sortBy($sortBy, $flags);
-        } else {
-            $c = $c->sort();
-        }
+        $c = is_callable($sortBy)
+            ? $c->sortBy($sortBy, $flags)
+            : $c->sort();
 
         return $c->values();
     }

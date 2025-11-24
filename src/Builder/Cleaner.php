@@ -23,9 +23,9 @@ final class Cleaner
                 $content = rtrim($content);
 
                 return $content === '' ? [] : [$content];
-            })->when($unique, function ($collection) {
-                return $collection->unique();
-            })->values()->all();
+            })
+            ->when($unique, fn($collection) => $collection->unique())
+            ->values()->all();
     }
 
     /**

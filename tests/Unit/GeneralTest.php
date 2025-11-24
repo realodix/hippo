@@ -67,10 +67,6 @@ class GeneralTest extends TestCase
         $input = [
             '2',
             '1',
-            '%include abid:src/general-block.adfl%',
-            '%include abid:src/adservers.adfl%',
-            '2',
-            '1',
             '[AdGuard]',
             '[uBlock Origin]',
             '[Adblock Plus 2.0]',
@@ -83,10 +79,6 @@ class GeneralTest extends TestCase
         ];
 
         $expected = [
-            '1',
-            '2',
-            '%include abid:src/general-block.adfl%',
-            '%include abid:src/adservers.adfl%',
             '1',
             '2',
             '[AdGuard]',

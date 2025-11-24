@@ -78,10 +78,6 @@ trait GeneralProvider
             ['!#endif'],
             ['!+ NOT_OPTIMIZED'],
             ['!+ NOT_OPTIMIZED PLATFORM(android)'],
-
-            // python-abp directive
-            // https://github.com/adblockplus/python-abp
-            ['%include easylist:easylist/easylist_general_block.txt%'],
         ];
     }
 

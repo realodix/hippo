@@ -4,7 +4,7 @@ namespace Realodix\Hippo\Test\Unit\Filter;
 
 trait NetworkProvider
 {
-    public static function sort_option_priority_has_domain_provider(): array
+    public static function option_sort__priority__has_domain_provider(): array
     {
         return [
             // Domain
@@ -30,7 +30,7 @@ trait NetworkProvider
         ];
     }
 
-    public static function sort_option_priority_has_value_provider(): array
+    public static function option_sort__priority__has_value_provider(): array
     {
         return [
             // $redirect / $redirect-rule

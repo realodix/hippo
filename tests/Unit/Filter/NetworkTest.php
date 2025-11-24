@@ -70,7 +70,7 @@ class NetworkTest extends TestCase
     }
 
     #[PHPUnit\Test]
-    public function sort_option_alphabetically_and_type(): void
+    public function option_sort__alphabetically_and_type(): void
     {
         $input = ['||example.com^$script,image,third-party,domain=a.com'];
         $expected = ['||example.com^$third-party,image,script,domain=a.com'];
@@ -82,7 +82,7 @@ class NetworkTest extends TestCase
     }
 
     #[PHPUnit\Test]
-    public function sort_option_priority_highest(): void
+    public function option_sort__priority__highest(): void
     {
         $input = ['*$domain=a.com,script,image,important,3p,third-party,strict3p,first-party,1p,strict1p'];
         $expected = ['*$important,strict1p,strict3p,1p,3p,first-party,third-party,image,script,domain=a.com'];
@@ -99,25 +99,42 @@ class NetworkTest extends TestCase
         $this->assertSame($expected, $this->processor->process($input));
     }
 
-    #[PHPUnit\DataProvider('sort_option_priority_has_domain_provider')]
+    #[PHPUnit\DataProvider('option_sort__priority__has_domain_provider')]
     #[PHPUnit\Test]
-    public function sort_option_priority_has_domain(array $input, array $expected): void
+    public function option_sort__priority__has_domain(array $input, array $expected): void
     {
         $this->assertSame($expected, $this->processor->process($input));
     }
 
-    #[PHPUnit\DataProvider('sort_option_priority_has_value_provider')]
+    #[PHPUnit\DataProvider('option_sort__priority__has_value_provider')]
     #[PHPUnit\Test]
-    public function sort_option_priority_has_value(array $input, array $expected): void
+    public function option_sort__priority__has_value(array $input, array $expected): void
     {
         $this->assertSame($expected, $this->processor->process($input));
     }
 
     #[PHPUnit\Test]
-    public function sort_option_priority_badfilter(): void
+    public function option_transforms(): void
     {
-        $input = ['||example.com^$script,badfilter,image'];
-        $expected = ['||example.com^$badfilter,image,script'];
+        // `$_`
+        $input = [
+            '||example.com$_,removeparam=/^ss\\$/,_,image',
+            '||example.com$replace=/bad/good/,___,~third-party',
+        ];
+        $expected = [
+            '||example.com$image,removeparam=/^ss\$/',
+            '||example.com$~third-party,replace=/bad/good/',
+        ];
+        $this->assertSame($expected, $this->processor->process($input));
+
+        // $empty
+        $input = ['||example.com/js/net.js$script,empty,domain=example.org'];
+        $expected = ['||example.com/js/net.js$script,redirect=nooptext,domain=example.org'];
+        $this->assertSame($expected, $this->processor->process($input));
+
+        // $mp4
+        $input = ['||example.com/video/*.mp4$mp4,domain=example.org'];
+        $expected = ['||example.com/video/*.mp4$media,redirect=noopmp4-1s,domain=example.org'];
         $this->assertSame($expected, $this->processor->process($input));
     }
 

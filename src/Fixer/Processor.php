@@ -19,10 +19,6 @@ final class Processor
      * Processes an array of filter lines, optimizing them into a sorted
      * and combined list.
      *
-     * This is the main entry point of the processor. It splits the list into
-     * sections, processes each section individually, and then concatenates
-     * the results.
-     *
      * @param array<string> $lines An array of raw filter lines
      * @return array<string> The processed and optimized list of filter lines
      */
@@ -113,9 +109,7 @@ final class Processor
             // special comments starting with # but not ## (element hiding)
             || str_starts_with($line, '#') && !$this->isCosmeticRule($line)
             // header
-            || (str_starts_with($line, '[') && str_ends_with($line, ']'))
-            // the python-abp directives
-            || (str_starts_with($line, '%include') && str_ends_with($line, '%'));
+            || str_starts_with($line, '[') && str_ends_with($line, ']');
     }
 
     /**

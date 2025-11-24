@@ -95,7 +95,7 @@ final class Builder
             }
 
             if ($data === null) {
-                $this->logger->error('Failed to read: '.$path);
+                $this->logger->error("Failed to read: {$path}");
 
                 return null;
             }

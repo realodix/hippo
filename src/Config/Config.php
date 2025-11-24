@@ -97,7 +97,7 @@ final class Config
             $this->output->writeln('<error>Configuration error:</error>');
 
             foreach ($e->getMessages() as $message) {
-                $this->output->writeln('- '.$message);
+                $this->output->writeln("- $message");
             }
 
             exit(1);

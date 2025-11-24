@@ -29,9 +29,6 @@ final class NetworkTidy
 
     /**
      * Tidies a network filter rule by normalizing options and sorting domains.
-     *
-     * @param string $line The raw network filter line
-     * @return string The tidied filter line
      */
     public function handle(string $line): string
     {
@@ -41,15 +38,17 @@ final class NetworkTidy
 
         $filterText = $this->removeUnnecessaryWildcard($m[1]);
         $filterOptions = $this->parseOptions($m[2]);
-        $optionList = $this->buildOptionList($filterOptions);
+        $optionList = $this->normalizeOption($filterOptions);
 
         return $filterText.'$'.$optionList->implode(',');
     }
 
     /**
+     * Parse the filter options.
+     *
      * @return array<string, array<string>>
      */
-    private function parseOptions(string $rawOptions): array
+    private function parseOptions(string $options): array
     {
         // Initialize an empty array
         $parsed = ['genericOpts' => []];
@@ -57,7 +56,7 @@ final class NetworkTidy
             $parsed[$key] = [];
         }
 
-        foreach (Preg::split('/(?<!\\\),/', $rawOptions) as $option) {
+        foreach (Preg::split('/(?<!\\\),/', $options) as $option) {
             $parts = explode('=', $option, 2);
             $name = strtolower(ltrim($parts[0], '~'));
             $value = $parts[1] ?? null;
@@ -87,12 +86,12 @@ final class NetworkTidy
     }
 
     /**
-     * Builds and sorts the list of filter options from parsed data.
+     * Normalizes and sorts the network filter options.
      *
      * @param array<string, array<string>> $options Parsed options from parseOptions()
      * @return \Illuminate\Support\Collection<int, string>
      */
-    private function buildOptionList(array $options)
+    private function normalizeOption(array $options)
     {
         $optionList = $options['genericOpts'];
 
@@ -106,7 +105,41 @@ final class NetworkTidy
             }
         }
 
-        return Helper::uniqueSorted($optionList, fn($a) => $this->prioritize($a));
+        $processedOptions = [];
+        foreach ($optionList as $option) {
+            $transformed = $this->applyOptionRules($option);
+            if ($transformed) {
+                $processedOptions[] = $transformed;
+            }
+        }
+
+        return Helper::uniqueSorted($processedOptions, fn($v) => $this->prioritize($v));
+    }
+
+    /**
+     * Applies a set of dynamic rules to transform or remove a filter option.
+     */
+    private function applyOptionRules(string $option): string
+    {
+        // https://github.com/gorhill/uBlock/wiki/Static-filter-syntax#_-aka-noop
+        // https://adguard.com/kb/general/ad-filtering/create-own-filters/#noop-modifier
+        if (str_starts_with($option, '_')) {
+            return '';
+        }
+
+        // https://github.com/gorhill/uBlock/wiki/Static-filter-syntax#empty
+        // https://adguard.com/kb/general/ad-filtering/create-own-filters/#empty-modifier
+        if ($option === 'empty') {
+            return 'redirect=nooptext';
+        }
+
+        // https://github.com/gorhill/uBlock/wiki/Static-filter-syntax#mp4
+        // https://adguard.com/kb/general/ad-filtering/create-own-filters/#mp4-modifier
+        if ($option === 'mp4') {
+            return 'media,redirect=noopmp4-1s';
+        }
+
+        return $option;
     }
 
     /**
@@ -115,9 +148,6 @@ final class NetworkTidy
      * This method does NOT sort the option by itself. Instead, it returns a transformed
      * string (a "sort key") which `uniqueSorted()` / `Collection::sortBy()` uses to
      * determine the relative ordering of options.
-     *
-     * @param string $option The raw option string (e.g., 'script', '~third-party')
-     * @return string A modified string used purely as a sort key
      */
     private function prioritize(string $option): string
     {
@@ -133,11 +163,10 @@ final class NetworkTidy
         }
 
         // Prio 3
-        if (preg_match('/
-            ^(csp|header|method|permissions|redirect(?:-rule)?
+        if (preg_match('/^(csp|header|method|permissions|redirect(?:-rule)?
                 |removeparam|replace
-            )=
-            /x', $option)) {
+            )=/x',
+            $option)) {
             return '4'.$option;
         }
 
@@ -158,9 +187,6 @@ final class NetworkTidy
 
     /**
      * Removes unnecessary wildcard characters ('*') from a filter rule.
-     *
-     * @param string $filterText The filter text.
-     * @return string string The filter text with unnecessary wildcards removed.
      */
     private function removeUnnecessaryWildcard(string $filterText): string
     {

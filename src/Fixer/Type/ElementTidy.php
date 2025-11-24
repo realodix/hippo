@@ -38,10 +38,8 @@ final class ElementTidy
     private function normalizeDomain(string $domain): string
     {
         if (str_contains($domain, ',')) {
-            return Helper::uniqueSorted(
-                explode(',', $domain),
-                fn($s) => ltrim($s, '~'),
-            )->implode(',');
+            return Helper::uniqueSorted(explode(',', $domain), fn($s) => ltrim($s, '~'))
+                ->implode(',');
         }
 
         return $domain;
@@ -54,7 +52,7 @@ final class ElementTidy
             $selector = ltrim($selector);
         }
 
-        $selector = '@'.$selector.'@'; // Wrap selector in a temporary character to handle edge cases
+        $selector = "@$selector@"; // Wrap selector in a temporary character to handle edge cases
         $selector = $this->extractStringLiterals($selector);
         $selector = $this->normalizeCombinatorWhitespace($selector);
         $selector = $this->lowercasePseudoClasses($selector);
@@ -73,7 +71,7 @@ final class ElementTidy
         return Preg::replaceCallback(
             Regex::SELECTOR_COMBINATOR,
             function ($matches) {
-                $replaceBy = ($matches[1] === '(') ? ($matches[2].' ') : (' '.$matches[2].' ');
+                $replaceBy = $matches[1] === '(' ? "$matches[2] " : " $matches[2] ";
                 if ($replaceBy === '   ') {
                     $replaceBy = ' ';
                 }
