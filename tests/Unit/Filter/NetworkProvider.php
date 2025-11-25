@@ -9,7 +9,7 @@ trait NetworkProvider
         return [
             // Domain
             [ // $denyallow
-                ['||example.com^$3p,script,domain=a.com|b.com,denyallow=x.com|y.com'],
+                ['||example.com^$3p,domain=a.com|b.com,denyallow=x.com|y.com,script'],
                 ['||example.com^$3p,script,denyallow=x.com|y.com,domain=a.com|b.com'],
             ],
             [ // $domain
@@ -33,32 +33,92 @@ trait NetworkProvider
     public static function option_sort__priority__has_value_provider(): array
     {
         return [
+            // $csp
+            [
+                ['/ads.$domain=example.com,css,csp=script-src \'none\''],
+                ['/ads.$css,csp=script-src \'none\',domain=example.com'],
+            ],
+            [
+                ['@@/ads.$domain=example.com,css,csp'],
+                ['@@/ads.$csp,css,domain=example.com'],
+            ],
+
+            // $header
+            [
+                ['/ads.$domain=example.com,xhr,header=via:/1\.1\s+google/'],
+                ['/ads.$xhr,header=via:/1\.1\s+google/,domain=example.com'],
+            ],
+
+            // $method
+            [
+                ['/ads.$domain=example.com,xhr,method=~get'],
+                ['/ads.$xhr,method=~get,domain=example.com'],
+            ],
+
+            // $permissions
+            [
+                ['|http*://*.*$doc,domain=~0.0.0.0|~127.0.0.1|~[::1]|~[::]|~local|~localhost,permissions=autoplay=(),xhr'],
+                ['|http*://*.*$doc,xhr,permissions=autoplay=(),domain=~0.0.0.0|~127.0.0.1|~[::1]|~[::]|~local|~localhost'],
+            ],
+
             // $redirect / $redirect-rule
             [
                 ['$script,redirect=noopjs,domain=x.com,css'],
                 ['$css,script,redirect=noopjs,domain=x.com'],
             ],
             [
+                ['@@/ads.$domain=example.com,css,redirect'],
+                ['@@/ads.$css,redirect,domain=example.com'],
+            ],
+            [
                 ['$redirect-rule=noopjs,domain=x.com,css'],
                 ['$css,redirect-rule=noopjs,domain=x.com'],
+            ],
+            [
+                ['@@/ads.$domain=example.com,css,redirect-rule'],
+                ['@@/ads.$css,redirect-rule,domain=example.com'],
             ],
 
             // $removeparam
             [
-                ['$~third-party,domain=x.com|y.com,removeparam,css'],
-                ['$~third-party,css,removeparam,domain=x.com|y.com'],
+                ['$removeparam=/^(utm_source|utm_medium|utm_term)=/,domain=x.com,xhr'],
+                ['$xhr,removeparam=/^(utm_source|utm_medium|utm_term)=/,domain=x.com'],
             ],
             [
-                ['$removeparam=/^(utm_source|utm_medium|utm_term)=/,domain=x.com,css'],
-                ['$css,removeparam=/^(utm_source|utm_medium|utm_term)=/,domain=x.com'],
+                ['@@/ads.$~third-party,domain=x.com|y.com,removeparam,css'],
+                ['@@/ads.$~third-party,css,removeparam,domain=x.com|y.com'],
             ],
 
-            // $permissions
-            // https://github.com/gorhill/uBlock/wiki/Static-filter-syntax#permissions
-            // https://adguard.com/kb/general/ad-filtering/create-own-filters/#permissions-modifier
+            // $replace
             [
-                ['|http*://*.*$doc,domain=~0.0.0.0|~127.0.0.1|~[::1]|~[::]|~local|~localhost,permissions=autoplay=(),css'],
-                ['|http*://*.*$css,doc,permissions=autoplay=(),domain=~0.0.0.0|~127.0.0.1|~[::1]|~[::]|~local|~localhost'],
+                ['/ads.$domain=example.com,css,replace=/X/Y/'],
+                ['/ads.$css,replace=/X/Y/,domain=example.com'],
+            ],
+            [
+                ['@@/ads.$domain=example.com,css,replace'],
+                ['@@/ads.$css,replace,domain=example.com'],
+            ],
+
+            // $urlskip
+            [
+                ['/ads.$domain=example.com,xhr,urlskip=/\/dl\/(.+)/ -base64'],
+                ['/ads.$xhr,urlskip=/\/dl\/(.+)/ -base64,domain=example.com'],
+            ],
+
+            // $urltransform
+            [
+                ['/ads.$domain=example.com,xhr,urltransform=/X/Y/'],
+                ['/ads.$xhr,urltransform=/X/Y/,domain=example.com'],
+            ],
+            [
+                ['@@/ads.$domain=example.com,xhr,urltransform'],
+                ['@@/ads.$urltransform,xhr,domain=example.com'],
+            ],
+
+            // $reason
+            [
+                ['/ads.$reason="Site blocked: \"Known malware distributor\",xhr,domain=example.com'],
+                ['/ads.$xhr,domain=example.com,reason="Site blocked: \"Known malware distributor\"'],
             ],
         ];
     }

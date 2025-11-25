@@ -84,12 +84,8 @@ class NetworkTest extends TestCase
     #[PHPUnit\Test]
     public function option_sort__priority__highest(): void
     {
-        $input = ['*$domain=a.com,script,image,important,3p,third-party,strict3p,first-party,1p,strict1p'];
-        $expected = ['*$important,strict1p,strict3p,1p,3p,first-party,third-party,image,script,domain=a.com'];
-        $this->assertSame($expected, $this->processor->process($input));
-
-        $input = ['*$domain=a.com,script,image,important,~3p,~third-party,strict3p,first-party,1p,strict1p'];
-        $expected = ['*$important,strict1p,strict3p,1p,~3p,first-party,~third-party,image,script,domain=a.com'];
+        $input = ['*$css,3p,third-party,strict3p,first-party,1p,strict1p,strict-first-party,strict-third-party'];
+        $expected = ['*$strict-first-party,strict-third-party,strict1p,strict3p,1p,3p,first-party,third-party,css'];
         $this->assertSame($expected, $this->processor->process($input));
 
         // badfilter & important

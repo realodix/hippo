@@ -155,7 +155,10 @@ final class NetworkTidy
         if ($option === 'important' || $option === 'badfilter') {
             return '0'.$option;
         }
-        if ($option === 'strict1p' || $option === 'strict3p') {
+        if (
+            $option === 'strict1p' || $option === 'strict-first-party'
+            || $option === 'strict3p' || $option === 'strict-third-party'
+        ) {
             return '1'.$option;
         }
         if (preg_match('/^~?((?:1|3)p|(first|third)-party)/', $option)) {
@@ -164,13 +167,12 @@ final class NetworkTidy
 
         // Prio 3
         if (preg_match('/^(csp|header|method|permissions|redirect(?:-rule)?
-                |removeparam|replace
+                |removeparam|replace|urlskip|urltransform
             )=/x',
             $option)) {
             return '4'.$option;
         }
 
-        // Always put at the end
         if (
             str_starts_with($option, 'denyallow=')
             || str_starts_with($option, 'domain=')
@@ -178,6 +180,11 @@ final class NetworkTidy
             || str_starts_with($option, 'to=')
             || str_starts_with($option, 'ipaddress=')
         ) {
+            return '5'.$option;
+        }
+
+        // Always put at the end
+        if (str_starts_with($option, 'reason=')) {
             return $option;
         }
 
