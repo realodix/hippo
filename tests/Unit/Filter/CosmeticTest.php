@@ -101,7 +101,7 @@ class CosmeticTest extends TestCase
     }
 
     #[PHPUnit\Test]
-    public function element_rules_based_on_rules(): void
+    public function combines_rules_based_on_rules(): void
     {
         $input = [
             'a.com##.ad',

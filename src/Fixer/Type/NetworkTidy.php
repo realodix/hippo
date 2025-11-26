@@ -23,8 +23,11 @@ final class NetworkTidy
      * @var array<string>
      */
     const CASE_SENSITIVE_VALUE = [
-        'csp', 'permissions', 'reason', 'removeparam', 'replace', 'urlskip', 'urltransform',
-        'cookie', 'hls', 'jsonprune', 'xmlprune',
+        'csp', 'reason', 'removeparam', 'replace', 'urlskip', 'urltransform',
+        // AdGuard
+        'cookie', 'extension', 'hls', 'jsonprune', 'xmlprune',
+        // AdGuard DNS
+        'dnsrewrite', 'dnstype',
     ];
 
     /**
@@ -98,10 +101,9 @@ final class NetworkTidy
         // Add back the consolidated domain-like options.
         foreach (self::MULTI_VALUE as $name) {
             if (!empty($options[$name])) {
-                $optionList[] = $name.'='.Helper::uniqueSorted(
-                    $options[$name],
-                    fn($s) => ltrim($s, '~'),
-                )->implode('|');
+                $value = Helper::uniqueSorted($options[$name], fn($s) => ltrim($s, '~'))
+                    ->implode('|');
+                $optionList[] = $name.'='.$value;
             }
         }
 

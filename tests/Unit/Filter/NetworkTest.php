@@ -20,25 +20,22 @@ class NetworkTest extends TestCase
     }
 
     #[PHPUnit\Test]
-    public function element_rules_based_on_rules(): void
+    public function combines_rules_based_on_rules(): void
     {
         $input = [
             '-banner-$image,domain=a.com',
             '-banner-$image,domain=a.com|b.com',
+            '-banner-$image,domain=a.com,css',
+
             '||example.com^$domain=a.com',
             '||example.com^$domain=b.com',
-            '!',
-            '$domain=b.com|a.com,permissions=storage-access=()\, camera=(),image',
-            '$permissions=storage-access=()\, camera=(),domain=b.com|a.com,image',
-            '$domain=b.com|a.com,permissions=storage-access=(),image',
-            '$permissions=storage-access=()\, camera=(),domain=b.com|a.com,image',
+            '||example.com^$domain=c.com,css',
         ];
         $expected = [
+            '-banner-$css,image,domain=a.com',
             '-banner-$image,domain=a.com|b.com',
+            '||example.com^$css,domain=c.com',
             '||example.com^$domain=a.com|b.com',
-            '!',
-            '$image,permissions=storage-access=(),domain=a.com|b.com',
-            '$image,permissions=storage-access=()\, camera=(),domain=a.com|b.com',
         ];
         $this->assertSame($expected, $this->processor->process($input));
     }
@@ -110,6 +107,56 @@ class NetworkTest extends TestCase
     }
 
     #[PHPUnit\Test]
+    public function lowercase_the_option_name(): void
+    {
+        $input = ['||example.com^$ALL'];
+        $expected = ['||example.com^$all'];
+        $this->assertSame($expected, $this->processor->process($input));
+    }
+
+    #[PHPUnit\Test]
+    public function optDomain_values_are_sorted(): void
+    {
+        $input = ['$domain=c.com|a.com|~b.com'];
+        $expected = ['$domain=a.com|~b.com|c.com'];
+        $this->assertSame($expected, $this->processor->process($input));
+
+        $input = ['$from=c.com|a.com|~b.com,to=c.com|a.com|~b.com'];
+        $expected = ['$from=a.com|~b.com|c.com,to=a.com|~b.com|c.com'];
+        $this->assertSame($expected, $this->processor->process($input));
+
+        $input = ['$denyallow=c.com|a.com|~b.com'];
+        $expected = ['$denyallow=a.com|~b.com|c.com'];
+        $this->assertSame($expected, $this->processor->process($input));
+
+        $input = ['$method=post|~get|delete'];
+        $expected = ['$method=delete|~get|post'];
+        $this->assertSame($expected, $this->processor->process($input));
+    }
+
+    #[PHPUnit\Test]
+    public function optDomain_values_are_lowercase(): void
+    {
+        $input = [
+            '$DENYALLOW=ExamPle.Com',
+            '$DOMAIN=ExamPle.Com',
+            '$FROM=ExamPle.Com',
+            '$TO=ExamPle.Com',
+            '!',
+            '$METHOD=GET',
+        ];
+
+        $this->assertSame(array_map('strtolower', $input), $this->processor->process($input));
+    }
+
+    #[PHPUnit\DataProvider('lowercase_the_option_name_preserve_value_provider')]
+    #[PHPUnit\Test]
+    public function lowercase_the_option_name_preserve_value($input, $expected): void
+    {
+        $this->assertSame([$expected], $this->processor->process([$input]));
+    }
+
+    #[PHPUnit\Test]
     public function option_transforms(): void
     {
         // `$_`
@@ -131,106 +178,6 @@ class NetworkTest extends TestCase
         // $mp4
         $input = ['||example.com/video/*.mp4$mp4,domain=example.org'];
         $expected = ['||example.com/video/*.mp4$media,redirect=noopmp4-1s,domain=example.org'];
-        $this->assertSame($expected, $this->processor->process($input));
-    }
-
-    #[PHPUnit\Test]
-    public function optDomain_values_are_sorted(): void
-    {
-        $input = ['||example.com^$domain=c.com|a.com|~b.com'];
-        $expected = ['||example.com^$domain=a.com|~b.com|c.com'];
-        $this->assertSame($expected, $this->processor->process($input));
-
-        $input = ['||example.com^$from=b.com|a.com,to=d.com|c.com'];
-        $expected = ['||example.com^$from=a.com|b.com,to=c.com|d.com'];
-        $this->assertSame($expected, $this->processor->process($input));
-
-        $input = ['||example.com^denyallow=y.com|x.com,domain=a.com|b.com'];
-        $expected = ['||example.com^denyallow=y.com|x.com,domain=a.com|b.com'];
-        $this->assertSame($expected, $this->processor->process($input));
-    }
-
-    #[PHPUnit\Test]
-    public function optMethod_is_handled_and_sorted(): void
-    {
-        $input = ['||example.com^$method=post|get|delete,domain=~b.com|~a.com'];
-        $expected = ['||example.com^$method=delete|get|post,domain=~a.com|~b.com'];
-        $this->assertSame($expected, $this->processor->process($input));
-
-        $input = ['||example.com^$domain=~b.com|~a.com,method=post|get|delete,'];
-        $expected = ['||example.com^$method=delete|get|post,domain=~a.com|~b.com'];
-        $this->assertSame($expected, $this->processor->process($input));
-    }
-
-    #[PHPUnit\Test]
-    public function lowercase_the_option_name(): void
-    {
-        $input = ['||example.com^$ALL'];
-        $expected = ['||example.com^$all'];
-        $this->assertSame($expected, $this->processor->process($input));
-    }
-
-    #[PHPUnit\Test]
-    public function lowercase_the_option_values(): void
-    {
-        $input = [
-            '$DENYALLOW=ExamPle.Com',
-            '$DOMAIN=ExamPle.Com',
-            '$FROM=ExamPle.Com',
-            '$METHOD=ExamPle.Com',
-            '$TO=ExamPle.Com',
-        ];
-
-        $this->assertSame(array_map('strtolower', $input), $this->processor->process($input));
-    }
-
-    #[PHPUnit\DataProvider('lowercase_the_option_name_preserve_value_provider')]
-    #[PHPUnit\Test]
-    public function lowercase_the_option_name_preserve_value($input, $expected): void
-    {
-        $this->assertSame([$expected], $this->processor->process([$input]));
-    }
-
-    #[PHPUnit\Test]
-    public function optCsp_option_is_preserved(): void
-    {
-        $input = ['||example.com^$csp=script-src \'none\''];
-        $this->assertSame($input, $this->processor->process($input));
-    }
-
-    #[PHPUnit\Test]
-    public function optPermissions_option_is_handled(): void
-    {
-        $input = ['$permissions=storage-access=(),domain=b.com|a.com,image'];
-        $expected = ['$image,permissions=storage-access=(),domain=a.com|b.com'];
-        $this->assertSame($expected, $this->processor->process($input));
-    }
-
-    #[PHPUnit\Test]
-    public function handle_escaped_comma(): void
-    {
-        $input = [
-            '||example.org^$domain=/a\,b/,HLS=/#UPLYNK-SEGMENT:.*\,ad/t',
-            '||example.org^$domain=b.com|a.com,permissions=storage-access=()\, camera=()',
-            '$domain=b.com|a.com,PERMISSIONS=storage-access=()\, camera=()',
-            '!',
-            // Mengandung $, dan tidak boleh terpengaruh
-            'example.com#$?#style[id="mdpDeblocker-css"] { remove: true; }',
-            'example.com#%#(function(b){Object.defineProperty(Element.prototype,"innerHTML",{get:function(){return b.get.call(this)},set:function(a){/^(?:<([abisuq]) id="[^"]*"><\/\1>)*$/.test(a)||b.set.call(this,a)},enumerable:!0,configurable:!0})})(Object.getOwnPropertyDescriptor(Element.prototype,"innerHTML"));',
-            'example.com#$#.ignielAdBlock { display: none !important; }',
-            'example.com#$#div.Ad-Container[id^="adblock-bait-element-"] { display: block !important; }',
-        ];
-        $expected = [
-            '$permissions=storage-access=()\, camera=(),domain=a.com|b.com',
-            '||example.org^$hls=/#UPLYNK-SEGMENT:.*\,ad/t,domain=/a\,b/',
-            '||example.org^$permissions=storage-access=()\, camera=(),domain=a.com|b.com',
-            '!',
-            // Mengandung $, dan tidak boleh terpengaruh
-            'example.com#$#.ignielAdBlock { display: none !important; }',
-            'example.com#$#div.Ad-Container[id^="adblock-bait-element-"] { display: block !important; }',
-            'example.com#$?#style[id="mdpDeblocker-css"] { remove: true; }',
-            'example.com#%#(function(b){Object.defineProperty(Element.prototype,"innerHTML",{get:function(){return b.get.call(this)},set:function(a){/^(?:<([abisuq]) id="[^"]*"><\/\1>)*$/.test(a)||b.set.call(this,a)},enumerable:!0,configurable:!0})})(Object.getOwnPropertyDescriptor(Element.prototype,"innerHTML"));',
-        ];
         $this->assertSame($expected, $this->processor->process($input));
     }
 }

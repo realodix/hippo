@@ -132,6 +132,33 @@ class GeneralTest extends TestCase
         $this->assertFilter($expectedFile, $inputFile);
     }
 
+    #[PHPUnit\Test]
+    public function handle_escaped_comma(): void
+    {
+        $input = [
+            '$permissions=storage-access=()\, camera=(),domain=b.com|a.com,image',
+            '$domain=b.com|a.com,permissions=storage-access=()\, camera=(),image',
+            '$permissions=storage-access=()\, camera=(),domain=b.com|a.com,image',
+            '||example.org^$domain=/a\,b/,HLS=/#UPLYNK-SEGMENT:.*\,ad/t',
+            '!',
+            // Contains $, and must not be affected.
+            'example.com#$?#style[id="mdpDeblocker-css"] { remove: true; }',
+            'example.com#%#(function(b){Object.defineProperty(Element.prototype,"innerHTML",{get:function(){return b.get.call(this)},set:function(a){/^(?:<([abisuq]) id="[^"]*"><\/\1>)*$/.test(a)||b.set.call(this,a)},enumerable:!0,configurable:!0})})(Object.getOwnPropertyDescriptor(Element.prototype,"innerHTML"));',
+            'example.com#$#.ignielAdBlock { display: none !important; }',
+            'example.com#$#div.Ad-Container[id^="adblock-bait-element-"] { display: block !important; }',
+        ];
+        $expected = [
+            '$image,permissions=storage-access=()\, camera=(),domain=a.com|b.com',
+            '||example.org^$hls=/#UPLYNK-SEGMENT:.*\,ad/t,domain=/a\,b/',
+            '!',
+            'example.com#$#.ignielAdBlock { display: none !important; }',
+            'example.com#$#div.Ad-Container[id^="adblock-bait-element-"] { display: block !important; }',
+            'example.com#$?#style[id="mdpDeblocker-css"] { remove: true; }',
+            'example.com#%#(function(b){Object.defineProperty(Element.prototype,"innerHTML",{get:function(){return b.get.call(this)},set:function(a){/^(?:<([abisuq]) id="[^"]*"><\/\1>)*$/.test(a)||b.set.call(this,a)},enumerable:!0,configurable:!0})})(Object.getOwnPropertyDescriptor(Element.prototype,"innerHTML"));',
+        ];
+        $this->assertSame($expected, $this->processor->process($input));
+    }
+
     /**
      * The results must not cause warnings/errors
      */

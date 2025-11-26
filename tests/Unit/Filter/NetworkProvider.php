@@ -133,7 +133,6 @@ trait NetworkProvider
             ['$To=/[A-Z-a-z-09]+/', '$to=/[A-Z-a-z-09]+/'],
 
             ['||example.org^$Csp=Foo', '||example.org^$csp=Foo'],
-            ['||example.org^$Permissions=Foo', '||example.org^$permissions=Foo'],
             ['||example.org^$Reason=Foo', '||example.org^$reason=Foo'],
             ['||example.org^$Removeparam=Foo', '||example.org^$removeparam=Foo'],
             ['||example.org^$Replace=Foo', '||example.org^$replace=Foo'],
@@ -141,9 +140,13 @@ trait NetworkProvider
             ['||example.org^$Urltransform=Foo', '||example.org^$urltransform=Foo'],
 
             ['||example.org^$Cookie=Foo', '||example.org^$cookie=Foo'],
+            ['||example.org^$Extension=Foo', '||example.org^$extension=Foo'],
             ['||example.org^$Hls=Foo', '||example.org^$hls=Foo'],
             ['||example.org^$Jsonprune=Foo', '||example.org^$jsonprune=Foo'],
             ['||example.org^$Xmlprune=Foo', '||example.org^$xmlprune=Foo'],
+
+            ['||example.org^$Dnsrewrite=Foo', '||example.org^$dnsrewrite=Foo'],
+            ['||example.org^$Dnstype=Foo', '||example.org^$dnstype=Foo'],
         ];
     }
 }
