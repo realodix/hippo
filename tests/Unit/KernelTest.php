@@ -32,7 +32,7 @@ class KernelTest extends TestCase
         $commands = $this->getPrivateProperty($kernel, 'commands');
 
         $applicationMock = \Mockery::mock(Application::class);
-        $applicationMock->expects('add')
+        $applicationMock->expects('addCommand')
             ->times(count($commands))
             ->with(\Mockery::type(\Symfony\Component\Console\Command\Command::class));
 

@@ -69,7 +69,7 @@ class Kernel
     protected function registerCommands(Application $console): void
     {
         foreach ($this->commands as $command) {
-            $console->add($this->app->make($command));
+            $console->addCommand($this->app->make($command));
         }
     }
 }

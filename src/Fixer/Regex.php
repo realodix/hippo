@@ -26,11 +26,11 @@ final class Regex
     const COSMETIC_RULE = '/^(?:\[\$[^\]]+\])?([^\/\|\@\"\!]*?)(\$\@?\$|#@?[$?]{1,2}#|#@?#[\^\+]?)(.*)$/';
 
     /**
-     * https://regex101.com/r/dgL4pf/1
+     * https://regex101.com/r/2E6nAd/1
      *
      * @var string Regex to find domains in element-hiding rules.
      */
-    const COSMETIC_DOMAIN = '/^([^\/\|\@\"\!]*?)(#|\$)\@?\??\@?(#|\$)/';
+    const COSMETIC_DOMAIN = '/^(?!##?\s)([^\/\|\@\"!]*?)(##|#[@?$%]{1,3}#|\$@?\$)/';
 
     /**
      * @var string Regex to find string literals inside CSS attribute selectors.

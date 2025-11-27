@@ -85,7 +85,8 @@ final class Processor
         }
 
         $cosmeticResult = $this->combiner->handle(
-            Helper::uniqueSorted($cosmetic, fn($a) => Preg::replace(Regex::COSMETIC_DOMAIN, '', $a))->all(),
+            Helper::uniqueSorted($cosmetic, fn($value) => Preg::replace(Regex::COSMETIC_DOMAIN, '', $value))
+                ->all(),
             Regex::COSMETIC_DOMAIN,
             ',',
         );

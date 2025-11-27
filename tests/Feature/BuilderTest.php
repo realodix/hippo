@@ -13,7 +13,7 @@ class BuilderTest extends TestCase
     protected function runBuildCommand()
     {
         $application = new Application;
-        $application->add(app(BuildCommand::class));
+        $application->addCommand(app(BuildCommand::class));
         $command = $application->find('build');
         $commandTester = new CommandTester($command);
 

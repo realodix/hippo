@@ -36,7 +36,7 @@ abstract class TestCase extends BaseTestCase
     protected function runFixCommand($processingFile, ?string $cachePath = null, array $options = [])
     {
         $application = new Application;
-        $application->add(app(FixCommand::class));
+        $application->addCommand(app(FixCommand::class));
         $command = $application->find('fix');
         $commandTester = new CommandTester($command);
 
