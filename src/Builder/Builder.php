@@ -130,7 +130,7 @@ final class Builder
      */
     private function sourceHash(array ...$sources): string
     {
-        return hash('xxh3', implode('', array_merge(...$sources)));
+        return hash('xxh128', implode('', array_merge(...$sources)));
     }
 
     /**
