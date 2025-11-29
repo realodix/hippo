@@ -151,10 +151,10 @@ class GeneralTest extends TestCase
             '$image,permissions=storage-access=()\, camera=(),domain=a.com|b.com',
             '||example.org^$hls=/#UPLYNK-SEGMENT:.*\,ad/t,domain=/a\,b/',
             '!',
+            'example.com#%#(function(b){Object.defineProperty(Element.prototype,"innerHTML",{get:function(){return b.get.call(this)},set:function(a){/^(?:<([abisuq]) id="[^"]*"><\/\1>)*$/.test(a)||b.set.call(this,a)},enumerable:!0,configurable:!0})})(Object.getOwnPropertyDescriptor(Element.prototype,"innerHTML"));',
             'example.com#$#.ignielAdBlock { display: none !important; }',
             'example.com#$#div.Ad-Container[id^="adblock-bait-element-"] { display: block !important; }',
             'example.com#$?#style[id="mdpDeblocker-css"] { remove: true; }',
-            'example.com#%#(function(b){Object.defineProperty(Element.prototype,"innerHTML",{get:function(){return b.get.call(this)},set:function(a){/^(?:<([abisuq]) id="[^"]*"><\/\1>)*$/.test(a)||b.set.call(this,a)},enumerable:!0,configurable:!0})})(Object.getOwnPropertyDescriptor(Element.prototype,"innerHTML"));',
         ];
         $this->assertSame($expected, $this->processor->process($input));
     }

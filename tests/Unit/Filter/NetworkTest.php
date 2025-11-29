@@ -20,6 +20,25 @@ class NetworkTest extends TestCase
     }
 
     #[PHPUnit\Test]
+    public function rules_order(): void
+    {
+        $input = [
+            '/ads.$domain=example.com',
+            '||example.com^',
+            '@@||example.com^',
+        ];
+        $expected = [
+            '/ads.$domain=example.com',
+            '||example.com^',
+            '@@||example.com^',
+        ];
+
+        arsort($input);
+
+        $this->assertSame($expected, $this->processor->process($input));
+    }
+
+    #[PHPUnit\Test]
     public function combines_rules_based_on_rules(): void
     {
         $input = [

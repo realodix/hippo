@@ -33,6 +33,13 @@ final class Regex
     const COSMETIC_DOMAIN = '/^(?!##?\s)([^\/\|\@\"!]*?)(##|#[@?$%]{1,3}#|\$@?\$)/';
 
     /**
+     * https://regex101.com/r/NYYNxd
+     *
+     * @var string Regex to find AdGuard JS rules.
+     */
+    const AG_JS_RULE = '/^(?:\[\$[^\]]+\])?([^\/\|\@\"\!]*?)(#@?%#[\^\+]?)(.*)$/';
+
+    /**
      * @var string Regex to find string literals inside CSS attribute selectors.
      *             Example: `[title="some text"]`
      */

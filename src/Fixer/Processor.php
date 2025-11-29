@@ -75,23 +75,33 @@ final class Processor
     {
         $cosmetic = [];
         $network = [];
+        $adguardJs = [];
 
         foreach ($section as $rule) {
             if (preg_match(Regex::COSMETIC_RULE, $rule)) {
                 $cosmetic[] = $rule;
+            } elseif (preg_match(Regex::AG_JS_RULE, $rule)) {
+                $adguardJs[] = $rule;
             } else {
                 $network[] = $rule;
             }
         }
 
         $cosmeticResult = $this->combiner->handle(
-            Helper::uniqueSorted($cosmetic, fn($value) => Preg::replace(Regex::COSMETIC_DOMAIN, '', $value))
-                ->all(),
+            Helper::uniqueSorted(
+                array_merge($cosmetic, $adguardJs),
+                fn($value) => Preg::replace(Regex::COSMETIC_DOMAIN, '', $value),
+            )->all(),
             Regex::COSMETIC_DOMAIN,
             ',',
         );
+
         $networkResult = $this->combiner->handle(
-            Helper::uniqueSorted($network, fn($value) => $value, SORT_STRING | SORT_FLAG_CASE)->all(),
+            Helper::uniqueSorted(
+                $network,
+                fn($value) => str_starts_with($value, '@@') ? '}'.$value : $value,
+                SORT_STRING | SORT_FLAG_CASE,
+            )->all(),
             Regex::NET_OPTION_DOMAIN,
             '|',
         );

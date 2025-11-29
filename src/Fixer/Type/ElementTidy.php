@@ -52,7 +52,7 @@ final class ElementTidy
             $selector = ltrim($selector);
         }
 
-        $selector = "@$selector@"; // Wrap selector in a temporary character to handle edge cases
+        $selector = "@{$selector}@"; // Wrap selector in a temporary character to handle edge cases
         $selector = $this->extractStringLiterals($selector);
         $selector = $this->normalizeCombinatorWhitespace($selector);
         $selector = $this->lowercasePseudoClasses($selector);
