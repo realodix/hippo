@@ -19,6 +19,49 @@ class GeneralTest extends TestCase
         $this->processor = app(Processor::class);
     }
 
+    #[PHPUnit\Test]
+    public function rulesOrder()
+    {
+        $input = [
+            '[$app=org.example.app]example.com##.textad',
+            'example.com###ads',
+            'example.com##.ads',
+            'example.com##ads',
+            'example.com#@##ads',
+            'example.com#@#.ads',
+            'example.com#@#ads',
+
+            'example.com#@#+js(...)',
+            'example.com#@%#ads',
+
+            '/ads.$domain=example.com',
+            '||example.com^',
+            '@@||example.com^',
+        ];
+
+        $expected = [
+            '/ads.$domain=example.com',
+            '||example.com^',
+            '@@||example.com^',
+
+            'example.com###ads',
+            'example.com##.ads',
+            '[$app=org.example.app]example.com##.textad',
+            'example.com##ads',
+            'example.com#@##ads',
+            'example.com#@#.ads',
+            'example.com#@#ads',
+
+            'example.com#@#+js(...)',
+            'example.com#@%#ads',
+        ];
+
+        arsort($input);
+        $output = $this->processor->process($input);
+
+        $this->assertSame($expected, $output);
+    }
+
     /**
      * Remove the blank line
      */
@@ -48,8 +91,8 @@ class GeneralTest extends TestCase
         $expected = [
             '! b',
             '! a',
-            'a.com,b.com##.ads',
             '||example.com^$css,domain=a.com|b.com',
+            'a.com,b.com##.ads',
         ];
         $this->assertSame($expected, $this->processor->process($input));
     }

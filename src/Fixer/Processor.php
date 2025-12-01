@@ -103,7 +103,7 @@ final class Processor
             '|',
         );
 
-        return array_merge($cosmeticResult, $networkResult);
+        return array_merge($networkResult, $cosmeticResult);
     }
 
     /**
