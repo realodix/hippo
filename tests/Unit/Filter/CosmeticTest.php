@@ -85,6 +85,66 @@ class CosmeticTest extends TestCase
     // ========================================================================
 
     #[PHPUnit\Test]
+    public function rules_order(): void
+    {
+        $input = [
+            'example.com##.ads',
+            'example.com#@#.ads',
+            'example.com##ads',
+            'example.com#@#ads',
+            'example.com###ads',
+            'example.com#@##ads',
+
+            'example.com#?#.ads',
+            'example.com#@?#.ads',
+
+            'example.com#$#ads',
+            'example.com#$?#ads',
+            'example.com#@$#ads',
+            'example.com#@$?#ads',
+
+            'example.com##^ads',
+            'example.com#@#^ads',
+            'example.com$$ads',
+            'example.com$@$ads',
+
+            'example.com#%#ads',
+            'example.com#@%#ads',
+
+            'example.com##+js(...)',
+            'example.com#@#+js(...)',
+        ];
+        $expected = [
+            'example.com###ads',
+            'example.com##.ads',
+            'example.com##ads',
+            'example.com#@##ads',
+            'example.com#@#.ads',
+            'example.com#@#ads',
+
+            'example.com##^ads',
+            'example.com#$#ads',
+            'example.com#$?#ads',
+            'example.com#?#.ads',
+
+            'example.com#@#^ads',
+            'example.com#@$#ads',
+            'example.com#@$?#ads',
+            'example.com#@?#.ads',
+            'example.com$$ads',
+            'example.com$@$ads',
+
+            'example.com##+js(...)',
+            'example.com#%#ads',
+            'example.com#@#+js(...)',
+            'example.com#@%#ads',
+        ];
+
+        arsort($input);
+        $this->assertSame($expected, $this->processor->process($input));
+    }
+
+    #[PHPUnit\Test]
     public function domains_are_sorted(): void
     {
         $input = ['c.com,b.com,~a.com##.ad'];
@@ -108,10 +168,19 @@ class CosmeticTest extends TestCase
             'a.com,b.com##.ad',
             'a.com##.adRight',
             'a.com,b.com##.adRight',
+            '!',
+            'b.com,a.com##.ads',
+            'a.com#?#.ads',
+            'a.com#@#.ads',
+            'c.com##.ads',
         ];
         $expected = [
             'a.com,b.com##.ad',
             'a.com,b.com##.adRight',
+            '!',
+            'a.com,b.com,c.com##.ads',
+            'a.com#@#.ads',
+            'a.com#?#.ads',
         ];
         $this->assertSame($expected, $this->processor->process($input));
     }
@@ -192,6 +261,35 @@ class CosmeticTest extends TestCase
             '##div:not(> .ad)',
             '!',
             '##body.cookie-overlay-active::after',
+        ];
+        $this->assertSame($expected, $this->processor->process($input));
+    }
+
+    /**
+     * https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
+     */
+    #[PHPUnit\Test]
+    public function handle_modifiersForNonBasicTypeOfRules(): void
+    {
+        $input = [
+            '! combine',
+            'example.com##selector',
+            '[$domain=b.com|a.com,app=test_app|com.apple.Safari]example.com##selector',
+            '! order',
+            'example.com##selector',
+            'example.com#?#div:has(> a[target="_blank"][rel="nofollow"])',
+            'example.com##+js(nobab)',
+            '[$domain=b.com|a.com,app=test_app|com.apple.Safari]example.com##selector',
+        ];
+        $expected = [
+            '! combine',
+            'example.com##selector',
+            '[$domain=b.com|a.com,app=test_app|com.apple.Safari]example.com##selector',
+            '! order',
+            'example.com##selector',
+            'example.com#?#div:has(> a[target="_blank"][rel="nofollow"])',
+            '[$domain=b.com|a.com,app=test_app|com.apple.Safari]example.com##selector',
+            'example.com##+js(nobab)',
         ];
         $this->assertSame($expected, $this->processor->process($input));
     }

@@ -75,23 +75,20 @@ final class Processor
     {
         $cosmetic = [];
         $network = [];
-        $adguardJs = [];
 
         foreach ($section as $rule) {
             if (preg_match(Regex::COSMETIC_RULE, $rule)) {
                 $cosmetic[] = $rule;
             } elseif (preg_match(Regex::AG_JS_RULE, $rule)) {
-                $adguardJs[] = $rule;
+                $cosmetic[] = $rule;
             } else {
                 $network[] = $rule;
             }
         }
 
         $cosmeticResult = $this->combiner->handle(
-            Helper::uniqueSorted(
-                array_merge($cosmetic, $adguardJs),
-                fn($value) => Preg::replace(Regex::COSMETIC_DOMAIN, '', $value),
-            )->all(),
+            Helper::uniqueSorted($cosmetic, fn($value) => $this->cosmeticRulesOrder($value))
+                ->all(),
             Regex::COSMETIC_DOMAIN,
             ',',
         );
@@ -107,6 +104,32 @@ final class Processor
         );
 
         return array_merge($cosmeticResult, $networkResult);
+    }
+
+    /**
+     * Returns a string representing the order of a cosmetic rule.
+     *
+     * @param string $rule The cosmetic rule to determine the order for
+     * @return string The rule with the order prefix added, or the original rule if no prefix is needed.
+     */
+    private function cosmeticRulesOrder(string $rule): string
+    {
+        Preg::match(Regex::COSMETIC_DOMAIN, $rule, $m);
+        $rule = isset($m[1]) ? substr($rule, strlen($m[1])) : $rule;
+
+        // https://regex101.com/r/eqaq6o/1
+        if (Preg::isMatch('/^(#@?[?$]{1,2}#|#@?#\^|\$@?\$)/', $rule)
+            || str_starts_with($rule, '[$')) {
+            return '1'.$rule;
+        }
+
+        // Scriptlet rules
+        if (str_starts_with($rule, '##+') || str_starts_with($rule, '#@#+')
+            || str_starts_with($rule, '#%#') || str_starts_with($rule, '#@%#')) {
+            return '2'.$rule;
+        }
+
+        return $rule;
     }
 
     /**

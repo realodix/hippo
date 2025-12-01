@@ -8,41 +8,41 @@
 # =========================
 !# Sorting
 ###a
-#@##a
 a.com,b.com,~c.com###a
-a.com,b.com,~c.com#@##a
 ###b
-#@##b
 a.com,b.com,~c.com###b
-a.com,b.com,~c.com#@##b
 ##.a
-#@#.a
 a.com,b.com,~c.com##.a
-a.com,b.com,~c.com#@#.a
 ##.b
-#@#.b
 a.com,b.com,~c.com##.b
+#@##a
+a.com,b.com,~c.com#@##a
+#@##b
+a.com,b.com,~c.com#@##b
+#@#.a
+a.com,b.com,~c.com#@#.a
+#@#.b
 a.com,b.com,~c.com#@#.b
 !# Merging
 ###a
-#@##a
 a.com,b.com,~c.com###a
-a.com,b.com,~c.com#@##a
 ##.a
-#@#.a
 a.com,b.com,~c.com##.a
+#@##a
+a.com,b.com,~c.com#@##a
+#@#.a
 a.com,b.com,~c.com#@#.a
 !# Cosmetic, Scriptlet and Network
 ###ads
-example.com##+js(nobab)
 ##.ads
-[$domain=b.com|a.com,app=test_app|com.apple.Safari]example.com##selector
 example.com##body:style(overflow: auto !important;)
 ##div
-$@$script[tag-content="banner"]
 example.com$$script[tag-content="banner"]
 $$script[tag-content="banner"]
+$@$script[tag-content="banner"]
 example.com$@$script[tag-content="banner"]
+[$domain=b.com|a.com,app=test_app|com.apple.Safari]example.com##selector
+example.com##+js(nobab)
 -ad123-
 ||example.com/banner/
 !# Network
