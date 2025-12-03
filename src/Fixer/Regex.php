@@ -18,12 +18,12 @@ final class Regex
     const NET_OPTION_DOMAIN = '/(?:\$|,)(?:denyallow|domain|from|method|to)\=([^,\s]+)$/';
 
     /**
-     * https://regex101.com/r/CdhXQ4
+     * https://regex101.com/r/yY3a26/2
      *
      * @var string Regex to identify and capture parts of an element hiding rule.
      *             Example: `example.com,example.org##.ad`
      */
-    const COSMETIC_RULE = '/^(?:\[\$[^\]]+\])?([^\/\|\@\"\!]*?)(\$\@?\$|#@?[$?]{1,2}#|#@?#[\^\+]?)(.*)$/';
+    const COSMETIC_RULE = '/^(?:\[\$[^\]]+\])?([^\/\|\@\"\!]*?|\/.+\/)(#@?[$?]{1,2}#|#@?#[\^\+]?|\$\@?\$)(.*)$/';
 
     /**
      * https://regex101.com/r/2E6nAd

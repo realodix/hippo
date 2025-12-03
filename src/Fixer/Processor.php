@@ -129,6 +129,11 @@ final class Processor
             return '2'.$rule;
         }
 
+        // regex domain
+        if (str_starts_with($rule, '/')) {
+            return '3'.$rule;
+        }
+
         return $rule;
     }
 

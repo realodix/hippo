@@ -94,6 +94,7 @@ class CosmeticTest extends TestCase
             'example.com#@#ads',
             'example.com###ads',
             'example.com#@##ads',
+            '/example\.com/###ads2',
 
             'example.com#?#.ads',
             'example.com#@?#.ads',
@@ -138,9 +139,31 @@ class CosmeticTest extends TestCase
             'example.com#%#ads',
             'example.com#@#+js(...)',
             'example.com#@%#ads',
+
+            '/example\.com/###ads2',
         ];
 
         arsort($input);
+        $this->assertSame($expected, $this->processor->process($input));
+    }
+
+    #[PHPUnit\Test]
+    public function handle_regex_domains(): void
+    {
+        $input = [
+            '/example\.com/###ads', // current is regex
+            'example.com###ads',
+            'example.com#@#ads', // next is regex
+            '/example\.com/#@#ads',
+            '/example\.com/###ads',
+            '/example\.com/###ads',
+        ];
+        $expected = [
+            'example.com###ads',
+            'example.com#@#ads',
+            '/example\.com/###ads',
+            '/example\.com/#@#ads',
+        ];
         $this->assertSame($expected, $this->processor->process($input));
     }
 

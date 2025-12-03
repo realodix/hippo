@@ -108,7 +108,9 @@ final class Combiner
      */
     private function canCombine($currentLine, $nextLine, string $separator): bool
     {
-        if ($nextLine->fullMatch === '' || $currentLine->domainList === '' || $nextLine->domainList === '') {
+        if ($nextLine->fullMatch === '' || $currentLine->domainList === '' || $nextLine->domainList === ''
+            || str_starts_with($currentLine->domainList, '/') || str_starts_with($nextLine->domainList, '/')
+        ) {
             return false;
         }
 
