@@ -16,6 +16,7 @@ A few examples of transformations applied during optimization:
 
 ```adblock
 ! Before
+example.com##+js(aopw, Fingerprint2)
 ##.top-r-ads
 example.com###ads
 -banner-$image,domain=example.com
@@ -26,12 +27,13 @@ google.com,example.com## .advert
 ##.top-banners
 
 ! After
+-banner-$image,domain=example.com|example.org
+||example.com^$third-party,script,domain=a.com
 example.com###ads
 example.com,google.com##.advert
 ##.top-banners
 ##.top-r-ads
--banner-$image,domain=example.com|example.org
-||example.com^$third-party,script,domain=a.com
+example.com##+js(aopw, Fingerprint2)
 ```
 
 
