@@ -2,7 +2,6 @@
 
 namespace Realodix\Haiku\Fixer;
 
-use Composer\Pcre\Preg;
 use Realodix\Haiku\Fixer\ValueObject\DomainSection;
 use Realodix\Haiku\Helper;
 
@@ -44,7 +43,7 @@ final class Combiner
 
                 // Replace the domain in `$currentLine` and insert it into `$nextLine`.
                 $newFullMatch = str_replace($currentLineParse->domainList, $newDomain, $currentLineParse->fullMatch);
-                $filters[$i + 1] = Preg::replace($domainPattern, $newFullMatch, $currentLine);
+                $filters[$i + 1] = preg_replace($domainPattern, $newFullMatch, $currentLine);
             } else {
                 $combined[] = $currentLine;
             }
@@ -85,7 +84,7 @@ final class Combiner
             return new DomainSection(
                 fullMatch: $matches[0],
                 domainList: $matches[1] ?? '',
-                baseRule: Preg::replace($domainPattern, '', $filter),
+                baseRule: preg_replace($domainPattern, '', $filter),
             );
         }
 

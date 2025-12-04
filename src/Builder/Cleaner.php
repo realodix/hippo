@@ -2,8 +2,6 @@
 
 namespace Realodix\Haiku\Builder;
 
-use Composer\Pcre\Preg;
-
 final class Cleaner
 {
     /**
@@ -43,7 +41,7 @@ final class Cleaner
      */
     private static function removeMetadataAgent(string $content): string
     {
-        return Preg::replace(
+        return preg_replace(
             '/^\[(Ad[Bb]lock|[Aa]d[Gg]uard|u[Bb](?:lock|[Oo]))([a-zA-Z0-9\.\s]+)?\]$/m',
             '',
             $content,
@@ -60,6 +58,6 @@ final class Cleaner
      */
     private static function removeComment(string $content): string
     {
-        return Preg::replace('/^!(?!#\s?(?:include\s|if|endif|else)).*/m', '', $content);
+        return preg_replace('/^!(?!#\s?(?:include\s|if|endif|else)).*/m', '', $content);
     }
 }

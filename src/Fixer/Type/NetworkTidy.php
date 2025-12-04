@@ -2,7 +2,6 @@
 
 namespace Realodix\Haiku\Fixer\Type;
 
-use Composer\Pcre\Preg;
 use Realodix\Haiku\Fixer\Regex;
 use Realodix\Haiku\Helper;
 
@@ -59,7 +58,7 @@ final class NetworkTidy
             $parsed[$key] = [];
         }
 
-        foreach (Preg::split('/(?<!\\\),/', $options) as $option) {
+        foreach (preg_split('/(?<!\\\),/', $options) as $option) {
             $parts = explode('=', $option, 2);
             $name = strtolower(ltrim($parts[0], '~'));
             $value = $parts[1] ?? null;

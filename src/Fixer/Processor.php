@@ -2,7 +2,6 @@
 
 namespace Realodix\Haiku\Fixer;
 
-use Composer\Pcre\Preg;
 use Realodix\Haiku\Fixer\Type\ElementTidy;
 use Realodix\Haiku\Fixer\Type\NetworkTidy;
 use Realodix\Haiku\Helper;
@@ -114,11 +113,11 @@ final class Processor
      */
     private function cosmeticRulesOrder(string $rule): string
     {
-        Preg::match(Regex::COSMETIC_DOMAIN, $rule, $m);
+        preg_match(Regex::COSMETIC_DOMAIN, $rule, $m);
         $rule = isset($m[1]) ? substr($rule, strlen($m[1])) : $rule;
 
         // https://regex101.com/r/eqaq6o/1
-        if (Preg::isMatch('/^(#@?[?$]{1,2}#|#@?#\^|\$@?\$)/', $rule)
+        if (preg_match('/^(#@?[?$]{1,2}#|#@?#\^|\$@?\$)/', $rule)
             || str_starts_with($rule, '[$')) {
             return '1'.$rule;
         }
@@ -157,9 +156,9 @@ final class Processor
     public function isCosmeticRule(string $line): bool
     {
         // https://regex101.com/r/OW1tkq/1
-        $basic = Preg::isMatch('/^#@?#[^\s|\#]|^#@?##[^\s|\#]/', $line);
+        $basic = preg_match('/^#@?#[^\s|\#]|^#@?##[^\s|\#]/', $line);
         // https://regex101.com/r/SPcKMv/1
-        $advanced = Preg::isMatch('/^(#(?:@?(?:\$|\?|%)|@?\$\?)#)[^\s]/', $line);
+        $advanced = preg_match('/^(#(?:@?(?:\$|\?|%)|@?\$\?)#)[^\s]/', $line);
 
         return $basic || $advanced;
     }
