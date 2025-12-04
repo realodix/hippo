@@ -19,6 +19,14 @@ class GeneralTest extends TestCase
         $this->processor = app(Processor::class);
     }
 
+    public function testComparesFiles(): void
+    {
+        $inputFile = base_path('tests/Integration/general_actual.txt');
+        $expectedFile = base_path('tests/Integration/general_expected.txt');
+
+        $this->assertFilter($expectedFile, $inputFile);
+    }
+
     #[PHPUnit\Test]
     public function rulesOrder()
     {

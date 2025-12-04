@@ -10,14 +10,14 @@ class RegexTest extends TestCase
 {
     use GeneralProvider;
 
-    #[PHPUnit\DataProvider('not_net_option_provider')]
+    #[PHPUnit\DataProvider('not_network_option_provider')]
     #[PHPUnit\Test]
-    public function not_net_option($string)
+    public function not_network_option($string)
     {
         $this->assertFalse((bool) preg_match(Regex::NET_OPTION, $string));
     }
 
-    public static function not_net_option_provider()
+    public static function not_network_option_provider()
     {
         return [
             ['#$#.textad { visibility: hidden; }'],
@@ -28,15 +28,15 @@ class RegexTest extends TestCase
         ];
     }
 
-    #[PHPUnit\DataProvider('NET_OPTION_DOMAIN_provider')]
+    #[PHPUnit\DataProvider('network_option_domain_provider')]
     #[PHPUnit\Test]
-    public function NET_OPTION_DOMAIN($expected, $string)
+    public function network_option_domain($expected, $string)
     {
         preg_match(Regex::NET_OPTION_DOMAIN, $string, $matches);
         $this->assertSame($expected, $matches[1] ?? null);
     }
 
-    public static function NET_OPTION_DOMAIN_provider()
+    public static function network_option_domain_provider()
     {
         return [
             ['example.com', '$domain=example.com'],
@@ -61,5 +61,78 @@ class RegexTest extends TestCase
     public function cosmetic_rule($string)
     {
         $this->assertTrue((bool) preg_match(Regex::COSMETIC_RULE, $string));
+    }
+
+    #[PHPUnit\DataProvider('cosmeticRuleMatchProvider')]
+    #[PHPUnit\Test]
+    public function cosmetic_rule_match($rule, $expectedMatch, $expectedDomain)
+    {
+        $matched = preg_match(Regex::COSMETIC_RULE, $rule, $m);
+
+        // There should be no matches at all
+        if ($expectedMatch === null) {
+            $this->assertSame(0, $matched);
+
+            return;
+        }
+
+        $this->assertSame($expectedMatch, $m[0], "Full match: $rule");
+        $this->assertSame($expectedDomain, $m[1], "Extracted domain: $rule");
+    }
+
+    public static function cosmeticRuleMatchProvider(): array
+    {
+        return [
+            ['##div', '##div', ''],
+            ['example.com,~example.org##div', 'example.com,~example.org##div', 'example.com,~example.org'],
+            ['example.com,~example.org##.ads', 'example.com,~example.org##.ads', 'example.com,~example.org'],
+
+            ['example.com##+js(...)', 'example.com##+js(...)', 'example.com'],
+
+            ['/regex/##div', '/regex/##div', '/regex/'],
+            [
+                '[$app=~org.example.app1|~org.example.app2]example.com##.textad',
+                '[$app=~org.example.app1|~org.example.app2]example.com##.textad',
+                'example.com',
+            ],
+
+            // not included
+            ['example.com#%#//scriptlet(...)', null, null],
+            ['example.com#%#window.__gaq = undefined;', null, null],
+        ];
+    }
+
+    #[PHPUnit\DataProvider('cosmeticDomainProvider')]
+    #[PHPUnit\Test]
+    public function cosmetic_domain($rule, $expectedMatch, $expectedDomain)
+    {
+        $matched = preg_match(Regex::COSMETIC_DOMAIN, $rule, $m);
+
+        // There should be no matches at all
+        if ($expectedMatch === null) {
+            $this->assertSame(0, $matched);
+
+            return;
+        }
+
+        $this->assertSame($expectedMatch, $m[0], "Full match: $rule");
+        $this->assertSame($expectedDomain, $m[1], "Extracted domain: $rule");
+    }
+
+    public static function cosmeticDomainProvider(): array
+    {
+        return [
+            ['##div', '##', ''],
+            ['example.com,~example.org##div', 'example.com,~example.org##', 'example.com,~example.org'],
+            ['example.com,~example.org##.ads', 'example.com,~example.org##', 'example.com,~example.org'],
+
+            ['example.com##+js(...)', 'example.com##', 'example.com'],
+            ['example.com#%#//scriptlet(...)', 'example.com#%#', 'example.com'],
+            ['example.com#%##%#window.__gaq = undefined;', 'example.com#%#', 'example.com'],
+
+            // not included
+            ['/regex/##div', null, null],
+            ['[$app=~org.example.app1|~org.example.app2]example.com##.textad', null, null],
+        ];
     }
 }
