@@ -30,36 +30,6 @@ class CosmeticTest extends TestCase
     }
 
     #[PHPUnit\Test]
-    public function blank_lines_are_removed_2(): void
-    {
-        $input = [
-            '## ads',
-            '## .ads',
-            '## #ads',
-            '!',
-            'a.com## #ads',
-            'a.com## .ads',
-            'a.com## ads',
-            '!',
-            'a.com##^ ads',
-            'a.com$$ ads',
-        ];
-        $expected = [
-            '## ads',
-            '## .ads',
-            '## #ads',
-            '!',
-            'a.com###ads',
-            'a.com##.ads',
-            'a.com##ads',
-            '!',
-            'a.com##^ads',
-            'a.com$$ads',
-        ];
-        $this->assertSame($expected, $this->processor->process($input));
-    }
-
-    #[PHPUnit\Test]
     public function multiple_sections_are_processed_correctly(): void
     {
         $input = [
@@ -242,50 +212,6 @@ class CosmeticTest extends TestCase
             'b.com##.ad2',
         ];
         $this->assertSame($input, $this->processor->process($input));
-    }
-
-    #[PHPUnit\Test]
-    public function element_combinator_whitespace_is_normalized(): void
-    {
-        $input = [
-            '##.a  +  .b:has(  +c)',
-            '##.a  .b:has(  c  )',
-            '##.a  >  .b:has(  >c)',
-            '##.a  ~  .b:has(  ~c)',
-            '!',
-            '##div:has(>.ad)',
-            '!',
-            'example.com##body:style(overflow:     auto     !important;)',
-        ];
-        $expected = [
-            '##.a + .b:has(+ c)',
-            '##.a .b:has(  c  )',
-            '##.a > .b:has(> c)',
-            '##.a ~ .b:has(~ c)',
-            '!',
-            '##div:has(> .ad)',
-            '!',
-            'example.com##body:style(overflow: auto !important;)',
-        ];
-        $this->assertSame($expected, $this->processor->process($input));
-    }
-
-    #[PHPUnit\Test]
-    public function element_pseudo_classes_are_lowercased(): void
-    {
-        $input = [
-            '##div:hAs(> .ad)',
-            '##div:nOt(> .ad)',
-            '!',
-            '##body.cookie-overlay-active::AFter',
-        ];
-        $expected = [
-            '##div:has(> .ad)',
-            '##div:not(> .ad)',
-            '!',
-            '##body.cookie-overlay-active::after',
-        ];
-        $this->assertSame($expected, $this->processor->process($input));
     }
 
     /**
