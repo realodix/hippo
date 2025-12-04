@@ -123,7 +123,7 @@ final class Processor
             return '1'.$rule;
         }
 
-        // Scriptlet rules
+        // scriptlet rules
         if (str_starts_with($rule, '##+') || str_starts_with($rule, '#@#+')
             || str_starts_with($rule, '#%#') || str_starts_with($rule, '#@%#')) {
             return '2'.$rule;
