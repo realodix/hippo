@@ -35,10 +35,10 @@ final class NetworkTidy
     public function handle(string $line): string
     {
         if (!preg_match(Regex::NET_OPTION, $line, $m)) {
-            return $this->removeUnnecessaryWildcard($line);
+            return $line;
         }
 
-        $filterText = $this->removeUnnecessaryWildcard($m[1]);
+        $filterText = $m[1];
         $filterOptions = $this->parseOptions($m[2]);
         $optionList = $this->normalizeOption($filterOptions);
 
@@ -181,39 +181,5 @@ final class NetworkTidy
 
         // Prio 2: Other options
         return '3'.$option;
-    }
-
-    /**
-     * Removes unnecessary wildcard characters ('*') from a filter rule.
-     */
-    private function removeUnnecessaryWildcard(string $filterText): string
-    {
-        // $allowlist = false;
-        // $had_star = false;
-
-        // if (str_starts_with($filterText, '@@')) {
-        //     $allowlist = true;
-        //     $filterText = substr($filterText, 2);
-        // }
-
-        // while (strlen($filterText) > 1 && $filterText[0] === '*' && $filterText[1] !== '|' && $filterText[1] !== '!') {
-        //     $filterText = substr($filterText, 1);
-        //     $had_star = true;
-        // }
-
-        // while (strlen($filterText) > 1 && $filterText[strlen($filterText) - 1] === '*' && $filterText[strlen($filterText) - 2] !== '|') {
-        //     $filterText = substr($filterText, 0, -1);
-        //     $had_star = true;
-        // }
-
-        // if ($had_star && str_starts_with($filterText, '/') && str_ends_with($filterText, '/')) {
-        //     $filterText .= '*';
-        // }
-
-        // if ($allowlist) {
-        //     $filterText = '@@' . $filterText;
-        // }
-
-        return $filterText;
     }
 }
