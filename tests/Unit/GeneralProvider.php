@@ -78,6 +78,21 @@ trait GeneralProvider
             ['!#endif'],
             ['!+ NOT_OPTIMIZED'],
             ['!+ NOT_OPTIMIZED PLATFORM(android)'],
+
+            // YAML metadata
+            ['---'],
+        ];
+    }
+
+    public static function isNotSpecialLineProvider(): array
+    {
+        return [
+            // https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
+            ['[$domain=example.com]##.textad'],
+            ['[$domain=example.org]example.com##.textad'],
+
+            // Like YAML metadata
+            ['-ads-'],
         ];
     }
 

@@ -151,9 +151,7 @@ class GeneralTest extends TestCase
         $this->assertTrue($this->processor->isSpecialLine($data));
     }
 
-    #[PHPUnit\TestWith(['[$domain=example.com]##.textad'])]
-    #[PHPUnit\TestWith(['[$domain=example.org]example.com##.textad'])]
-    #[PHPUnit\TestWith(['%include'])]
+    #[PHPUnit\DataProvider('isNotSpecialLineProvider')]
     #[PHPUnit\Test]
     public function isNotSpecialLine($data)
     {

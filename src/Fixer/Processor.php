@@ -147,7 +147,9 @@ final class Processor
             // special comments starting with # but not ## (element hiding)
             || str_starts_with($line, '#') && !$this->isCosmeticRule($line)
             // header
-            || str_starts_with($line, '[') && str_ends_with($line, ']');
+            || str_starts_with($line, '[') && str_ends_with($line, ']')
+            // YAML metadata
+            || trim($line, '-') === '';
     }
 
     /**
