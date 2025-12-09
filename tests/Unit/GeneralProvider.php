@@ -66,7 +66,10 @@ trait GeneralProvider
             ['###'],
 
             // Headers
+            ['[]'],
+            ['[ ]'],
             ['[Adblock Plus 2.0]'],
+            ['[Adblock Plus 3.1; AdGuard 1.0]'],
 
             // Preprocessor directive
             // https://github.com/gorhill/uBlock/wiki/Static-filter-syntax#pre-parsing-directives
@@ -88,8 +91,10 @@ trait GeneralProvider
     {
         return [
             // https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
-            ['[$domain=example.com]##.textad'],
-            ['[$domain=example.org]example.com##.textad'],
+            ['['],
+            ['[$path=/test]example.org##.ad'],
+            ['[$path=/test]##.ad'],
+            ['[$adg-modifier]##[class^="ads-"]'], // Special case
 
             // Like YAML metadata
             ['-ads-'],
