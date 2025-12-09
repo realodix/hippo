@@ -3,6 +3,7 @@
 namespace Realodix\Haiku\Test;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
+use Realodix\Haiku\Console\BuildCommand;
 use Realodix\Haiku\Console\FixCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -33,7 +34,20 @@ abstract class TestCase extends BaseTestCase
         );
     }
 
-    protected function runFixCommand($processingFile, ?string $cachePath = null, array $options = [])
+    protected function runBuildCommand(array $options = [])
+    {
+        $application = new Application;
+        $application->addCommand(app(BuildCommand::class));
+        $command = $application->find('build');
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute(array_merge([
+            '--config' => 'tests/Integration/Builder/haiku.yml',
+            '--force' => true,
+        ], $options));
+    }
+
+    protected function runFixCommand(array $options = []): CommandTester
     {
         $application = new Application;
         $application->addCommand(app(FixCommand::class));
@@ -41,18 +55,20 @@ abstract class TestCase extends BaseTestCase
         $commandTester = new CommandTester($command);
 
         $commandTester->execute(array_merge([
-            '--path' => $processingFile,
-            '--cache' => $cachePath,
+            '--cache' => isset($options['--cache']) ? $options['--cache'] : $this->cacheFile,
         ], $options));
+
+        return $commandTester;
     }
 
-    protected function assertFilter(string $expectedFile, string $actualFile, ?string $cachePath = null, array $options = [])
+    protected function assertFilter(string $expectedFile, string $actualFile, array $options = [])
     {
-        $cachePath = $cachePath ?? $this->cacheFile;
         $processingFile = Path::join($this->tmpDir, basename($actualFile));
         $this->fs->copy($actualFile, $processingFile, true);
 
-        $this->runFixCommand($processingFile, $cachePath, $options);
+        $this->runFixCommand(array_merge([
+            '--path' => $processingFile,
+        ], $options));
 
         $this->assertFileEquals($expectedFile, $processingFile);
     }
