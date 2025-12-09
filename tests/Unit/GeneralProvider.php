@@ -79,6 +79,7 @@ trait GeneralProvider
             ['!#if (conditions)'],
             ['!#else'],
             ['!#endif'],
+            ['!+NOT_OPTIMIZED'],
             ['!+ NOT_OPTIMIZED'],
             ['!+ NOT_OPTIMIZED PLATFORM(android)'],
 
