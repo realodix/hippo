@@ -3,6 +3,7 @@
 namespace Realodix\Haiku\Console;
 
 use Realodix\Haiku\App;
+use Realodix\Haiku\Config\InvalidConfigurationException;
 use Realodix\Haiku\Enums\Mode;
 use Realodix\Haiku\Fixer\Fixer;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -35,6 +36,10 @@ class FixCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        if ($input->getOption('config') && !file_exists($input->getOption('config'))) {
+            throw new InvalidConfigurationException('The configuration file does not exist.');
+        }
+
         $io = new SymfonyStyle($input, $output);
         $io->writeln(sprintf('%s <info>%s</info> by <comment>Realodix</comment>', App::NAME, App::VERSION));
         $io->newLine();
