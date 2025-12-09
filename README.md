@@ -85,25 +85,42 @@ Haiku provides two main commands: `build` for merging sources and `fix` for opti
 Builds multiple source files into a single output file as defined in your `haiku.yml`, including metadata regeneration and stripping unnecessary lines such as comments.
 
 ```sh
-vendor/bin/haiku build [options]
+Usage:
+    vendor/bin/haiku build [options]
+
+Options:
+    --force     Ignore cache and rebuild all sources.
+    --config    Use a custom configuration file path.
+
+Examples:
+    # Build all sources with custom config file.
+    vendor/bin/haiku build --config haiku.yml
+    # Rebuild all sources with custom config file and ignore cache.
+    vendor/bin/haiku build --force --config haiku.yml
 ```
 
-#### Options:
-- `--force`: Ignore cache and rebuild all sources.
-- `--config`: Use a custom configuration file path. Example: `--config ./config.yml`.
 
 ### Fixing Filter Lists
 Optimizes existing filter files or directories by cleaning syntax, sorting rules, and combining compatible patterns.
 
 ```sh
-vendor/bin/haiku fix [options]
-```
+Usage:
+    vendor/bin/haiku fix [options]
 
-#### Options:
-- `--path`: Path to the filter file or directory to process.
-- `--force`: Process all files regardless of cache.
-- `--config`: Use a custom configuration file path. Example: `--config ./config.yml`.
-- `--cache`: Specify a custom cache path. Example: `--cache ./custom-cache/`.
+Options:
+    --path      Path to the filter file or directory to process.
+    --force     Ignore cache and process all files.
+    --config    Use a custom configuration file path.
+    --cache     Specify a custom cache path.
+
+Examples:
+    # Process all files in the root directory.
+    vendor/bin/haiku fix
+    # Process a specific file with custom config file.
+    vendor/bin/haiku fix --path filter-list.txt --config haiku.yml
+    # Process all files in the root directory with custom chache directory.
+    vendor/bin/haiku fix --cache ./customcachedir
+```
 
 
 ## Configuration
