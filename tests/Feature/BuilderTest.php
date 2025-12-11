@@ -40,26 +40,4 @@ class BuilderTest extends TestCase
         $this->assertStringContainsString('date_modified:', $compiledContent);
         $this->assertStringNotContainsString('%timestamp%', $compiledContent);
     }
-
-    #[PHPUnit\Test]
-    public function date_modified_without_metadata()
-    {
-        $this->runBuildCommand();
-
-        $this->assertStringNotContainsString(
-            'Last modified:',
-            file_get_contents(base_path('tests/Integration/tmp/metadata_date_modified.txt')),
-        );
-    }
-
-    #[PHPUnit\Test]
-    public function date_modified_metadata_provided()
-    {
-        $this->runBuildCommand();
-
-        $this->assertStringContainsString(
-            'Last modified:',
-            file_get_contents(base_path('tests/Integration/tmp/metadata_date_modified_provided.txt')),
-        );
-    }
 }

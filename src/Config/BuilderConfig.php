@@ -80,7 +80,6 @@ final class BuilderConfig
                 outputPath: Path::join($this->outputDir, $list['filename']),
                 header: $list['header'] ?? '',
                 source: $list['source'],
-                metadata: $list['metadata'] ?? [],
                 unique: $list['remove_duplicates'] ?? false,
             );
         }

@@ -40,13 +40,6 @@ final class Schema
                 'filter_list' => Expect::listOf(Expect::structure([
                     'filename' => Expect::string(),
                     'remove_duplicates' => Expect::bool(),
-                    'metadata' => Expect::structure([
-                        'date_modified' => Expect::bool(),
-                        'header' => Expect::string(),
-                        'title' => Expect::string(),
-                        'version' => Expect::bool(),
-                        'custom' => Expect::string(),
-                    ]),
                     'header' => Expect::string(),
                     'source' => Expect::listOf('string'),
                 ])),

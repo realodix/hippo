@@ -15,30 +15,11 @@ builder:
         Homepage: https://example.com/
         License: MIT
         ------------------------------
-      metadata:
-        header: Adblock Plus 2.0
-        title: Filterlist 2
-        version: false
-        date_modified: false
-        custom: |
-          Description: Foo
-          Expires: 5 days (update frequency)
-          Homepage: https://example.com/
-          License: MIT
-          ------------------------------
       source:
         - tests/Integration/Builder/filter1.txt
         - tests/Integration/Builder/filter2.txt
     - filename: date_modified.txt
       header: |
         date_modified: %timestamp%
-      source:
-        - tests/Integration/Builder/filter1.txt
-    - filename: metadata_date_modified.txt
-      source:
-        - tests/Integration/Builder/filter1.txt
-    - filename: metadata_date_modified_provided.txt
-      metadata:
-        title: date_modified_provided
       source:
         - tests/Integration/Builder/filter1.txt

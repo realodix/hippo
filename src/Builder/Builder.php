@@ -15,7 +15,6 @@ final class Builder
 {
     public function __construct(
         private Config $config,
-        private Metadata $metadata,
         private Filesystem $fs,
         private Cache $cache,
         private OutputLogger $logger,
@@ -46,7 +45,6 @@ final class Builder
             // Step 1: Read all source files or URLs
             $outputPath = $filterSet->outputPath;
             $header = $filterSet->header;
-            $rawMetadata = $filterSet->metadata();
             $rawContent = $this->read($filterSet->source);
 
             if ($rawContent === null) {
@@ -57,7 +55,7 @@ final class Builder
 
             // Step 2: Preparing content
             $content = Cleaner::clean($rawContent, $filterSet->unique);
-            $sourceHash = $this->sourceHash($content, [$header], $rawMetadata);
+            $sourceHash = $this->sourceHash($content, [$header]);
 
             if (!$force && $this->cache->isValid($outputPath, $sourceHash)) {
                 $this->logger->skipped($outputPath);
@@ -68,7 +66,6 @@ final class Builder
             // Step 3: Build and write
             $finalContent = array_merge(
                 [$this->header($header)],
-                $this->metadata->build($rawMetadata),
                 $content,
             );
             $this->write($outputPath, $finalContent, $sourceHash);
