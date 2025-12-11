@@ -45,7 +45,7 @@ example.com##+js(aopw, Fingerprint2)
 Install the package via [Composer](https://getcomposer.org/):
 
 ```sh
-composer require realodix/haiku
+composer require realodix/haiku ~1.1.0
 ```
 
 Composer will install Haiku executable in its `bin-dir` which defaults to `vendor/bin`.
