@@ -78,6 +78,7 @@ final class BuilderConfig
         foreach ($filterLists as $list) {
             $filters[] = new FilterSet(
                 outputPath: Path::join($this->outputDir, $list['filename']),
+                header: $list['header'] ?? '',
                 source: $list['source'],
                 metadata: $list['metadata'] ?? [],
                 unique: $list['remove_duplicates'] ?? false,

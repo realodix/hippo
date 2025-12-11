@@ -32,17 +32,9 @@ The directory where the compiled filter lists will be saved.
 An array that defines one or more filter lists to be built. Each item in the array is an object that configures a single filter list.
 
 - **`filename`** (Required): The output filename for the filter list.
+- **`header`**: A multi-line string that will be added at the top of the filter list.
+  - `%timestamp%`: Will be replaced with the current date and time in RFC 7231 format.
 - **`source`** (Required): A list of source files (local or URL) to build the filter list from.
-- **`metadata`**: An object containing metadata to be added to the filter file's header.
-  - **`header`**: The main header for the file (e.g., `Adblock Plus 2.0`).
-  - **`title`**: The title of the filter list.
-  - **`date_modified`**: If `true`, adds the last modified date to the metadata.
-    - **Possible values:** `true` or `false`
-    - **Default:** `true` or `false` if you have not set any configuration for metadata.
-  - **`version`**: If `true`, adds a version number to the metadata.
-    - **Possible values:** `true` or `false`
-    - **Default:** `false`
-  - **`custom`**: A multi-line string that allows you to add any custom text to the metadata header.
 - **`remove_duplicates`**: If set to `true`, duplicate lines will be removed from the combined filter list.
   - **Possible values:** `true` or `false`
   - **Default:** `false`

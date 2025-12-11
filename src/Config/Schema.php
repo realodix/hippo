@@ -47,6 +47,7 @@ final class Schema
                         'version' => Expect::bool(),
                         'custom' => Expect::string(),
                     ]),
+                    'header' => Expect::string(),
                     'source' => Expect::listOf('string'),
                 ])),
             ]),

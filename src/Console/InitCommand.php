@@ -58,15 +58,15 @@ builder:
   filter_list:
     - filename: general_blocklist.txt # Required
       remove_duplicates: true
-      metadata:
-        header: Adblock Plus 2.0
-        title: General Blocklist
-        version: true
-        custom: |
-          Description: Filter list that specifically removes adverts.
-          Expires: 6 days (update frequency)
-          Homepage: https://example.org/
-          License: MIT
+      header: |
+        [Adblock Plus 2.0]
+        ! Title: Ad Blocklist
+        ! Description: Filter list that specifically removes adverts.
+        ! Last modified: %timestamp%
+        ! Expires: 5 days (update frequency)
+        ! Homepage: https://example.org/
+        ! License: MIT
+        ! --------------------------------------------------
       source: # Required
         - blocklists/general/local-rules.txt
         - https://cdn.example.org/blocklists/general.txt

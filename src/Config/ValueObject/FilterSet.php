@@ -15,6 +15,7 @@ final readonly class FilterSet
      */
     public function __construct(
         public string $outputPath,
+        public string $header,
         public array $source,
         private array $metadata,
         public bool $unique,

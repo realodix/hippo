@@ -2,6 +2,7 @@
 
 namespace Realodix\Haiku\Builder;
 
+use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Realodix\Haiku\Cache\Cache;
 use Realodix\Haiku\Config\Config;
@@ -44,6 +45,7 @@ final class Builder
         foreach ($filterSets as $filterSet) {
             // Step 1: Read all source files or URLs
             $outputPath = $filterSet->outputPath;
+            $header = $filterSet->header;
             $rawMetadata = $filterSet->metadata();
             $rawContent = $this->read($filterSet->source);
 
@@ -55,7 +57,7 @@ final class Builder
 
             // Step 2: Preparing content
             $content = Cleaner::clean($rawContent, $filterSet->unique);
-            $sourceHash = $this->sourceHash($content, $rawMetadata);
+            $sourceHash = $this->sourceHash($content, [$header], $rawMetadata);
 
             if (!$force && $this->cache->isValid($outputPath, $sourceHash)) {
                 $this->logger->skipped($outputPath);
@@ -64,13 +66,28 @@ final class Builder
             }
 
             // Step 3: Build and write
-            $finalContent = array_merge($this->metadata->build($rawMetadata), $content);
+            $finalContent = array_merge(
+                [$this->header($header)],
+                $this->metadata->build($rawMetadata),
+                $content,
+            );
             $this->write($outputPath, $finalContent, $sourceHash);
             $this->logger->processed($outputPath);
         }
 
         // Save all updated cache entries to disk
         $this->cache->repository()->save();
+    }
+
+    /**
+     * Filterlist header.
+     */
+    public function header(string $data): string
+    {
+        $data = str_replace('%timestamp%', Carbon::now()->toRfc7231String(), $data);
+        $data = rtrim($data);
+
+        return $data;
     }
 
     /**
@@ -116,7 +133,7 @@ final class Builder
      */
     private function write(string $outputPath, array $content, string $sourceHash): void
     {
-        $this->fs->dumpFile($outputPath, implode("\n", $content)."\n");
+        $this->fs->dumpFile($outputPath, ltrim(implode("\n", $content))."\n");
 
         $this->cache->set($outputPath, $sourceHash);
     }

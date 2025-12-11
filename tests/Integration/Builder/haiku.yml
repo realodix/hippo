@@ -4,13 +4,17 @@ builder:
   output_dir: tests/Integration/tmp
   filter_list:
     - filename: compiled1.txt
-      metadata:
-        date_modified: false
       source:
         - tests/Integration/Builder/filter1.txt
         - tests/Integration/Builder/filter2.txt
     - filename: compiled2.txt
       remove_duplicates: true
+      header: |
+        Description: Foo
+        Expires: 5 days (update frequency)
+        Homepage: https://example.com/
+        License: MIT
+        ------------------------------
       metadata:
         header: Adblock Plus 2.0
         title: Filterlist 2
@@ -26,10 +30,15 @@ builder:
         - tests/Integration/Builder/filter1.txt
         - tests/Integration/Builder/filter2.txt
     - filename: date_modified.txt
+      header: |
+        date_modified: %timestamp%
       source:
         - tests/Integration/Builder/filter1.txt
-    - filename: date_modified_metadata_provided.txt
+    - filename: metadata_date_modified.txt
+      source:
+        - tests/Integration/Builder/filter1.txt
+    - filename: metadata_date_modified_provided.txt
       metadata:
-        title: date_modified_metadata_provided
+        title: date_modified_provided
       source:
         - tests/Integration/Builder/filter1.txt

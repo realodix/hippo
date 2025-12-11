@@ -1,3 +1,8 @@
+Description: Foo
+Expires: 5 days (update frequency)
+Homepage: https://example.com/
+License: MIT
+------------------------------
 [Adblock Plus 2.0]
 ! Title: Filterlist 2
 ! Description: Foo

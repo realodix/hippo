@@ -28,13 +28,27 @@ class BuilderTest extends TestCase
     }
 
     #[PHPUnit\Test]
+    public function date_modified()
+    {
+        $this->assertStringContainsString(
+            'date_modified: %timestamp%',
+            file_get_contents(base_path('tests/Integration/Builder/haiku.yml'))
+        );
+
+        $this->runBuildCommand();
+        $compiledContent = file_get_contents(base_path('tests/Integration/tmp/date_modified.txt'));
+        $this->assertStringContainsString('date_modified:', $compiledContent);
+        $this->assertStringNotContainsString('%timestamp%', $compiledContent);
+    }
+
+    #[PHPUnit\Test]
     public function date_modified_without_metadata()
     {
         $this->runBuildCommand();
 
         $this->assertStringNotContainsString(
             'Last modified:',
-            file_get_contents(base_path('tests/Integration/tmp/date_modified.txt')),
+            file_get_contents(base_path('tests/Integration/tmp/metadata_date_modified.txt')),
         );
     }
 
@@ -45,7 +59,7 @@ class BuilderTest extends TestCase
 
         $this->assertStringContainsString(
             'Last modified:',
-            file_get_contents(base_path('tests/Integration/tmp/date_modified_metadata_provided.txt')),
+            file_get_contents(base_path('tests/Integration/tmp/metadata_date_modified_provided.txt')),
         );
     }
 }

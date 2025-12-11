@@ -45,7 +45,7 @@ example.com##+js(aopw, Fingerprint2)
 Install the package via [Composer](https://getcomposer.org/):
 
 ```sh
-composer require realodix/haiku ~1.1.0
+composer require realodix/haiku
 ```
 
 Composer will install Haiku executable in its `bin-dir` which defaults to `vendor/bin`.
@@ -147,23 +147,21 @@ builder:
     # First filter list
     - filename: general_blocklist.txt # Required
       remove_duplicates: true
-      metadata:
-        header: Adblock Plus 2.0
-        title: General Blocklist
-        version: true
-        custom: |
-          Description: Filter list that specifically removes adverts.
-          Expires: 6 days (update frequency)
-          Homepage: https://example.org/
-          License: MIT
+      header: |
+        [Adblock Plus 2.0]
+        ! Title: Ad Blocklist
+        ! Description: Filter list that specifically removes adverts.
+        ! Last modified: %timestamp%
+        ! Expires: 5 days (update frequency)
+        ! Homepage: https://example.org/
+        ! License: MIT
+        ! --------------------------------------------------
       source: # Required
         - blocklists/general/local-rules.txt
         - https://cdn.example.org/blocklists/general.txt
 
     # Second filter list
     - filename: custom_privacy.txt
-      date_modified: false
-      remove_duplicates: true
       source:
         - sources/tracking_domains-1.txt
         - sources/tracking_domains-2.txt
