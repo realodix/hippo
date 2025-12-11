@@ -32,7 +32,7 @@ class BuilderTest extends TestCase
     {
         $this->assertStringContainsString(
             'date_modified: %timestamp%',
-            file_get_contents(base_path('tests/Integration/Builder/haiku.yml'))
+            file_get_contents(base_path('tests/Integration/Builder/haiku.yml')),
         );
 
         $this->runBuildCommand();
