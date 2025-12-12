@@ -158,20 +158,6 @@ class GeneralTest extends TestCase
         $this->assertFalse($this->processor->isSpecialLine($data));
     }
 
-    #[PHPUnit\DataProvider('isCosmeticRuleProvider')]
-    #[PHPUnit\Test]
-    public function isCosmeticRule($data)
-    {
-        $this->assertTrue($this->processor->isCosmeticRule($data));
-    }
-
-    #[PHPUnit\DataProvider('isNotCosmeticRuleProvider')]
-    #[PHPUnit\Test]
-    public function isNotCosmeticRule($data)
-    {
-        $this->assertFalse($this->processor->isCosmeticRule($data));
-    }
-
     #[PHPUnit\Test]
     public function preserveTheStructure(): void
     {

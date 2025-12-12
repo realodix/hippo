@@ -145,23 +145,10 @@ final class Processor
             // comment
             str_starts_with($line, '!')
             // special comments starting with # but not ## (element hiding)
-            || str_starts_with($line, '#') && !$this->isCosmeticRule($line)
+            || str_starts_with($line, '#') && !Helper::isCosmeticRule($line)
             // header
             || str_starts_with($line, '[') && str_ends_with($line, ']') && !str_contains($line, '#')
             // YAML metadata
             || trim($line, '-') === '';
-    }
-
-    /**
-     * Determines if a given filter line is a cosmetic filter rule.
-     */
-    public function isCosmeticRule(string $line): bool
-    {
-        // https://regex101.com/r/OW1tkq/1
-        $basic = preg_match('/^#@?#[^\s|\#]|^#@?##[^\s|\#]/', $line);
-        // https://regex101.com/r/SPcKMv/1
-        $advanced = preg_match('/^(#(?:@?(?:\$|\?|%)|@?\$\?)#)[^\s]/', $line);
-
-        return $basic || $advanced;
     }
 }

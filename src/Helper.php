@@ -24,4 +24,20 @@ final class Helper
 
         return $c->values();
     }
+
+    /**
+     * Determines if a given filter line is a cosmetic filter rule.
+     *
+     * @param string $line The filter rule to analyze
+     * @return bool True if the rule is a cosmetic filter rule, false otherwise
+     */
+    public static function isCosmeticRule(string $line): bool
+    {
+        // https://regex101.com/r/OW1tkq/1
+        $basic = preg_match('/^#@?#[^\s|\#]|^#@?##[^\s|\#]/', $line);
+        // https://regex101.com/r/SPcKMv/1
+        $advanced = preg_match('/^(#(?:@?(?:\$|\?|%)|@?\$\?)#)[^\s]/', $line);
+
+        return $basic || $advanced;
+    }
 }

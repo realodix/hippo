@@ -6,4 +6,6 @@ duplicate_line
 duplicate_line_global
 1
 ! comment
+# comment
+#comment
 duplicate_line
