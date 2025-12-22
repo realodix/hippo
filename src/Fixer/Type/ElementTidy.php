@@ -34,11 +34,12 @@ final class ElementTidy
 
     private function normalizeDomain(string $domain): string
     {
-        if (str_contains($domain, ',')) {
-            return Helper::uniqueSorted(explode(',', $domain), fn($s) => ltrim($s, '~'))
-                ->implode(',');
+        // regex and single domain
+        if (str_starts_with($domain, '/') || !str_contains($domain, ',')) {
+            return $domain;
         }
 
-        return $domain;
+        return Helper::uniqueSorted(explode(',', $domain), fn($s) => ltrim($s, '~'))
+            ->implode(',');
     }
 }
