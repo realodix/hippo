@@ -122,15 +122,20 @@ final class NetworkTidy
     private function normalizeDomain(string $domain): string
     {
         // domain is a regex
-        if (str_starts_with($domain, '/')) {
+        if (str_starts_with($domain, '/') && str_ends_with($domain, '/')) {
             return $domain;
         }
 
         // make it lowercase
         $domain = strtolower($domain);
-
-        return Helper::uniqueSorted(explode('|', $domain), fn($s) => ltrim($s, '~'))
+        $domain = collect(explode('|', $domain))
+            ->filter(fn($d) => $d !== '')
+            ->map(fn($d) => Helper::cleanDomain($d))
+            ->unique()
+            ->sortBy(fn($d) => ltrim($d, '~'))
             ->implode('|');
+
+        return $domain;
     }
 
     /**

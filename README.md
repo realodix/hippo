@@ -18,7 +18,7 @@ Haiku is a powerful command-line tool for managing ad-blocker filter lists. It a
 A few examples of transformations applied during optimization:
 
 ```adblock
-! Before
+!## BEFORE
 example.com##+js(aopw, Fingerprint2)
 ##.top-r-ads
 example.com###ads
@@ -28,8 +28,13 @@ example.com###ads
 example.com###ads
 google.com,example.com## .advert
 ##.top-banners
+! typo
+/ads.$domain=example.com/
+/ads2.$domain=example.com|
+example.com/##.ads
+example.com,##.ads2
 
-! After
+!## AFTER
 -banner-$image,domain=example.com|example.org
 ||example.com^$third-party,script,domain=a.com
 example.com###ads
@@ -37,6 +42,11 @@ example.com,google.com##.advert
 ##.top-banners
 ##.top-r-ads
 example.com##+js(aopw, Fingerprint2)
+! typo
+/ads.$domain=example.com
+/ads2.$domain=example.com
+example.com##.ads
+example.com##.ads2
 ```
 
 

@@ -40,4 +40,17 @@ final class Helper
 
         return $basic || $advanced;
     }
+
+    public static function cleanDomain(string $domain): string
+    {
+        if (str_starts_with($domain, '/') || str_starts_with($domain, '.')) {
+            $domain = substr($domain, 1);
+        }
+
+        if (str_ends_with($domain, '/')) {
+            $domain = substr($domain, 0, -1);
+        }
+
+        return $domain;
+    }
 }

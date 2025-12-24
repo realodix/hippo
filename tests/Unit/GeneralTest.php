@@ -208,6 +208,36 @@ class GeneralTest extends TestCase
         $this->assertSame($expected, $this->processor->process($input));
     }
 
+    #[PHPUnit\Test]
+    public function domain_cleanup(): void
+    {
+        // regex
+        $input = [
+            '/ads.$domain=/Example.com/|.Example.com/|Example.com',
+            '/ads2.$domain=.Example.com/',
+            '/example.com/,.example.com/,example.com##.ads',
+            '.example.com/##.ads2',
+        ];
+        $expected = [
+            '/ads.$domain=example.com',
+            '/ads2.$domain=example.com',
+            'example.com##.ads',
+            'example.com##.ads2',
+        ];
+        $this->assertSame($expected, $this->processor->process($input));
+
+        // regex
+        $input = [
+            '/ads.$domain=/regex/',
+            '/regex/##.ads',
+        ];
+        $expected = [
+            '/ads.$domain=/regex/',
+            '/regex/##.ads',
+        ];
+        $this->assertSame($expected, $this->processor->process($input));
+    }
+
     /**
      * The results must not cause warnings/errors
      */

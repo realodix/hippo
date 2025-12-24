@@ -35,11 +35,13 @@ final class Regex
      * Regex to identify and capture parts of an element hiding rule.
      *
      * Example: example.com,example.org##.ad
-     * Ref: https://regex101.com/r/yY3a26/3
+     * Ref:
+     * - https://regex101.com/r/yY3a26/5
+     * - https://regex101.com/r/4aHTZj
      *
      * @var string
      */
-    const COSMETIC_RULE = '/^(?:\[\$[^\]]+\])?([^\/\|\@\"\!]*?|\/.+\/)(#@?[$?]{1,2}#|#@?%#\/\/|#@?#[\^\+]?|\$\@?\$)(.*)$/';
+    const COSMETIC_RULE = '/^(?:\[\$[^\]]+\])?([^\^$\\\|{\@\"\!]*?|\/.+\/)(#@?[$?]{1,2}#|#@?%#\/\/|#@?#[\^\+]?|\$\@?\$)(.*)$/';
 
     /**
      * Regex to find domains in element-hiding rules.
