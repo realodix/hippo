@@ -58,7 +58,7 @@ final class NetworkTidy
             $parsed[$key] = [];
         }
 
-        foreach (preg_split('/(?<!\\\),/', $options) as $option) {
+        foreach (preg_split(Regex::NET_OPTION_SPLIT, $options) as $option) {
             $parts = explode('=', $option, 2);
             $name = strtolower(ltrim($parts[0], '~'));
             $value = $parts[1] ?? null;

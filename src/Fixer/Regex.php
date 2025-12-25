@@ -23,6 +23,15 @@ final class Regex
     const NET_OPTION_DOMAIN = '/(?:\$|,)(?:denyallow|domain|from|method|to)\=([^,\s]+)$/';
 
     /**
+     * Regex to safely split a network filter's options.
+     *
+     * Ref: https://regex101.com/r/SNN2yd/1
+     *
+     * @var string
+     */
+    const NET_OPTION_SPLIT = '/(?<!\\\),/';
+
+    /**
      * Regex to identify and capture parts of an element hiding rule.
      *
      * Example: example.com,example.org##.ad
