@@ -25,11 +25,11 @@ final class Regex
     /**
      * Regex to safely split a network filter's options.
      *
-     * Ref: https://regex101.com/r/SNN2yd/1
+     * Ref: https://regex101.com/r/SNN2yd/2
      *
      * @var string
      */
-    const NET_OPTION_SPLIT = '/(?<!\\\),/';
+    const NET_OPTION_SPLIT = '/(?<!\\\),(?!})/';
 
     /**
      * Regex to identify and capture parts of an element hiding rule.
