@@ -56,6 +56,16 @@ class NetworkTest extends TestCase
             '||example.com^$domain=a.com|b.com',
         ];
         $this->assertSame($expected, $this->processor->process($input));
+
+        $input = [
+            '$permissions=storage-access=()\, camera=(),domain=b.com|a.com,image',
+            '$domain=b.com|a.com,permissions=storage-access=()\, camera=(),image',
+            '$permissions=storage-access=()\, camera=(),domain=b.com|a.com,image',
+        ];
+        $expected = [
+            '$image,permissions=storage-access=()\, camera=(),domain=a.com|b.com',
+        ];
+        $this->assertSame($expected, $this->processor->process($input));
     }
 
     #[PHPUnit\Test]
