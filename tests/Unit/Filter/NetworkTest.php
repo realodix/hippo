@@ -208,4 +208,24 @@ class NetworkTest extends TestCase
         $expected = ['||example.com/video/*.mp4$media,redirect=noopmp4-1s,domain=example.org'];
         $this->assertSame($expected, $this->processor->process($input));
     }
+
+    #[PHPUnit\Test]
+    public function handle_regex_domains(): void
+    {
+        $input = [
+            '/ads.$domain=/example\.com/', // current is regex
+            '/ads.$domain=example.com',
+            '@@/ads.$domain=example.com', // next is regex
+            '@@/ads.$domain=/example\.com/',
+            '/ads.$domain=/example\.com/',
+            '/ads.$domain=/example\.com/',
+        ];
+        $expected = [
+            '/ads.$domain=/example\.com/',
+            '/ads.$domain=example.com',
+            '@@/ads.$domain=/example\.com/',
+            '@@/ads.$domain=example.com',
+        ];
+        $this->assertSame($expected, $this->processor->process($input));
+    }
 }
