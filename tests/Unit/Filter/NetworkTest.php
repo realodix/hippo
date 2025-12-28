@@ -227,5 +227,8 @@ class NetworkTest extends TestCase
             '@@/ads.$domain=example.com',
         ];
         $this->assertSame($expected, $this->processor->process($input));
+
+        $v = ['/ads.$domain=/d|c|b|a/'];
+        $this->assertSame($v, $this->processor->process($v));
     }
 }

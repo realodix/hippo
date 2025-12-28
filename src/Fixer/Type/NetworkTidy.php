@@ -65,12 +65,7 @@ final class NetworkTidy
 
             if (in_array($name, self::MULTI_VALUE)) {
                 if ($value !== null) {
-                    // if it's not a regex, make it lowercase
-                    if (!str_contains($value, '/')) {
-                        $value = strtolower($value);
-                    }
-
-                    array_push($parsed[$name], ...explode('|', $value));
+                    array_push($parsed[$name], ...[$value]);
                 }
             } elseif (in_array($name, self::CASE_SENSITIVE_VALUE, true)) {
                 // Lowercase the name, preserve value
@@ -100,8 +95,7 @@ final class NetworkTidy
         // Add back the consolidated domain-like options.
         foreach (self::MULTI_VALUE as $name) {
             if (!empty($options[$name])) {
-                $value = Helper::uniqueSorted($options[$name], fn($s) => ltrim($s, '~'))
-                    ->implode('|');
+                $value = $this->normalizeDomain($options[$name][0]);
                 $optionList[] = $name.'='.$value;
             }
         }
@@ -115,6 +109,28 @@ final class NetworkTidy
         }
 
         return Helper::uniqueSorted($processedOptions, fn($v) => $this->optionOrder($v));
+    }
+
+    /**
+     * Normalize a domain string by making it lowercase and deduplicating the values.
+     * If the domain string contains a slash (/), it is assumed to be a regex
+     * and is returned as is.
+     *
+     * @param string $domain The domain string to normalize.
+     * @return string The normalized domain string.
+     */
+    private function normalizeDomain(string $domain): string
+    {
+        // domain is a regex
+        if (str_starts_with($domain, '/')) {
+            return $domain;
+        }
+
+        // make it lowercase
+        $domain = strtolower($domain);
+
+        return Helper::uniqueSorted(explode('|', $domain), fn($s) => ltrim($s, '~'))
+            ->implode('|');
     }
 
     /**
