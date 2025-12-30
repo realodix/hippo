@@ -26,7 +26,7 @@ example.com###ads
 ||example.com^$script,domain=a.com,third-party
 -banner-$image,domain=example.org
 example.com###ads
-google.com,example.com## .advert
+google.com,example.com##.advert
 ##.top-banners
 ! typo
 /ads.$domain=example.com/
