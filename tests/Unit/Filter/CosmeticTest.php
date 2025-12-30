@@ -256,6 +256,10 @@ class CosmeticTest extends TestCase
         $input = ['c.com,b.com,a.com##+js(...)'];
         $expected = ['a.com,b.com,c.com##+js(...)'];
         $this->assertSame($expected, $this->processor->process($input));
+
+        $input = ['c.com,b.com,a.com#%#//scriptlet(...)'];
+        $expected = ['a.com,b.com,c.com#%#//scriptlet(...)'];
+        $this->assertSame($expected, $this->processor->process($input));
     }
 
     #[PHPUnit\Test]
@@ -263,6 +267,10 @@ class CosmeticTest extends TestCase
     {
         $input = ['~b.com,a.com##+js(...)'];
         $expected = ['a.com,~b.com##+js(...)'];
+        $this->assertSame($expected, $this->processor->process($input));
+
+        $input = ['~b.com,a.com#%#//scriptlet(...)'];
+        $expected = ['a.com,~b.com#%#//scriptlet(...)'];
         $this->assertSame($expected, $this->processor->process($input));
     }
 
@@ -282,6 +290,20 @@ class CosmeticTest extends TestCase
             'a.com,~a.com,b.com##+js(...)',
         ];
         $this->assertSame($expected, $this->processor->process($input));
+
+        $input = [
+            'a.com#%#//scriptlet(...)',
+            'b.com#%#//scriptlet(...)',
+            '!',
+            'a.com#%#//scriptlet(...)',
+            '~a.com,b.com#%#//scriptlet(...)',
+        ];
+        $expected = [
+            'a.com,b.com#%#//scriptlet(...)',
+            '!',
+            'a.com,~a.com,b.com#%#//scriptlet(...)',
+        ];
+        $this->assertSame($expected, $this->processor->process($input));
     }
 
     #[PHPUnit\Test]
@@ -290,6 +312,12 @@ class CosmeticTest extends TestCase
         $input = [
             'a.com##+js(aopr, Notification)',
             'b.com##+js(aopw, Fingerprint2)',
+        ];
+        $this->assertSame($input, $this->processor->process($input));
+
+        $input = [
+            "example.org#%#//scriptlet('abort-on-property-read', 'alert')",
+            "example.org#%#//scriptlet('remove-class', 'branding', 'div[class^=\"inner\"]')",
         ];
         $this->assertSame($input, $this->processor->process($input));
     }

@@ -108,7 +108,7 @@ final class Fixer
     {
         // increases the suffix number when the Fixer changes
         // to invalidate the cache
-        return hash('xxh128', $data.'1');
+        return hash('xxh128', $data.'2');
     }
 
     /**

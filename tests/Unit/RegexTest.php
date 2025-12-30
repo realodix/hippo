@@ -96,8 +96,9 @@ class RegexTest extends TestCase
                 'example.com',
             ],
 
+            ['example.com#%#//scriptlet(...)', 'example.com#%#//scriptlet(...)', 'example.com'],
+
             // not included
-            ['example.com#%#//scriptlet(...)', null, null],
             ['example.com#%#window.__gaq = undefined;', null, null],
         ];
     }

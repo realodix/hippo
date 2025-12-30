@@ -48,7 +48,7 @@ final class Processor
             }
 
             // Categorize the line as either an element rule or a network filter.
-            if (preg_match(Regex::COSMETIC_RULE, $line, $m) || str_starts_with($line, '[$')) {
+            if (preg_match(Regex::COSMETIC_RULE, $line, $m)) {
                 $section[] = $this->elementTidy->handle($line, $m);
             } else {
                 $section[] = $this->networkTidy->handle($line);
