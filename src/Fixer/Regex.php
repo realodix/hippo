@@ -36,12 +36,12 @@ final class Regex
      *
      * Example: example.com,example.org##.ad
      * Ref:
-     * - https://regex101.com/r/yY3a26/5
+     * - https://regex101.com/r/yY3a26/6
      * - https://regex101.com/r/4aHTZj
      *
      * @var string
      */
-    const COSMETIC_RULE = '/^(?:\[\$[^\]]+\])?([^\^$\\\|{\@\"\!]*?|\/.+\/)(#@?[$?]{1,2}#|#@?%#\/\/|#@?#[\^\+]?|\$\@?\$)(.*)$/';
+    const COSMETIC_RULE = '/^(\[\$[^\]]+\])?([^\^$\\\|{\@\"\!]*?|\/.+\/)(#@?[$?]{1,2}#|#@?%#\/\/|#@?#[\^\+]?|\$\@?\$)(.*)$/';
 
     /**
      * Regex to find domains in element-hiding rules.

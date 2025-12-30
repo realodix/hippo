@@ -18,18 +18,22 @@ final class ElementTidy
      */
     public function handle(string $line, array $m): string
     {
-        // https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
-        if (str_starts_with($line, '[$')) {
+        if ($m === []) {
             return $line;
         }
 
-        $domain = $m[1]; // Extract domains
-        $separator = $m[2]; // Extract separator
-        $selector = $m[3]; // Extract selector
+        $modifier = $m[1] ?? ''; // AdGuard non-basic modifier
+        $domain = $m[2]; // domains
+        $separator = $m[3]; // separator
+        $selector = $m[4]; // selector
+
+        if (str_starts_with($modifier, '[$') && $this->isComplexNonBasic($modifier)) {
+            return $line;
+        }
 
         $normalizedDomain = $this->normalizeDomain($domain);
 
-        return $normalizedDomain.$separator.$selector;
+        return $modifier.$normalizedDomain.$separator.$selector;
     }
 
     private function normalizeDomain(string $domain): string
@@ -47,5 +51,23 @@ final class ElementTidy
             ->implode(',');
 
         return $domain;
+    }
+
+    /**
+     * Checks if a given AdGuard modifier is complex (i.e., contains regex or fails to parse).
+     *
+     * https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
+     *
+     * A complex modifier is one that:
+     * - contains a '/' character (regex)
+     * - has a different number of '[' and ']' characters (failed to parse)
+     */
+    private function isComplexNonBasic(string $modifier): bool
+    {
+        return
+            // value contains regex
+            substr_count($modifier, '/]') > 0
+            // failed to parse
+            || substr_count($modifier, '[') != substr_count($modifier, ']');
     }
 }

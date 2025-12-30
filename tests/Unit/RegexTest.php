@@ -82,9 +82,9 @@ class RegexTest extends TestCase
         }
 
         $this->assertSame($expectedMatch, $m[0], "Full match: $rule");
-        $this->assertSame($expectedDomain, $m[1], "Extracted domain: $rule");
-        $this->assertSame($expectedSeparator, $m[2], "Extracted separator: $rule");
-        $this->assertSame($expectedRule, $m[3], "Extracted rule: $rule");
+        $this->assertSame($expectedDomain, $m[2], "Extracted domain: $rule");
+        $this->assertSame($expectedSeparator, $m[3], "Extracted separator: $rule");
+        $this->assertSame($expectedRule, $m[4], "Extracted rule: $rule");
     }
 
     public static function cosmeticRuleMatchProvider(): array

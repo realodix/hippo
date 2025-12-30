@@ -28,6 +28,7 @@ example.com###ads
 example.com###ads
 google.com,example.com##.advert
 ##.top-banners
+[$path=/page.html]example.org,example.com##.textad
 ! typo
 /ads.$domain=example.com/
 /ads2.$domain=example.com|
@@ -41,6 +42,7 @@ example.com###ads
 example.com,google.com##.advert
 ##.top-banners
 ##.top-r-ads
+[$path=/page.html]example.com,example.org##.textad
 example.com##+js(aopw, Fingerprint2)
 ! typo
 /ads.$domain=example.com

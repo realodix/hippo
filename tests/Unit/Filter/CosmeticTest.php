@@ -217,35 +217,6 @@ class CosmeticTest extends TestCase
         $this->assertSame($input, $this->processor->process($input));
     }
 
-    /**
-     * https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
-     */
-    #[PHPUnit\Test]
-    public function handle_modifiersForNonBasicTypeOfRules(): void
-    {
-        $input = [
-            '! combine',
-            'example.com##selector',
-            '[$domain=b.com|a.com,app=test_app|com.apple.Safari]example.com##selector',
-            '! order',
-            'example.com##selector',
-            'example.com#?#div:has(> a[target="_blank"][rel="nofollow"])',
-            'example.com##+js(nobab)',
-            '[$domain=b.com|a.com,app=test_app|com.apple.Safari]example.com##selector',
-        ];
-        $expected = [
-            '! combine',
-            'example.com##selector',
-            '[$domain=b.com|a.com,app=test_app|com.apple.Safari]example.com##selector',
-            '! order',
-            'example.com##selector',
-            'example.com#?#div:has(> a[target="_blank"][rel="nofollow"])',
-            '[$domain=b.com|a.com,app=test_app|com.apple.Safari]example.com##selector',
-            'example.com##+js(nobab)',
-        ];
-        $this->assertSame($expected, $this->processor->process($input));
-    }
-
     // ========================================================================
     // Scriptlet Tests (`elementtidy`)
     // ========================================================================

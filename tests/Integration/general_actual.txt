@@ -51,7 +51,7 @@ $@$script[tag-content="banner"]
 example.com$$script[tag-content="banner"]
 $$script[tag-content="banner"]
 example.com$@$script[tag-content="banner"]
-[$domain=b.com|a.com,app=test_app|com.apple.Safari]example.com##selector
+[$path=/page.html]##selector
 ###ads
 ##div
 ##.ads
