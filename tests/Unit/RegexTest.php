@@ -65,8 +65,13 @@ class RegexTest extends TestCase
 
     #[PHPUnit\DataProvider('cosmeticRuleMatchProvider')]
     #[PHPUnit\Test]
-    public function cosmetic_rule_match($rule, $expectedMatch, $expectedDomain)
-    {
+    public function cosmetic_rule_match(
+        $rule,
+        $expectedMatch,
+        $expectedDomain,
+        $expectedSeparator,
+        $expectedRule,
+    ) {
         $matched = preg_match(Regex::COSMETIC_RULE, $rule, $m);
 
         // There should be no matches at all
@@ -78,28 +83,59 @@ class RegexTest extends TestCase
 
         $this->assertSame($expectedMatch, $m[0], "Full match: $rule");
         $this->assertSame($expectedDomain, $m[1], "Extracted domain: $rule");
+        $this->assertSame($expectedSeparator, $m[2], "Extracted separator: $rule");
+        $this->assertSame($expectedRule, $m[3], "Extracted rule: $rule");
     }
 
     public static function cosmeticRuleMatchProvider(): array
     {
         return [
-            ['##div', '##div', ''],
-            ['example.com,~example.org##div', 'example.com,~example.org##div', 'example.com,~example.org'],
-            ['example.com,~example.org##.ads', 'example.com,~example.org##.ads', 'example.com,~example.org'],
+            ['##div', '##div', '', '##', 'div'],
 
-            ['example.com##+js(...)', 'example.com##+js(...)', 'example.com'],
+            [
+                'example.com,~example.org##div',
+                'example.com,~example.org##div',
+                'example.com,~example.org',
+                '##',
+                'div',
+            ],
 
-            ['/regex/##div', '/regex/##div', '/regex/'],
+            [
+                'example.com,~example.org##.ads',
+                'example.com,~example.org##.ads',
+                'example.com,~example.org',
+                '##',
+                '.ads',
+            ],
+
+            [
+                '[$app=org.example.app]example.com##.textad',
+                '[$app=org.example.app]example.com##.textad',
+                'example.com',
+                '##',
+                '.textad',
+            ],
+
+            ['example.com##+js(...)', 'example.com##+js(...)', 'example.com', '##+', 'js(...)'],
+            ['/regex/##div', '/regex/##div', '/regex/', '##', 'div'],
+
             [
                 '[$app=~org.example.app1|~org.example.app2]example.com##.textad',
                 '[$app=~org.example.app1|~org.example.app2]example.com##.textad',
                 'example.com',
+                '##',
+                '.textad',
             ],
 
-            ['example.com#%#//scriptlet(...)', 'example.com#%#//scriptlet(...)', 'example.com'],
+            [
+                'example.com#%#//scriptlet(...)',
+                'example.com#%#//scriptlet(...)',
+                'example.com', '#%#//',
+                'scriptlet(...)',
+            ],
 
             // not included
-            ['example.com#%#window.__gaq = undefined;', null, null],
+            ['example.com#%#window.__gaq = undefined;', null, null, null, null],
         ];
     }
 
