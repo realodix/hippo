@@ -2,6 +2,7 @@
 
 namespace Realodix\Haiku\Fixer;
 
+use Realodix\Haiku\App;
 use Realodix\Haiku\Cache\Cache;
 use Realodix\Haiku\Config\Config;
 use Realodix\Haiku\Console\OutputLogger;
@@ -106,9 +107,7 @@ final class Fixer
 
     private function hash(string $data): string
     {
-        // increases the suffix number when the Fixer changes
-        // to invalidate the cache
-        return hash('xxh128', $data.'2');
+        return hash('xxh128', $data.App::VERSION);
     }
 
     /**
