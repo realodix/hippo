@@ -3,7 +3,6 @@
 namespace Realodix\Haiku\Test\Unit\Filter;
 
 use PHPUnit\Framework\Attributes as PHPUnit;
-use Realodix\Haiku\Fixer\Processor;
 use Realodix\Haiku\Fixer\Regex;
 use Realodix\Haiku\Test\TestCase;
 
@@ -12,15 +11,6 @@ use Realodix\Haiku\Test\TestCase;
  */
 class CosmeticAGNonBasicTest extends TestCase
 {
-    private $processor;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->processor = app(Processor::class);
-    }
-
     #[PHPUnit\DataProvider('parseProvider')]
     #[PHPUnit\Test]
     public function parse(
@@ -74,7 +64,7 @@ class CosmeticAGNonBasicTest extends TestCase
             '[$app=~org.example.app1|~org.example.app2]example.com##.textad',
             '[$path=/\/(maps|navi|web-maps)/]ya.ru,yandex.*#%#//scriptlet(...)',
         ];
-        $this->assertSame($input, $this->processor->process($input));
+        $this->assertSame($input, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -92,7 +82,7 @@ class CosmeticAGNonBasicTest extends TestCase
             'example.com#?#div:has(> a[target="_blank"][rel="nofollow"])',
             'example.com##+js(nobab)',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -108,7 +98,7 @@ class CosmeticAGNonBasicTest extends TestCase
             '[$path=/page.html]example.com,example.org##.textad',
             '[$path=/page.html]example.com,example.org#%#//scriptlet(...)',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -121,7 +111,7 @@ class CosmeticAGNonBasicTest extends TestCase
         $expected = [
             '[$path=/page.html]##selector',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         $input = [
             '[$path=/page.html]example.com##selector',
@@ -130,7 +120,7 @@ class CosmeticAGNonBasicTest extends TestCase
         $expected = [
             '[$path=/page.html]example.com##selector',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         // not combined
         $input = [
@@ -141,7 +131,7 @@ class CosmeticAGNonBasicTest extends TestCase
             'example.com##selector',
             '[$path=/page.html]example.com##selector',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     /**
@@ -151,9 +141,9 @@ class CosmeticAGNonBasicTest extends TestCase
     public function complex(): void
     {
         $input = ['[$app=/^org\.example\.[ab].*/]example.com,~[::]##.ads'];
-        $this->assertSame($input, $this->processor->process($input));
+        $this->assertSame($input, $this->fix($input));
 
         $input = ['[$domain=~example.com|~[::]]example.org,0.0.0.0##.ads'];
-        $this->assertSame($input, $this->processor->process($input));
+        $this->assertSame($input, $this->fix($input));
     }
 }

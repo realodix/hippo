@@ -3,21 +3,11 @@
 namespace Realodix\Haiku\Test\Unit\Filter;
 
 use PHPUnit\Framework\Attributes as PHPUnit;
-use Realodix\Haiku\Fixer\Processor;
 use Realodix\Haiku\Test\TestCase;
 
 class NetworkTest extends TestCase
 {
     use NetworkProvider;
-
-    private $processor;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->processor = app(Processor::class);
-    }
 
     #[PHPUnit\Test]
     public function rules_order(): void
@@ -34,7 +24,7 @@ class NetworkTest extends TestCase
         ];
 
         arsort($input);
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -55,7 +45,7 @@ class NetworkTest extends TestCase
             '||example.com^$css,domain=c.com',
             '||example.com^$domain=a.com|b.com',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         $input = [
             '$permissions=storage-access=()\, camera=(),domain=b.com|a.com,image',
@@ -65,7 +55,7 @@ class NetworkTest extends TestCase
         $expected = [
             '$image,permissions=storage-access=()\, camera=(),domain=a.com|b.com',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -91,7 +81,7 @@ class NetworkTest extends TestCase
             '||example.com^$domain=x.com',
             '||example.com^$domain=~y.com',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -99,11 +89,11 @@ class NetworkTest extends TestCase
     {
         $input = ['||example.com^$script,image,third-party,domain=a.com'];
         $expected = ['||example.com^$third-party,image,script,domain=a.com'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         $input = ['||example.com^$~image,image'];
         $expected = ['||example.com^$image,~image'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -111,27 +101,27 @@ class NetworkTest extends TestCase
     {
         $input = ['*$css,3p,third-party,strict3p,first-party,1p,strict1p,strict-first-party,strict-third-party'];
         $expected = ['*$strict-first-party,strict-third-party,strict1p,strict3p,1p,3p,first-party,third-party,css'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         // badfilter & important
         // badfilter must always be first
         $input = ['*$important,domain=3p.com,css,badfilter'];
         $expected = ['*$badfilter,important,css,domain=3p.com'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\DataProvider('option_sort_order__has_domain_provider')]
     #[PHPUnit\Test]
     public function option_sort_order__has_domain(array $input, array $expected): void
     {
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\DataProvider('option_sort_order__has_value_provider')]
     #[PHPUnit\Test]
     public function option_sort_order__has_value(array $input, array $expected): void
     {
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -139,7 +129,7 @@ class NetworkTest extends TestCase
     {
         $input = ['||example.com^$ALL'];
         $expected = ['||example.com^$all'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -147,19 +137,19 @@ class NetworkTest extends TestCase
     {
         $input = ['$domain=c.com|a.com|~b.com'];
         $expected = ['$domain=a.com|~b.com|c.com'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         $input = ['$from=c.com|a.com|~b.com,to=c.com|a.com|~b.com'];
         $expected = ['$from=a.com|~b.com|c.com,to=a.com|~b.com|c.com'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         $input = ['$denyallow=c.com|a.com|~b.com'];
         $expected = ['$denyallow=a.com|~b.com|c.com'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         $input = ['$method=post|~get|delete'];
         $expected = ['$method=delete|~get|post'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -174,14 +164,14 @@ class NetworkTest extends TestCase
             '$METHOD=GET',
         ];
 
-        $this->assertSame(array_map('strtolower', $input), $this->processor->process($input));
+        $this->assertSame(array_map('strtolower', $input), $this->fix($input));
     }
 
     #[PHPUnit\DataProvider('lowercase_the_option_name_preserve_value_provider')]
     #[PHPUnit\Test]
     public function lowercase_the_option_name_preserve_value($input, $expected): void
     {
-        $this->assertSame([$expected], $this->processor->process([$input]));
+        $this->assertSame([$expected], $this->fix([$input]));
     }
 
     #[PHPUnit\Test]
@@ -196,17 +186,17 @@ class NetworkTest extends TestCase
             '||example.com$image,removeparam=/^ss\$/',
             '||example.com$~third-party,replace=/bad/good/',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         // $empty
         $input = ['||example.com/js/net.js$script,empty,domain=example.org'];
         $expected = ['||example.com/js/net.js$script,redirect=nooptext,domain=example.org'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         // $mp4
         $input = ['||example.com/video/*.mp4$mp4,domain=example.org'];
         $expected = ['||example.com/video/*.mp4$media,redirect=noopmp4-1s,domain=example.org'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -226,9 +216,9 @@ class NetworkTest extends TestCase
             '@@/ads.$domain=/example\.com/',
             '@@/ads.$domain=example.com',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         $v = ['/ads.$domain=/d|c|b|a/'];
-        $this->assertSame($v, $this->processor->process($v));
+        $this->assertSame($v, $this->fix($v));
     }
 }

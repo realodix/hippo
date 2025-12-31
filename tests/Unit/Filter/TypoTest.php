@@ -3,21 +3,11 @@
 namespace Realodix\Haiku\Test\Unit\Filter;
 
 use PHPUnit\Framework\Attributes as PHPUnit;
-use Realodix\Haiku\Fixer\Processor;
 use Realodix\Haiku\Test\TestCase;
 
 class TypoTest extends TestCase
 {
     use \Realodix\Haiku\Test\Unit\GeneralProvider;
-
-    private $processor;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->processor = app(Processor::class);
-    }
 
     #[PHPUnit\Test]
     public function domain_separator(): void
@@ -30,7 +20,7 @@ class TypoTest extends TestCase
             '||example.com^$domain=a.com|b.com',
             'a.com,b.com##.ads',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -42,7 +32,7 @@ class TypoTest extends TestCase
         $expected = [
             '||example.com^$css,domain=a.com|b.com',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -60,7 +50,7 @@ class TypoTest extends TestCase
             'example.com##.ads',
             'example.com##.ads2',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         // regex
         $input = [
@@ -71,6 +61,6 @@ class TypoTest extends TestCase
             '/ads.$domain=/regex/',
             '/regex/##.ads',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 }

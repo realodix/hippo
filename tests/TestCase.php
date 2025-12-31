@@ -5,6 +5,7 @@ namespace Realodix\Haiku\Test;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Realodix\Haiku\Console\BuildCommand;
 use Realodix\Haiku\Console\FixCommand;
+use Realodix\Haiku\Fixer\Processor;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
@@ -32,6 +33,11 @@ abstract class TestCase extends BaseTestCase
             \Symfony\Component\Console\Output\OutputInterface::class,
             \Symfony\Component\Console\Output\BufferedOutput::class,
         );
+    }
+
+    protected function fix(array $value): mixed
+    {
+        return app(Processor::class)->process($value);
     }
 
     protected function runBuildCommand(array $options = [])

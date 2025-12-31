@@ -3,20 +3,10 @@
 namespace Realodix\Haiku\Test\Unit\Filter;
 
 use PHPUnit\Framework\Attributes as PHPUnit;
-use Realodix\Haiku\Fixer\Processor;
 use Realodix\Haiku\Test\TestCase;
 
 class CosmeticTest extends TestCase
 {
-    private $processor;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->processor = app(Processor::class);
-    }
-
     // ========================================================================
     // General & File Structure Tests
     // ========================================================================
@@ -26,7 +16,7 @@ class CosmeticTest extends TestCase
     {
         $input = ['line1', '', 'line2', '   ', 'line3'];
         $expected = ['line1', 'line2', 'line3'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -47,7 +37,7 @@ class CosmeticTest extends TestCase
             '! Section 2: Element',
             'example.com,example.org##.ad',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     // ========================================================================
@@ -114,7 +104,7 @@ class CosmeticTest extends TestCase
         ];
 
         arsort($input);
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -134,10 +124,10 @@ class CosmeticTest extends TestCase
             '/example\.com/###ads',
             '/example\.com/#@#ads',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         $v = ['/^https:\/\/[a-z\d]{4,}+\.[a-z\d]{12,}+\.(cfd|sbs|shop)$/##.ads'];
-        $this->assertSame($v, $this->processor->process($v));
+        $this->assertSame($v, $this->fix($v));
     }
 
     #[PHPUnit\Test]
@@ -145,7 +135,7 @@ class CosmeticTest extends TestCase
     {
         $input = ['c.com,b.com,~a.com##.ad'];
         $expected = ['~a.com,b.com,c.com##.ad'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -153,7 +143,7 @@ class CosmeticTest extends TestCase
     {
         $input = ['~b.com,a.com##.ad'];
         $expected = ['a.com,~b.com##.ad'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -178,7 +168,7 @@ class CosmeticTest extends TestCase
             'a.com#@#.ads',
             'a.com#?#.ads',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -204,7 +194,7 @@ class CosmeticTest extends TestCase
             'x.com##.ad',
             '~y.com##.ad',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -214,7 +204,7 @@ class CosmeticTest extends TestCase
             'a.com##.ad1',
             'b.com##.ad2',
         ];
-        $this->assertSame($input, $this->processor->process($input));
+        $this->assertSame($input, $this->fix($input));
     }
 
     // ========================================================================
@@ -226,11 +216,11 @@ class CosmeticTest extends TestCase
     {
         $input = ['c.com,b.com,a.com##+js(...)'];
         $expected = ['a.com,b.com,c.com##+js(...)'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         $input = ['c.com,b.com,a.com#%#//scriptlet(...)'];
         $expected = ['a.com,b.com,c.com#%#//scriptlet(...)'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -238,11 +228,11 @@ class CosmeticTest extends TestCase
     {
         $input = ['~b.com,a.com##+js(...)'];
         $expected = ['a.com,~b.com##+js(...)'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         $input = ['~b.com,a.com#%#//scriptlet(...)'];
         $expected = ['a.com,~b.com#%#//scriptlet(...)'];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -260,7 +250,7 @@ class CosmeticTest extends TestCase
             '!',
             'a.com,~a.com,b.com##+js(...)',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         $input = [
             'a.com#%#//scriptlet(...)',
@@ -274,7 +264,7 @@ class CosmeticTest extends TestCase
             '!',
             'a.com,~a.com,b.com#%#//scriptlet(...)',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -284,12 +274,12 @@ class CosmeticTest extends TestCase
             'a.com##+js(aopr, Notification)',
             'b.com##+js(aopw, Fingerprint2)',
         ];
-        $this->assertSame($input, $this->processor->process($input));
+        $this->assertSame($input, $this->fix($input));
 
         $input = [
             "example.org#%#//scriptlet('abort-on-property-read', 'alert')",
             "example.org#%#//scriptlet('remove-class', 'branding', 'div[class^=\"inner\"]')",
         ];
-        $this->assertSame($input, $this->processor->process($input));
+        $this->assertSame($input, $this->fix($input));
     }
 }

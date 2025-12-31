@@ -10,15 +10,6 @@ class GeneralTest extends TestCase
 {
     use GeneralProvider;
 
-    private $processor;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->processor = app(Processor::class);
-    }
-
     public function testComparesFiles(): void
     {
         $inputFile = base_path('tests/Integration/general_actual.txt');
@@ -65,7 +56,7 @@ class GeneralTest extends TestCase
         ];
 
         arsort($input);
-        $output = $this->processor->process($input);
+        $output = $this->fix($input);
 
         $this->assertSame($expected, $output);
     }
@@ -82,7 +73,7 @@ class GeneralTest extends TestCase
 
         $expected = [];
 
-        $output = $this->processor->process($input);
+        $output = $this->fix($input);
 
         $this->assertSame($expected, $output);
     }
@@ -98,14 +89,14 @@ class GeneralTest extends TestCase
             '! b',
             '! a',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\DataProvider('notCombinedProvider')]
     #[PHPUnit\Test]
     public function not_combined($input, $expected): void
     {
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     #[PHPUnit\Test]
@@ -135,7 +126,7 @@ class GeneralTest extends TestCase
             '2',
         ];
 
-        $output = $this->processor->process($input);
+        $output = $this->fix($input);
 
         $this->assertSame($expected, $output);
     }
@@ -144,14 +135,14 @@ class GeneralTest extends TestCase
     #[PHPUnit\Test]
     public function isSpecialLine($data)
     {
-        $this->assertTrue($this->processor->isSpecialLine($data));
+        $this->assertTrue(app(Processor::class)->isSpecialLine($data));
     }
 
     #[PHPUnit\DataProvider('isNotSpecialLineProvider')]
     #[PHPUnit\Test]
     public function isNotSpecialLine($data)
     {
-        $this->assertFalse($this->processor->isSpecialLine($data));
+        $this->assertFalse(app(Processor::class)->isSpecialLine($data));
     }
 
     #[PHPUnit\Test]
@@ -175,7 +166,7 @@ class GeneralTest extends TestCase
             '$image,permissions=storage-access=()\, camera=(),domain=a.com|b.com',
             '||example.org^$hls=/#UPLYNK-SEGMENT:.*\,ad/t,domain=/a\,b/',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         // non escape comma
         $input = [
@@ -186,7 +177,7 @@ class GeneralTest extends TestCase
             '/ads.$domain=/^https:\/\/[a-z\d]{4,}+\.[a-z\d]{12,}+\.com$/',
             '/^https:\/\/[a-z\d]{4,}+\.[a-z\d]{12,}+\.(cfd|sbs|shop)$/##.ads',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
 
         // Contains $, and must not be affected.
         $input = [
@@ -201,7 +192,7 @@ class GeneralTest extends TestCase
             'example.com#$?#style[id="mdpDeblocker-css"] { remove: true; }',
             'example.com#%#(function(b){Object.defineProperty(Element.prototype,"innerHTML",{get:function(){return b.get.call(this)},set:function(a){/^(?:<([abisuq]) id="[^"]*"><\/\1>)*$/.test(a)||b.set.call(this,a)},enumerable:!0,configurable:!0})})(Object.getOwnPropertyDescriptor(Element.prototype,"innerHTML"));',
         ];
-        $this->assertSame($expected, $this->processor->process($input));
+        $this->assertSame($expected, $this->fix($input));
     }
 
     /**
@@ -218,6 +209,6 @@ class GeneralTest extends TestCase
             'example.com#?#',
             'example.com##+',
         ];
-        $this->assertSame($input, $this->processor->process($input));
+        $this->assertSame($input, $this->fix($input));
     }
 }
