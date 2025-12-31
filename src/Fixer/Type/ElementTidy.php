@@ -6,9 +6,6 @@ use Realodix\Haiku\Helper;
 
 final class ElementTidy
 {
-    // /** @var array<string, string> */
-    // private array $stringLiterals = [];
-
     /**
      * Normalize an element hiding rule.
      *
