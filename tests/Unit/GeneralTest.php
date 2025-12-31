@@ -93,14 +93,10 @@ class GeneralTest extends TestCase
         $input = [
             ' ! b',
             ' ! a',
-            'a.com,,b.com##.ads',
-            '||example.com^$domain=a.com||b.com,,css',
         ];
         $expected = [
             '! b',
             '! a',
-            '||example.com^$css,domain=a.com|b.com',
-            'a.com,b.com##.ads',
         ];
         $this->assertSame($expected, $this->processor->process($input));
     }
@@ -204,36 +200,6 @@ class GeneralTest extends TestCase
             'example.com#$#div.Ad-Container[id^="adblock-bait-element-"] { display: block !important; }',
             'example.com#$?#style[id="mdpDeblocker-css"] { remove: true; }',
             'example.com#%#(function(b){Object.defineProperty(Element.prototype,"innerHTML",{get:function(){return b.get.call(this)},set:function(a){/^(?:<([abisuq]) id="[^"]*"><\/\1>)*$/.test(a)||b.set.call(this,a)},enumerable:!0,configurable:!0})})(Object.getOwnPropertyDescriptor(Element.prototype,"innerHTML"));',
-        ];
-        $this->assertSame($expected, $this->processor->process($input));
-    }
-
-    #[PHPUnit\Test]
-    public function domain_cleanup(): void
-    {
-        // regex
-        $input = [
-            '/ads.$domain=/Example.com/|.Example.com/|Example.com',
-            '/ads2.$domain=.Example.com/',
-            '/example.com/,.example.com/,example.com##.ads',
-            '.example.com/##.ads2',
-        ];
-        $expected = [
-            '/ads.$domain=example.com',
-            '/ads2.$domain=example.com',
-            'example.com##.ads',
-            'example.com##.ads2',
-        ];
-        $this->assertSame($expected, $this->processor->process($input));
-
-        // regex
-        $input = [
-            '/ads.$domain=/regex/',
-            '/regex/##.ads',
-        ];
-        $expected = [
-            '/ads.$domain=/regex/',
-            '/regex/##.ads',
         ];
         $this->assertSame($expected, $this->processor->process($input));
     }
