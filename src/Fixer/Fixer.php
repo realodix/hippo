@@ -107,7 +107,11 @@ final class Fixer
 
     private function hash(string $data): string
     {
-        return hash('xxh128', $data.App::VERSION);
+        // get major and minor version
+        $v = explode('.', App::VERSION);
+        $v = implode('.', array_slice($v, 0, 2));
+
+        return hash('xxh128', $data.$v);
     }
 
     /**
