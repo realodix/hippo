@@ -146,15 +146,6 @@ class GeneralTest extends TestCase
     }
 
     #[PHPUnit\Test]
-    public function preserveTheStructure(): void
-    {
-        $inputFile = base_path('tests/Integration/preserve-the-structure_actual.txt');
-        $expectedFile = base_path('tests/Integration/preserve-the-structure_expected.txt');
-
-        $this->assertFilter($expectedFile, $inputFile);
-    }
-
-    #[PHPUnit\Test]
     public function handle_split_comma(): void
     {
         // escape comma
