@@ -43,6 +43,8 @@ final class Helper
 
     public static function cleanDomain(string $domain): string
     {
+        $domain = trim($domain);
+
         if (str_starts_with($domain, '/') || str_starts_with($domain, '.')) {
             $domain = substr($domain, 1);
         }

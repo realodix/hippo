@@ -10,6 +10,20 @@ class TypoTest extends TestCase
     use \Realodix\Haiku\Test\Unit\GeneralProvider;
 
     #[PHPUnit\Test]
+    public function domain_space(): void
+    {
+        $input = [
+            'a.com , b.com ##.ads',
+            '||example.com^$domain= a.com | b.com',
+        ];
+        $expected = [
+            '||example.com^$domain=a.com|b.com',
+            'a.com,b.com##.ads',
+        ];
+        $this->assertSame($expected, $this->fix($input));
+    }
+
+    #[PHPUnit\Test]
     public function domain_separator(): void
     {
         $input = [
