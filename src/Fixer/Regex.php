@@ -7,7 +7,9 @@ final class Regex
     /**
      * Regex to capture the filter body and its options.
      *
-     * Example: ||example.com^$script,domain=example.org
+     * @example ||example.com^$script,domain=example.org
+     *
+     * @link https://regex101.com/r/t2MFGs/1
      *
      * @var string
      */
@@ -34,10 +36,11 @@ final class Regex
     /**
      * Regex to identify and capture parts of an element hiding rule.
      *
-     * Example: example.com,example.org##.ad
-     * Ref:
-     * - https://regex101.com/r/yY3a26/7
-     * - https://regex101.com/r/4aHTZj
+     * @example example.com,example.org##.ad
+     *
+     * @link
+     *  https://regex101.com/r/yY3a26/7
+     *  https://regex101.com/r/4aHTZj
      *
      * @var string
      */
@@ -46,7 +49,7 @@ final class Regex
     /**
      * Regex to find domains in element-hiding rules.
      *
-     * Ref: https://regex101.com/r/2E6nAd
+     * @link https://regex101.com/r/2E6nAd
      *
      * @var string
      */
@@ -55,7 +58,7 @@ final class Regex
     /**
      * Regex to find AdGuard JS rules.
      *
-     * Ref: https://regex101.com/r/K4VTwP/1
+     * @link https://regex101.com/r/K4VTwP/1
      *
      * @var string
      */
