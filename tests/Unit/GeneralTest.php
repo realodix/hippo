@@ -163,9 +163,12 @@ class GeneralTest extends TestCase
         $input = [
             '/ads.$domain=/^https:\/\/[a-z\d]{4,}+\.[a-z\d]{12,}+\.com$/',
             '/^https:\/\/[a-z\d]{4,}+\.[a-z\d]{12,}+\.(cfd|sbs|shop)$/##.ads',
+            // https://github.com/uBlockOrigin/uBlock-issues/discussions/2234#discussioncomment-5403472
+            'example.*,~/example\.([a-z]{1,2}|[a-z]{4,16})/##body > *',
         ];
         $expected = [
             '/ads.$domain=/^https:\/\/[a-z\d]{4,}+\.[a-z\d]{12,}+\.com$/',
+            'example.*,~/example\.([a-z]{1,2}|[a-z]{4,16})/##body > *',
             '/^https:\/\/[a-z\d]{4,}+\.[a-z\d]{12,}+\.(cfd|sbs|shop)$/##.ads',
         ];
         $this->assertSame($expected, $this->fix($input));

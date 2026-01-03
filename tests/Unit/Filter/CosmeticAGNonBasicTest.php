@@ -140,10 +140,10 @@ class CosmeticAGNonBasicTest extends TestCase
     #[PHPUnit\Test]
     public function complex(): void
     {
-        $input = ['[$app=/^org\.example\.[ab].*/]example.com,~[::]##.ads'];
+        $input = ['[$app=/[a-z]/]example.org,0.0.0.0##.ads'];
         $this->assertSame($input, $this->fix($input));
 
-        $input = ['[$domain=~example.com|~[::]]example.org,0.0.0.0##.ads'];
+        $input = ['[$app=/^org\.example\.[ab].*/]example.com,~[::]##.ads'];
         $this->assertSame($input, $this->fix($input));
     }
 }
