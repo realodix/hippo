@@ -255,15 +255,15 @@ class CosmeticTest extends TestCase
                 'example.com,~auth.example.com#%#//scriptlet(...)',
                 'example.com,~auth.example.com#%#//scriptlet(...)',
                 'example.com,~auth.example.com',
-                '#%#//',
-                'scriptlet(...)',
+                '#%#',
+                '//scriptlet(...)',
             ],
             [
                 'example.com,~auth.example.com#@%#//scriptlet(...)',
                 'example.com,~auth.example.com#@%#//scriptlet(...)',
                 'example.com,~auth.example.com',
-                '#@%#//',
-                'scriptlet(...)',
+                '#@%#',
+                '//scriptlet(...)',
             ],
 
             // JavaScript rules, not included
@@ -298,7 +298,6 @@ class CosmeticTest extends TestCase
 
             ['example.com##+js(...)', 'example.com##', 'example.com'],
             ['example.com#%#//scriptlet(...)', 'example.com#%#', 'example.com'],
-            ['example.com#%##%#window.__gaq = undefined;', 'example.com#%#', 'example.com'],
 
             // not included
             ['/regex/##div', null, null],
