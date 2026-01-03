@@ -179,12 +179,12 @@ class NetworkTest extends TestCase
     {
         // `$_`
         $input = [
-            '||example.com$_,removeparam=/^ss\\$/,_,image',
-            '||example.com$replace=/bad/good/,___,~third-party',
+            '||example.com$_,removeparam=/^ss\\$/,__,image',
+            '||example.com$domain=example.com,replace=/bad/good/,___,~third-party',
         ];
         $expected = [
-            '||example.com$image,removeparam=/^ss\$/',
-            '||example.com$~third-party,replace=/bad/good/',
+            '||example.com$image,removeparam=/^ss\$/,__',
+            '||example.com$~third-party,replace=/bad/good/,___,domain=example.com',
         ];
         $this->assertSame($expected, $this->fix($input));
 

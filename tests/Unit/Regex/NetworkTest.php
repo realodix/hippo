@@ -67,11 +67,31 @@ class NetworkTest extends TestCase
     {
         return [
             [
-                '$~third-party,xmlhttprequest,domain=~www.example.com',
-                ['$~third-party', 'xmlhttprequest', 'domain=~www.example.com'],
+                '$~third-party,~xmlhttprequest,domain=~www.example.com',
+                ['$~third-party', '~xmlhttprequest', 'domain=~www.example.com'],
+            ],
+            [
+                '$_,removeparam=/^ss\\$/,__,image,1p,3p',
+                ['$_', 'removeparam=/^ss\$/,__', 'image', '1p', '3p'],
             ],
 
-            // escape comma, not captured
+            // only network options, then the filter rules will also be captured
+            [
+                '||example.com/*.js$1p,script',
+                ['||example.com/*.js$1p', 'script'],
+            ],
+
+            // typo
+            [ // uppercase network option
+                '$IMAGE,DOMAIN=a.com|b.com',
+                ['$IMAGE', 'DOMAIN=a.com|b.com'],
+            ],
+            [ // has superfluous commas
+                '*$,script,,header=via:/1\.1\s+google/,,css,',
+                ['*$', 'script', '', 'header=via:/1\.1\s+google/', '', 'css', ''],
+            ],
+
+            // ignore: escape comma
             [
                 '$image,permissions=storage-access=()\, camera=(),domain=a.com|b.com',
                 ['$image', 'permissions=storage-access=()\, camera=()', 'domain=a.com|b.com'],
@@ -81,7 +101,7 @@ class NetworkTest extends TestCase
                 ['||example.org^$hls=/#UPLYNK-SEGMENT:.*\,ad/t', 'domain=/a\,b/'],
             ],
 
-            // escape comma, not captured
+            // ignore: comma inside regex
             [
                 '/ads.$domain=/^https:\/\/[a-z\d]{4,}+\.[a-z\d]{12,}+\.(cfd|sbs|shop)$/',
                 ['/ads.$domain=/^https:\/\/[a-z\d]{4,}+\.[a-z\d]{12,}+\.(cfd|sbs|shop)$/'],

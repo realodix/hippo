@@ -151,7 +151,7 @@ class GeneralTest extends TestCase
         // escape comma
         $input = [
             '$permissions=storage-access=()\, camera=(),domain=b.com|a.com,image',
-            '||example.org^$domain=/a\,b/,HLS=/#UPLYNK-SEGMENT:.*\,ad/t',
+            '||example.org^$domain=/a\,b/,hls=/#UPLYNK-SEGMENT:.*\,ad/t',
         ];
         $expected = [
             '$image,permissions=storage-access=()\, camera=(),domain=a.com|b.com',
