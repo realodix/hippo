@@ -162,6 +162,10 @@ class NetworkTest extends TestCase
                 '/^https:\/\/[a-z\d]{4,}+\.[a-z\d]{12,}+\.(cfd|sbs|shop)$/',
                 ['/^https:\/\/[a-z\d]{4,}+\.[a-z\d]{12,}+\.(cfd|sbs|shop)$/'],
             ],
+            [ // https://github.com/uBlockOrigin/uBlock-issues/discussions/2234#discussioncomment-5403472
+                '$all,~doc,domain=example.*|/example\.([a-z]{1,2}|[a-z]{4,16})/',
+                ['$all', '~doc', 'domain=example.*|/example\.([a-z]{1,2}|[a-z]{4,16})/'],
+            ],
         ];
     }
 }
