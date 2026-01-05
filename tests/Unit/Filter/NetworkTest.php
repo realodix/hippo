@@ -218,7 +218,13 @@ class NetworkTest extends TestCase
         ];
         $this->assertSame($expected, $this->fix($input));
 
-        $v = ['/ads.$domain=/d|c|b|a/'];
-        $this->assertSame($v, $this->fix($v));
+        $str = ['/ads.$domain=/d|c|b|a/'];
+        $this->assertSame($str, $this->fix($str));
+        // https://github.com/uBlockOrigin/uBlock-issues/discussions/2234#discussioncomment-5403472
+        $str = ['$all,~doc,domain=example.*|~/example\.([a-z]{1,2}|[a-z]{4,16})/'];
+        $this->assertSame(
+            ['$all,~doc,domain=~/example\.([a-z]{1,2}|[a-z]{4,16})/|example.*'],
+            $this->fix($str)
+        );
     }
 }
