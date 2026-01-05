@@ -132,7 +132,6 @@ final class NetworkTidy
         $domain = collect($domain)
             ->filter(fn($d) => $d !== '')
             ->map(function ($str) {
-                // domain is a regex
                 if (Helper::isRegexDomain($str)) {
                     return $str;
                 }
