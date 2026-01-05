@@ -224,7 +224,7 @@ class NetworkTest extends TestCase
         $str = ['$all,~doc,domain=example.*|~/example\.([a-z]{1,2}|[a-z]{4,16})/'];
         $this->assertSame(
             ['$all,~doc,domain=~/example\.([a-z]{1,2}|[a-z]{4,16})/|example.*'],
-            $this->fix($str)
+            $this->fix($str),
         );
     }
 }
