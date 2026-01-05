@@ -53,16 +53,26 @@ class TypoTest extends TestCase
     public function domain_value(): void
     {
         $input = [
-            '/ads.$domain=/Example.com/|.Example.com/|Example.com',
-            '/ads2.$domain=.Example.com/',
-            '/example.com/,.example.com/,example.com##.ads',
-            '.example.com/##.ads2',
+            '/ads.$domain=Example.com',
+            '/ads.$domain=.Example.com/',
+            '/ads.$domain=/Example.com/',
+            'example.com##.ads',
+            '.example.com/##.ads',
         ];
         $expected = [
             '/ads.$domain=example.com',
-            '/ads2.$domain=example.com',
             'example.com##.ads',
-            'example.com##.ads2',
+        ];
+        $this->assertSame($expected, $this->fix($input));
+
+        // complex
+        $input = [
+            '/ads.$domain=/Example.com/|.Example.com/|Example.com',
+            '/example.com/,.example.com/,example.com##.ads',
+        ];
+        $expected = [
+            '/ads.$domain=example.com',
+            'example.com##.ads',
         ];
         $this->assertSame($expected, $this->fix($input));
 

@@ -55,4 +55,10 @@ final class Helper
 
         return $domain;
     }
+
+    public static function isRegexDomain(string $domain): bool
+    {
+        return str_contains($domain, '\\')
+            || (str_contains($domain, '/') && preg_match('/\||,|]|\)/', $domain));
+    }
 }

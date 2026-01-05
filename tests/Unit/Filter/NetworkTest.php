@@ -220,5 +220,86 @@ class NetworkTest extends TestCase
 
         $v = ['/ads.$domain=/d|c|b|a/'];
         $this->assertSame($v, $this->fix($v));
+        // https://github.com/uBlockOrigin/uBlock-issues/discussions/2234#discussioncomment-5403472
+        $v = ['$all,~doc,domain=example.*|~/example\.([a-z]{1,2}|[a-z]{4,16})/'];
+        $this->assertSame(
+            ['$all,~doc,domain=~/example\.([a-z]{1,2}|[a-z]{4,16})/|example.*'],
+            $this->fix($v)
+        );
+    }
+
+    public function test_spitDomain(): void
+    {
+        $domain = 'example.*|/example\.([a-z]{1,2}|[a-z]{4,16})/|~example.com';
+        $this->assertSame(
+            [
+                'example.*',
+                '/example\.([a-z]{1,2}|[a-z]{4,16})/',
+                '~example.com',
+            ],
+            self::spitDomain($domain),
+        );
+
+        $domain = 'example.*|~/example\.([a-z]{1,2}|[a-z]{4,16})/|example.com';
+        $this->assertSame(
+            [
+                'example.*',
+                '~/example\.([a-z]{1,2}|[a-z]{4,16})/',
+                'example.com',
+            ],
+            self::spitDomain($domain),
+        );
+    }
+
+    public static function spitDomain(string $domain): array
+    {
+        preg_match_all('~\~?/(?:\\\\/|[^/])*/|[^|]+~', $domain, $matches);
+
+        return $matches[0];
+    }
+
+    public function test_normalizeDomain(): void
+    {
+        $domain = 'example.*|/example\.([a-zA-Z]{1,2}|[a-z]{4,16})/|~Example.com';
+        $this->assertSame(
+            '/example\.([a-zA-Z]{1,2}|[a-z]{4,16})/|example.*|~example.com',
+            self::normalizeDomain($domain),
+        );
+
+        $domain = 'example.*|~/example\.([a-zA-Z]{1,2}|[a-z]{4,16})/|example.com';
+        $this->assertSame(
+            '~/example\.([a-zA-Z]{1,2}|[a-z]{4,16})/|example.*|example.com',
+            self::normalizeDomain($domain),
+        );
+    }
+
+    public static function normalizeDomain(string $domain): string
+    {
+        // has regex domain
+        if (str_contains($domain, '/')) {
+            preg_match_all('~\~?/(?:\\\\/|[^/])*/|[^|]+~', $domain, $matches);
+            $domain = $matches[0];
+        } else {
+            $domain = explode('|', $domain);
+        }
+
+        $domain = collect($domain)
+            ->filter(fn($d) => $d !== '')
+            ->map(function ($str) {
+                // domain is a regex
+                if (preg_match('/^~?\/.+\//', $str)) {
+                    return $str;
+                }
+
+                $domain = strtolower($str);
+                $domain = \Realodix\Haiku\Helper::cleanDomain($domain);
+
+                return $domain;
+            })
+            ->unique()
+            ->sortBy(fn($d) => ltrim($d, '~'))
+            ->implode('|');
+
+        return $domain;
     }
 }
