@@ -68,12 +68,12 @@ class TypoTest extends TestCase
 
         // regex
         $input = [
-            '/ads.$domain=/regex/',
-            '/regex/##.ads',
+            '/ads.$domain=/examplE\.com/',
+            '/example\.com/##.ads',
         ];
         $expected = [
-            '/ads.$domain=/regex/',
-            '/regex/##.ads',
+            '/ads.$domain=/examplE\.com/',
+            '/example\.com/##.ads',
         ];
         $this->assertSame($expected, $this->fix($input));
     }
