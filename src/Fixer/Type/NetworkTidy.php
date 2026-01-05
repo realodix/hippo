@@ -121,7 +121,6 @@ final class NetworkTidy
      */
     private function normalizeDomain(string $domain): string
     {
-        // has regex domain
         if (Helper::isRegexDomain($domain)) {
             preg_match_all(Regex::NET_OPTION_DOMAIN_SPLIT, $domain, $matches);
             $domain = $matches[0];
