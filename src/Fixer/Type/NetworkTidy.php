@@ -95,7 +95,7 @@ final class NetworkTidy
         // Add back the consolidated domain-like options.
         foreach (self::MULTI_VALUE as $name) {
             if (!empty($options[$name])) {
-                $value = $this->normalizeDomain($options[$name][0]);
+                $value = Helper::normalizeDomain($options[$name][0], '|');
                 $optionList[] = $name.'='.$value;
             }
         }
@@ -109,42 +109,6 @@ final class NetworkTidy
         }
 
         return Helper::uniqueSorted($processedOptions, fn($v) => $this->optionOrder($v));
-    }
-
-    /**
-     * Normalize a domain string by making it lowercase and deduplicating the values.
-     * If the domain string contains a slash (/), it is assumed to be a regex
-     * and is returned as is.
-     *
-     * @param string $domain The domain string to normalize.
-     * @return string The normalized domain string.
-     */
-    private function normalizeDomain(string $domain): string
-    {
-        if (Helper::isRegexDomain($domain)) {
-            preg_match_all(Regex::NET_OPTION_DOMAIN_SPLIT, $domain, $matches);
-            $domain = $matches[0];
-        } else {
-            $domain = explode('|', $domain);
-        }
-
-        $domain = collect($domain)
-            ->filter(fn($d) => $d !== '')
-            ->map(function ($str) {
-                if (Helper::isRegexDomain($str)) {
-                    return $str;
-                }
-
-                $domain = strtolower($str);
-                $domain = Helper::cleanDomain($domain);
-
-                return $domain;
-            })
-            ->unique()
-            ->sortBy(fn($d) => ltrim($d, '~'))
-            ->implode('|');
-
-        return $domain;
     }
 
     /**

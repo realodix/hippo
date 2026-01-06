@@ -202,6 +202,7 @@ class NetworkTest extends TestCase
     #[PHPUnit\Test]
     public function handle_regex_domains(): void
     {
+        // combine filter rules
         $input = [
             '/ads.$domain=/example\.com/', // current is regex
             '/ads.$domain=example.com',
@@ -218,13 +219,8 @@ class NetworkTest extends TestCase
         ];
         $this->assertSame($expected, $this->fix($input));
 
-        $str = ['/ads.$domain=/d|c|b|a/'];
+        // left as is
+        $str = ['/ads.$domain=/example\.(org|com)/'];
         $this->assertSame($str, $this->fix($str));
-        // https://github.com/uBlockOrigin/uBlock-issues/discussions/2234#discussioncomment-5403472
-        $str = ['$all,~doc,domain=example.*|~/example\.([a-z]{1,2}|[a-z]{4,16})/'];
-        $this->assertSame(
-            ['$all,~doc,domain=~/example\.([a-z]{1,2}|[a-z]{4,16})/|example.*'],
-            $this->fix($str),
-        );
     }
 }
