@@ -44,7 +44,7 @@ final class Helper
     public static function normalizeDomain(string $domain, string $separator): string
     {
         if (self::containsRegexDomain($domain)) {
-            preg_match_all('#~?/(?:\\\\/|[^/])*/|[^'.$separator.']+#', $domain, $matches);
+            preg_match_all('#~?/(?:\\\/|[^/])*/|[^'.$separator.']+#', $domain, $matches);
             $domain = $matches[0];
         } else {
             $domain = explode($separator, $domain);
