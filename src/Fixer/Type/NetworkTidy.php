@@ -32,7 +32,7 @@ final class NetworkTidy
     /**
      * Tidies a network filter rule by normalizing options and sorting domains.
      */
-    public function handle(string $line): string
+    public function applyFix(string $line): string
     {
         if (!preg_match(Regex::NET_OPTION, $line, $m)) {
             return $line;

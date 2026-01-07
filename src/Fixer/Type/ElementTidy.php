@@ -13,7 +13,7 @@ final class ElementTidy
      * @param array<string> $m The regex match
      * @return string The normalized rule
      */
-    public function handle(string $line, array $m): string
+    public function applyFix(string $line, array $m): string
     {
         if ($m === []) {
             return $line;

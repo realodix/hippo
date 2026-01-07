@@ -15,7 +15,7 @@ final class Combiner
      * @param string $separator The separator character used between domains (`,` or `|`)
      * @return array<string> Combined filter rules
      */
-    public function handle(array $filters, string $domainPattern, string $separator): array
+    public function applyFix(array $filters, string $domainPattern, string $separator): array
     {
         $combined = [];
         $filterCount = count($filters);
