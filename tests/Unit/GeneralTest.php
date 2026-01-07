@@ -145,6 +145,46 @@ class GeneralTest extends TestCase
         $this->assertFalse(app(Processor::class)->isSpecialLine($data));
     }
 
+    #[PHPUnit\DataProvider('splitDomainListContainingRegexProvider')]
+    #[PHPUnit\Test]
+    public function splitDomainListContainingRegex($input, $expected)
+    {
+        $this->assertSame([$expected], $this->fix([$input]));
+    }
+
+    public static function splitDomainListContainingRegexProvider(): array
+    {
+        return [
+            [
+                '$all,~doc,domain=laravel.com|~/example\.([a-z]{1,2}|[a-z]{4,16})/|example.*',
+                '$all,~doc,domain=~/example\.([a-z]{1,2}|[a-z]{4,16})/|example.*|laravel.com',
+            ],
+            [
+                '$all,~doc,domain=example.*|~/example\.([a-z]{1,2}|[a-z]{4,16})/',
+                '$all,~doc,domain=~/example\.([a-z]{1,2}|[a-z]{4,16})/|example.*',
+            ],
+            [
+                '$all,~doc,domain=~/example\.([a-z]{1,2}|[a-z]{4,16})/|laravel.com',
+                '$all,~doc,domain=~/example\.([a-z]{1,2}|[a-z]{4,16})/|laravel.com',
+            ],
+
+            // `Regex::COSMETIC_RULE` does not support domain lists containing plain domains
+            // mixed with regular expressions.
+            [
+                'example.*,~/example\.([a-z]{1,2}|[a-z]{4,16})/,laravel.com##body > *',
+                'example.*,~/example\.([a-z]{1,2}|[a-z]{4,16})/,laravel.com##body > *',
+            ],
+            [
+                'example.*,~/example\.([a-z]{1,2}|[a-z]{4,16})/##body > *',
+                'example.*,~/example\.([a-z]{1,2}|[a-z]{4,16})/##body > *',
+            ],
+            [
+                '~/example\.([a-z]{1,2}|[a-z]{4,16})/,laravel.com##body > *',
+                '~/example\.([a-z]{1,2}|[a-z]{4,16})/,laravel.com##body > *',
+            ],
+        ];
+    }
+
     #[PHPUnit\Test]
     public function handle_split_comma(): void
     {

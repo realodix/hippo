@@ -41,6 +41,33 @@ final class Helper
         return $basic || $advanced;
     }
 
+    public static function normalizeDomain(string $domain, string $separator): string
+    {
+        if (self::containsRegexDomain($domain)) {
+            preg_match_all('#~?/(?:\\\/|[^/])*/|[^'.$separator.']+#', $domain, $matches);
+            $domain = $matches[0];
+        } else {
+            $domain = explode($separator, $domain);
+        }
+
+        $domain = collect($domain)
+            ->filter(fn($d) => $d !== '')
+            ->map(function ($str) {
+                if (self::containsRegexDomain($str)) {
+                    return $str;
+                }
+
+                $domain = strtolower($str);
+                $domain = self::cleanDomain($domain);
+
+                return $domain;
+            })->unique()
+            ->sortBy(fn($d) => ltrim($d, '~'))
+            ->implode($separator);
+
+        return $domain;
+    }
+
     public static function cleanDomain(string $domain): string
     {
         $domain = trim($domain);
@@ -56,8 +83,8 @@ final class Helper
         return $domain;
     }
 
-    public static function isRegexDomain(string $domain): bool
+    public static function containsRegexDomain(string $domain): bool
     {
-        return str_contains($domain, '/') && preg_match('/\||,|]|\)|\\\/', $domain);
+        return str_contains($domain, '/') && preg_match('/[\\^([{$\\\]/', $domain);
     }
 }

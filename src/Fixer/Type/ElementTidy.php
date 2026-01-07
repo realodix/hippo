@@ -28,26 +28,9 @@ final class ElementTidy
             return $line;
         }
 
-        $normalizedDomain = $this->normalizeDomain($domain);
+        $normalizedDomain = Helper::normalizeDomain($domain, ',');
 
         return $modifier.$normalizedDomain.$separator.$selector;
-    }
-
-    private function normalizeDomain(string $domain): string
-    {
-        // domain is a regex
-        if (str_starts_with($domain, '/') && str_ends_with($domain, '/')) {
-            return $domain;
-        }
-
-        $domain = collect(explode(',', $domain))
-            ->filter(fn($d) => $d !== '')
-            ->map(fn($d) => Helper::cleanDomain($d))
-            ->unique()
-            ->sortBy(fn($d) => ltrim($d, '~'))
-            ->implode(',');
-
-        return $domain;
     }
 
     /**

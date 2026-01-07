@@ -56,8 +56,8 @@ class TypoTest extends TestCase
             '/ads.$domain=Example.com',
             '/ads.$domain=.Example.com/',
             '/ads.$domain=/Example.com/',
-            'example.com##.ads',
-            '.example.com/##.ads',
+            'Example.com##.ads',
+            '.Example.com/##.ads',
         ];
         $expected = [
             '/ads.$domain=example.com',
