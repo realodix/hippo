@@ -2,6 +2,7 @@
 
 namespace Realodix\Haiku\Fixer;
 
+use Realodix\Haiku\Fixer\Type\Combiner;
 use Realodix\Haiku\Fixer\Type\ElementTidy;
 use Realodix\Haiku\Fixer\Type\NetworkTidy;
 use Realodix\Haiku\Helper;

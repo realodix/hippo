@@ -1,6 +1,6 @@
 <?php
 
-namespace Realodix\Haiku\Fixer;
+namespace Realodix\Haiku\Fixer\Type;
 
 use Realodix\Haiku\Fixer\ValueObject\DomainSection;
 use Realodix\Haiku\Helper;
