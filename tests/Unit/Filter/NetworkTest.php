@@ -223,4 +223,39 @@ class NetworkTest extends TestCase
         $str = ['/ads.$domain=/example\.(org|com)/'];
         $this->assertSame($str, $this->fix($str));
     }
+
+    #[PHPUnit\DataProvider('handleRegexValuesProvider')]
+    #[PHPUnit\Test]
+    public function handle_regex_values($actual, $expected): void
+    {
+        $this->assertSame([$expected], $this->fix([$actual]));
+    }
+
+    public static function handleRegexValuesProvider(): array
+    {
+        return [
+            // https://github.com/AdguardTeam/tsurlfilter/blob/8a529d173b/packages/agtree/test/parser/misc/modifier-list.test.ts#L743
+            [
+                '$replace=/(<VAST[\\s\\S]*?>)[\\s\\S]*<\\/VAST>/\\$1<\\/VAST>/i,path=/\\/(sub1|sub2)\\/page\\.html/',
+                '$path=/\\/(sub1|sub2)\\/page\\.html/,replace=/(<VAST[\\s\\S]*?>)[\\s\\S]*<\\/VAST>/\\$1<\\/VAST>/i',
+            ],
+            [
+                '$replace=/(<VAST[\\s\\S]*?>)[\\s\\S]*<\\/VAST>/\\$1<\\/VAST>/i,~path=/\\/(sub1|sub2)\\/page\\.html/',
+                '$~path=/\\/(sub1|sub2)\\/page\\.html/,replace=/(<VAST[\\s\\S]*?>)[\\s\\S]*<\\/VAST>/\\$1<\\/VAST>/i',
+            ],
+        ];
+    }
+
+    #[PHPUnit\Test]
+    public function handle_nonAscii(): void
+    {
+        // https://github.com/AdguardTeam/tsurlfilter/blob/8a529d173b/packages/agtree/test/parser/misc/modifier-list.test.ts#L775
+        $input = [
+            '$foo=你好,bar=世界',
+        ];
+        $expected = [
+            '$bar=世界,foo=你好',
+        ];
+        $this->assertSame($expected, $this->fix($input));
+    }
 }
