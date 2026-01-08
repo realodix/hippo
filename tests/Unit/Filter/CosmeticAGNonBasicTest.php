@@ -135,10 +135,10 @@ class CosmeticAGNonBasicTest extends TestCase
     }
 
     /**
-     * Because the syntax is quite complex, the rules must be returned as is.
+     * Because the syntax is quite complicated, the rules must be returned as is.
      */
     #[PHPUnit\Test]
-    public function complex(): void
+    public function complicated(): void
     {
         $input = ['[$app=/[a-z]/]example.org,0.0.0.0##.ads'];
         $this->assertSame($input, $this->fix($input));
