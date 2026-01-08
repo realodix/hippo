@@ -2,6 +2,7 @@
 
 namespace Realodix\Haiku\Fixer\Type;
 
+use Realodix\Haiku\Fixer\Regex;
 use Realodix\Haiku\Helper;
 
 final class ElementTidy
@@ -25,7 +26,18 @@ final class ElementTidy
         $selector = $m[4];
 
         if (str_starts_with($modifier, '[$') && $this->isComplicatedAdgModifier($modifier)) {
-            return $line;
+            $modifier = $this->extractAdgModifier($line);
+
+            if (is_null($modifier)) {
+                return $line;
+            }
+
+            $line = substr($line, strlen($modifier));
+
+            preg_match(Regex::COSMETIC_RULE, $line, $m);
+            $domain = $m[2];
+            $separator = $m[3];
+            $selector = $m[4];
         }
 
         $domain = Helper::normalizeDomain($domain, ',');
@@ -44,5 +56,47 @@ final class ElementTidy
             substr_count($modifier, '/]') > 0
             // bracket count mismatch
             || substr_count($modifier, '[') != substr_count($modifier, ']');
+    }
+
+    /**
+     * Extract AdGuard non-basic modifier using backward scan.
+     *
+     * https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
+     */
+    private function extractAdgModifier(string $str): ?string
+    {
+        $len = strlen($str);
+        $open = null; // '/'
+
+        for ($i = $len - 1; $i >= 0; $i--) {
+            $c = $str[$i];
+
+            // ===== REGEX =====
+            if ($c === '/') {
+                if ($open === $c) {
+                    $open = null;
+                } elseif ($open === null) {
+                    $open = $c;
+                }
+
+                continue;
+            }
+
+            // ===== CLOSING BRACKET =====
+            if ($open === null && $c === ']') {
+                // IPv6 literal? → skip
+                $ipv6Start = Helper::isIpv6Literal($str, $i);
+                if ($ipv6Start !== null) {
+                    $i = $ipv6Start;
+
+                    continue;
+                }
+
+                // this is modifier end
+                return substr($str, 0, $i + 1);
+            }
+        }
+
+        return null;
     }
 }
