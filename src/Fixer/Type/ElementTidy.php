@@ -72,7 +72,7 @@ final class ElementTidy
 
             // ===== CLOSING BRACKET =====
             if ($open === null && $c === ']') {
-                // IPv6 literal? → skip
+                // IPv6 literal? -> skip
                 $ipv6Start = Helper::isIpv6Literal($str, $i);
                 if ($ipv6Start !== null) {
                     $i = $ipv6Start;
