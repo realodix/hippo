@@ -2,11 +2,65 @@
 
 namespace Realodix\Haiku\Fixer\Type;
 
+use Realodix\Haiku\Fixer\Regex;
+use Realodix\Haiku\Helper;
+
 /**
  * https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
  */
 final class AdgModifierForElement
 {
+    public function applyFix(string $str): string
+    {
+        // unwrap  `[` and `]`
+        $str = substr($str, 1, -1);
+
+        if (!preg_match(Regex::NET_OPTION, $str, $m)) {
+            return $str;
+        }
+
+        $modifiers = $m[2];
+
+        // initialize an empty array
+        $parsed = ['modifiers' => []];
+        $multiValue = ['app', 'domain'];
+        foreach ($multiValue as $key) {
+            $parsed[$key] = [];
+        }
+
+        foreach (preg_split(Regex::NET_OPTION_SPLIT, $modifiers) as $option) {
+            $parts = explode('=', $option, 2);
+            $name = ltrim($parts[0], '~');
+            $value = $parts[1] ?? null;
+
+            if (in_array($name, $multiValue)) {
+                if ($value !== null) {
+                    array_push($parsed[$name], ...[$value]);
+                }
+            } else {
+                $parsed['modifiers'][] = $option;
+            }
+        }
+
+        // add back the consolidated domain-like options.
+        foreach ($multiValue as $name) {
+            if (!empty($parsed[$name])) {
+                $value = Helper::uniqueSorted(
+                    explode('|', $parsed[$name][0]),
+
+                    fn($d) => ltrim($d, '~'),
+                )->implode('|');
+
+                $parsed['modifiers'][] = $name.'='.$value;
+            }
+        }
+
+        $modifiers = collect($parsed['modifiers'])
+            ->unique()->sort()->implode(',');
+
+        return '[$'.$modifiers.']';
+    }
+
     /**
      * Extract AdGuard modifier using backward scan.
      */

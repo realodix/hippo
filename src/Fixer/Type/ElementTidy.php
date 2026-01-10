@@ -12,8 +12,6 @@ final class ElementTidy
     ) {}
 
     /**
-     * Normalize an element hiding rule.
-     *
      * @param string $line The rule line
      * @param array<string> $m The regex match
      * @return string The normalized rule
@@ -45,6 +43,7 @@ final class ElementTidy
             $selector = $m[5];
         }
 
+        $modifier = $this->adgModifier->applyFix($modifier);
         $domain = Helper::normalizeDomain($domain, ',');
 
         return $modifier.$domain.$separator.$selector;
