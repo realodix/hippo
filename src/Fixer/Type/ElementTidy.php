@@ -24,7 +24,7 @@ final class ElementTidy
         $separator = $m[3];
         $selector = $m[4];
 
-        if (str_starts_with($modifier, '[$') && $this->isComplicatedNonBasic($modifier)) {
+        if (str_starts_with($modifier, '[$') && $this->isComplicatedAdgModifier($modifier)) {
             return $line;
         }
 
@@ -42,7 +42,7 @@ final class ElementTidy
      * - contains a '/' character (regex)
      * - has a different number of '[' and ']' characters (failed to parse)
      */
-    private function isComplicatedNonBasic(string $modifier): bool
+    private function isComplicatedAdgModifier(string $modifier): bool
     {
         return
             // value contains regex
