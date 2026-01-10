@@ -34,20 +34,15 @@ final class ElementTidy
     }
 
     /**
-     * Checks if a given AdGuard modifier is complicated (i.e., contains regex or fails to parse).
-     *
-     * https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
-     *
-     * A complicated modifier is one that:
-     * - contains a '/' character (regex)
-     * - has a different number of '[' and ']' characters (failed to parse)
+     * Checks if a given AdGuard modifier is complicated. i.e., contains regex string
+     * or Regex::COSMETIC_RULE fails to extract.
      */
     private function isComplicatedAdgModifier(string $modifier): bool
     {
         return
-            // value contains regex
+            // contains regex
             substr_count($modifier, '/]') > 0
-            // failed to parse
+            // bracket count mismatch
             || substr_count($modifier, '[') != substr_count($modifier, ']');
     }
 }
