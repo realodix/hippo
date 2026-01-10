@@ -26,9 +26,9 @@ class CosmeticTest extends TestCase
         preg_match(Regex::COSMETIC_RULE, $rule, $m);
 
         $this->assertSame($expectedMatch, $m[0], "Full match: $rule");
-        $this->assertSame($expectedSeparator, $m[3], "Extracted separator: $rule");
-        $this->assertSame($expectedRule, $m[4], "Extracted rule: $rule");
-        $this->assertSame($expectedDomain, $m[2], "Extracted domain: $rule");
+        $this->assertSame($expectedSeparator, $m[4], "Extracted separator: $rule");
+        $this->assertSame($expectedRule, $m[5], "Extracted rule: $rule");
+        $this->assertSame($expectedDomain, $m[1], "Extracted domain: $rule");
     }
 
     public static function cosmeticRuleGeneralMatchProvider(): array
@@ -53,9 +53,9 @@ class CosmeticTest extends TestCase
         preg_match(Regex::COSMETIC_RULE, $rule, $m);
 
         $this->assertSame($expectedMatch, $m[0], "Full match: $rule");
-        $this->assertSame($expectedDomain, $m[2], "Extracted domain: $rule");
-        $this->assertSame($expectedSeparator, $m[3], "Extracted separator: $rule");
-        $this->assertSame($expectedRule, $m[4], "Extracted rule: $rule");
+        $this->assertSame($expectedDomain, $m[1], "Extracted domain: $rule");
+        $this->assertSame($expectedSeparator, $m[4], "Extracted separator: $rule");
+        $this->assertSame($expectedRule, $m[5], "Extracted rule: $rule");
     }
 
     public static function cosmeticRuleMatchProvider(): array
@@ -175,9 +175,9 @@ class CosmeticTest extends TestCase
         }
 
         $this->assertSame($expectedMatch, $m[0], "Full match: $rule");
-        $this->assertSame($expectedDomain, $m[2], "Extracted domain: $rule");
-        $this->assertSame($expectedSeparator, $m[3], "Extracted separator: $rule");
-        $this->assertSame($expectedRule, $m[4], "Extracted rule: $rule");
+        $this->assertSame($expectedDomain, $m[3], "Extracted domain: $rule");
+        $this->assertSame($expectedSeparator, $m[4], "Extracted separator: $rule");
+        $this->assertSame($expectedRule, $m[5], "Extracted rule: $rule");
     }
 
     public static function cosmeticRuleAdGuardMatchProvider(): array

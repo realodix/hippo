@@ -87,4 +87,28 @@ final class Helper
     {
         return str_contains($domain, '/') && preg_match('/[\\^([{$\\\]/', $domain);
     }
+
+    public static function isIpv6Literal(string $str, int $end): ?int
+    {
+        for ($i = $end - 1; $i >= 0; $i--) {
+            $c = $str[$i];
+
+            if ($c === '[') {
+                $inside = substr($str, $i + 1, $end - $i - 1);
+
+                // only hex digits and colon
+                if ($inside !== '' && preg_match('/^[0-9a-fA-F:]+$/', $inside)) {
+                    return $i; // opening bracket position
+                }
+
+                return null;
+            }
+
+            if (!ctype_xdigit($c) && $c !== ':') {
+                return null;
+            }
+        }
+
+        return null;
+    }
 }
