@@ -47,19 +47,6 @@ final class ElementTidy
     }
 
     /**
-     * Checks if a given AdGuard modifier is complicated. i.e., contains regex string
-     * or Regex::COSMETIC_RULE fails to extract.
-     */
-    private function isComplicatedAdgModifier(string $modifier): bool
-    {
-        return
-            // contains regex
-            substr_count($modifier, '/]') > 0
-            // bracket count mismatch
-            || substr_count($modifier, '[') != substr_count($modifier, ']');
-    }
-
-    /**
      * Extract AdGuard non-basic modifier using backward scan.
      *
      * https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
@@ -99,5 +86,18 @@ final class ElementTidy
         }
 
         return null;
+    }
+
+    /**
+     * Checks if a given AdGuard modifier is complicated. i.e., contains regex string
+     * or Regex::COSMETIC_RULE fails to extract.
+     */
+    private function isComplicatedAdgModifier(string $modifier): bool
+    {
+        return
+            // contains regex
+            substr_count($modifier, '/]') > 0
+            // bracket count mismatch
+            || substr_count($modifier, '[') != substr_count($modifier, ']');
     }
 }
