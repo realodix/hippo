@@ -47,7 +47,7 @@ final class ElementTidy
     }
 
     /**
-     * Extract AdGuard non-basic modifier using backward scan.
+     * Extract AdGuard modifier using backward scan.
      *
      * https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
      */
