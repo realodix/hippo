@@ -252,15 +252,15 @@ class CosmeticAGNonBasicTest extends TestCase
                 '[$url=/\[a-z\]+\\.example\\.com^/]',
             ],
 
-            [ // https://github.com/AdguardTeam/tsurlfilter/blob/8a529d173b/packages/agtree/test/parser/cosmetic/adg-modifier-list.test.ts#L72C36-L72C76
+            [ // https://github.com/AdguardTeam/tsurlfilter/blob/8a529d173b/packages/agtree/test/parser/cosmetic/adg-modifier-list.test.ts#L72
                 '[$domain=/example[0-9]\.(com|org)/]##.ad',
                 '[$domain=/example[0-9]\.(com|org)/]',
             ],
-            [ // https://github.com/AdguardTeam/tsurlfilter/blob/8a529d173b/packages/agtree/test/parser/cosmetic/adg-modifier-list.test.ts#L124C36-L124C77
+            [ // https://github.com/AdguardTeam/tsurlfilter/blob/8a529d173b/packages/agtree/test/parser/cosmetic/adg-modifier-list.test.ts#L124
                 '[$domain=/example\d{1,}\.(com|org)/]##.ad',
                 '[$domain=/example\d{1,}\.(com|org)/]',
             ],
-            [ // https://github.com/AdguardTeam/tsurlfilter/blob/8a529d173b/packages/agtree/test/parser/cosmetic/adg-modifier-list.test.ts#L177C36-L177C121
+            [ // https://github.com/AdguardTeam/tsurlfilter/blob/8a529d173b/packages/agtree/test/parser/cosmetic/adg-modifier-list.test.ts#L177
                 '[$path=/id]/^[a-z0-9]{5,}\.(?=.*[a-z])(?=.*[0-9])[a-z0-9]{17,}\.(cfd|sbs|shop)$/##.ad',
                 '[$path=/id]',
             ],
