@@ -23,10 +23,10 @@ class CosmeticAGNonBasicTest extends TestCase
     ) {
         preg_match(Regex::COSMETIC_RULE, $rule, $m);
 
-        $this->assertSame($expectedModifier, $m[1], "Extracted modifier: $rule");
-        $this->assertSame($expectedDomain, $m[2], "Extracted domain: $rule");
-        $this->assertSame($expectedSeparator, $m[3], "Extracted separator: $rule");
-        $this->assertSame($expectedRule, $m[4], "Extracted rule: $rule");
+        $this->assertSame($expectedModifier, $m[2], "Extracted modifier: $rule");
+        $this->assertSame($expectedDomain, $m[3], "Extracted domain: $rule");
+        $this->assertSame($expectedSeparator, $m[4], "Extracted separator: $rule");
+        $this->assertSame($expectedRule, $m[5], "Extracted rule: $rule");
     }
 
     public static function parseProvider(): array

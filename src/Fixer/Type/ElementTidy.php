@@ -20,13 +20,14 @@ final class ElementTidy
             return $line;
         }
 
-        $modifier = $m[1] ?? ''; // AdGuard non-basic modifier
-        $domain = $m[2];
-        $separator = $m[3];
-        $selector = $m[4];
+        $domainBlock = $m[1];
+        $modifier = $m[2] ?? ''; // AdGuard modifier
+        $domain = $m[3];
+        $separator = $m[4];
+        $selector = $m[5];
 
         if (str_starts_with($modifier, '[$') && $this->isComplicatedAdgModifier($modifier)) {
-            $modifier = $this->extractAdgModifier($line);
+            $modifier = $this->extractAdgModifier($domainBlock);
 
             if (is_null($modifier)) {
                 return $line;
@@ -35,9 +36,9 @@ final class ElementTidy
             $line = substr($line, strlen($modifier));
 
             preg_match(Regex::COSMETIC_RULE, $line, $m);
-            $domain = $m[2];
-            $separator = $m[3];
-            $selector = $m[4];
+            $domain = $m[3];
+            $separator = $m[4];
+            $selector = $m[5];
         }
 
         $domain = Helper::normalizeDomain($domain, ',');
