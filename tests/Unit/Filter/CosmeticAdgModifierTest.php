@@ -10,7 +10,7 @@ use Realodix\Haiku\Test\TestCase;
 /**
  * https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
  */
-class CosmeticAGNonBasicTest extends TestCase
+class CosmeticAdgModifierTest extends TestCase
 {
     #[PHPUnit\DataProvider('parseProvider')]
     #[PHPUnit\Test]
