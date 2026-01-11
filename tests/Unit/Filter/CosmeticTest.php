@@ -40,6 +40,24 @@ class CosmeticTest extends TestCase
         $this->assertSame($expected, $this->fix($input));
     }
 
+    /**
+     * Remove extra spaces.
+     */
+    #[PHPUnit\Test]
+    public function normalizeSpaces(): void
+    {
+        $input = [
+            'example.com##.single-post  .code-block    +    .single-page:style(margin-top: 100px!important;)',
+            'example.com##header:style(margin:     0!important;     padding: 0!important;)',
+        ];
+        $expected = [
+            'example.com##.single-post .code-block + .single-page:style(margin-top: 100px!important;)',
+            'example.com##header:style(margin: 0!important; padding: 0!important;)',
+        ];
+
+        $this->assertSame($expected, $this->fix($input));
+    }
+
     // ========================================================================
     // Element Hiding Tests (`elementtidy`)
     // ========================================================================
