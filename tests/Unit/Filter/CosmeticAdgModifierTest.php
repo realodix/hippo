@@ -103,6 +103,38 @@ class CosmeticAdgModifierTest extends TestCase
     }
 
     #[PHPUnit\Test]
+    public function adgModifier_sortingDomain(): void
+    {
+        $input = [
+            '[$domain=b.com|a.com]##selector',
+
+            '[$app=test_app|com.apple.Safari,domain=b.com|a.com]##selector',
+        ];
+
+        $expected = [
+            '[$app=com.apple.Safari|test_app,domain=a.com|b.com]##selector',
+
+            '[$domain=a.com|b.com]##selector',
+        ];
+
+        $this->assertSame($expected, $this->fix($input));
+    }
+
+    #[PHPUnit\Test]
+    public function sortingModifier(): void
+    {
+        $input = [
+            '[$domain=a.com,url=||example.com/content/*,app=com.apple.Safari,path=/page.html]##selector',
+        ];
+
+        $expected = [
+            '[$app=com.apple.Safari,domain=a.com,path=/page.html,url=||example.com/content/*]##selector',
+        ];
+
+        $this->assertSame($expected, $this->fix($input));
+    }
+
+    #[PHPUnit\Test]
     public function combine(): void
     {
         $input = [
