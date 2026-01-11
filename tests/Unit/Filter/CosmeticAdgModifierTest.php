@@ -4,7 +4,7 @@ namespace Realodix\Haiku\Test\Unit\Filter;
 
 use PHPUnit\Framework\Attributes as PHPUnit;
 use Realodix\Haiku\Fixer\Regex;
-use Realodix\Haiku\Fixer\Type\ElementTidy;
+use Realodix\Haiku\Fixer\Type\AdgModifierForElement;
 use Realodix\Haiku\Test\TestCase;
 
 /**
@@ -159,17 +159,17 @@ class CosmeticAdgModifierTest extends TestCase
      *
      * https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
      */
-    #[PHPUnit\DataProvider('extractAdgModifierProvider')]
+    #[PHPUnit\DataProvider('extractProvider')]
     #[PHPUnit\Test]
-    public function extractAdgModifier($actual, $expected): void
+    public function extract($actual, $expected): void
     {
         $this->assertSame(
             $expected,
-            $this->callPrivateMethod(new ElementTidy, 'extractAdgModifier', [$actual]),
+            $this->callPrivateMethod(new AdgModifierForElement, 'extract', [$actual]),
         );
     }
 
-    public static function extractAdgModifierProvider(): array
+    public static function extractProvider(): array
     {
         return [
             // $app
@@ -273,7 +273,7 @@ class CosmeticAdgModifierTest extends TestCase
     {
         $this->assertSame(
             $expected,
-            $this->callPrivateMethod(new ElementTidy, 'extractAdgModifier', [$actual]),
+            $this->callPrivateMethod(new AdgModifierForElement, 'extract', [$actual]),
         );
     }
 

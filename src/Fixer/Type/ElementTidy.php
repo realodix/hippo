@@ -7,6 +7,10 @@ use Realodix\Haiku\Helper;
 
 final class ElementTidy
 {
+    public function __construct(
+        private AdgModifierForElement $adgModifier,
+    ) {}
+
     /**
      * Normalize an element hiding rule.
      *
@@ -26,8 +30,8 @@ final class ElementTidy
         $separator = $m[4];
         $selector = $m[5];
 
-        if (str_starts_with($modifier, '[$') && $this->isComplicatedAdgModifier($modifier)) {
-            $modifier = $this->extractAdgModifier($domainBlock);
+        if (str_starts_with($modifier, '[$') && $this->adgModifier->isComplicated($modifier)) {
+            $modifier = $this->adgModifier->extract($domainBlock);
 
             if (is_null($modifier)) {
                 return $line;
@@ -44,60 +48,5 @@ final class ElementTidy
         $domain = Helper::normalizeDomain($domain, ',');
 
         return $modifier.$domain.$separator.$selector;
-    }
-
-    /**
-     * Extract AdGuard modifier using backward scan.
-     *
-     * https://adguard.com/kb/general/ad-filtering/create-own-filters/#non-basic-rules-modifiers
-     */
-    private function extractAdgModifier(string $str): ?string
-    {
-        $len = strlen($str);
-        $open = null; // '/'
-
-        for ($i = $len - 1; $i >= 0; $i--) {
-            $c = $str[$i];
-
-            // ===== REGEX =====
-            if ($c === '/') {
-                if ($open === $c) {
-                    $open = null;
-                } elseif ($open === null) {
-                    $open = $c;
-                }
-
-                continue;
-            }
-
-            // ===== CLOSING BRACKET =====
-            if ($open === null && $c === ']') {
-                // IPv6 literal? -> skip
-                $ipv6Start = Helper::isIpv6Literal($str, $i);
-                if ($ipv6Start !== null) {
-                    $i = $ipv6Start;
-
-                    continue;
-                }
-
-                // this is modifier end
-                return substr($str, 0, $i + 1);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Checks if a given AdGuard modifier is complicated. i.e., contains regex string
-     * or Regex::COSMETIC_RULE fails to extract.
-     */
-    private function isComplicatedAdgModifier(string $modifier): bool
-    {
-        return
-            // contains regex
-            substr_count($modifier, '/]') > 0
-            // bracket count mismatch
-            || substr_count($modifier, '[') != substr_count($modifier, ']');
     }
 }
