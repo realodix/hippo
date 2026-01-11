@@ -95,7 +95,9 @@ trait GeneralProvider
             ['['],
             ['[$path=/test]example.org##.ad'],
             ['[$path=/test]##.ad'],
-            ['[$adg-modifier]##[class^="ads-"]'], // Special case
+            // Special case
+            ['[$adg-modifier]##[class^="ads-"]'],
+            ['[$adg-modifier]$$script[data-src="banner"]'],
 
             // Like YAML metadata
             ['-ads-'],
