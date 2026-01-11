@@ -64,10 +64,7 @@ final class Builder
             }
 
             // Step 3: Build and write
-            $finalContent = array_merge(
-                [$this->header($header)],
-                $content,
-            );
+            $finalContent = array_merge([$this->header($header)], $content);
             $this->write($outputPath, $finalContent, $sourceHash);
             $this->logger->processed($outputPath);
         }
